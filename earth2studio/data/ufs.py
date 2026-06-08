@@ -16,7 +16,10 @@
 
 from __future__ import annotations
 
+import concurrent.futures
 import hashlib
+import math
+import multiprocessing
 import os
 import pathlib
 import shutil
@@ -54,6 +57,18 @@ class _GSIAsyncTask:
     satellite: str | None = None
 
 
+# Transient context for the parallel-decode worker pool. Set just before the
+# ProcessPoolExecutor runs and cleared after; forked workers inherit it via
+# copy-on-write (which also carries the otherwise-unpicklable lexicon closures).
+_DECODE_CTX: dict = {}
+
+
+def _decode_chunk_idx(i: int) -> pd.DataFrame | None:
+    """Worker entry point: decode the i-th task chunk in a forked process."""
+    self, chunks, variables, schema = _DECODE_CTX["args"]
+    return self._compile_chunk(chunks[i], variables, schema)
+
+
 class _UFSObsBase:
     """Base class for GSI data sources.
 
@@ -81,6 +96,12 @@ class _UFSObsBase:
         self._tmp_cache_hash: str | None = None
         # Anonymous obstore S3 stores, cached per bucket (created lazily).
         self._stores: dict[str, S3Store] = {}
+        # Number of processes for NetCDF->DataFrame decode. 1 = serial (default,
+        # unchanged). >1 forks worker processes (see _compile_dataframe) and must
+        # be set before any CUDA context exists in this process.
+        self._decode_workers: int = int(
+            os.environ.get("EARTH2STUDIO_UFS_DECODE_WORKERS", "1")
+        )
 
         lower, upper = normalize_time_tolerance(time_tolerance)
         self._tolerance_lower = pd.to_timedelta(lower).to_pytimedelta()
@@ -213,7 +234,49 @@ class _UFSObsBase:
         variables: list[str],
         schema: pa.Schema,
     ) -> pd.DataFrame:
-        """Compile fetched data into a DataFrame."""
+        """Compile fetched GSI files into a DataFrame.
+
+        Each file's HDF5->pandas decode is CPU- and GIL-bound. When
+        ``decode_workers`` (env ``EARTH2STUDIO_UFS_DECODE_WORKERS``) > 1 the files
+        are split across forked worker processes; default 1 is serial and
+        unchanged. The 'fork' start method lets workers inherit the unpicklable
+        lexicon closures via copy-on-write, so this must run BEFORE any CUDA
+        context is created in the parent process.
+        """
+        workers = min(max(1, self._decode_workers), len(async_tasks))
+        if workers <= 1:
+            result = self._compile_chunk(async_tasks, variables, schema)
+            return result if result is not None else pd.DataFrame()
+
+        size = math.ceil(len(async_tasks) / workers)
+        chunks = [
+            c
+            for c in (
+                async_tasks[i * size : (i + 1) * size] for i in range(workers)
+            )
+            if c
+        ]
+        _DECODE_CTX["args"] = (self, chunks, variables, schema)
+        try:
+            with concurrent.futures.ProcessPoolExecutor(
+                max_workers=len(chunks),
+                mp_context=multiprocessing.get_context("fork"),
+            ) as executor:
+                parts = list(executor.map(_decode_chunk_idx, range(len(chunks))))
+        finally:
+            _DECODE_CTX.clear()
+
+        frames = [p for p in parts if p is not None and len(p)]
+        result = pd.concat(frames, ignore_index=True)
+        return result[[name for name in schema.names if name in result.columns]]
+
+    def _compile_chunk(
+        self,
+        async_tasks: list[_GSIAsyncTask],
+        variables: list[str],
+        schema: pa.Schema,
+    ) -> pd.DataFrame | None:
+        """Decode one set of GSI files into a DataFrame (the per-process unit)."""
         # Identify schema fields that are per-channel (need Channel_Index lookup)
         channel_indexed_fields: dict[str, str] = {}
         for field in schema:
@@ -290,6 +353,8 @@ class _UFSObsBase:
             df = df.loc[mask]
             frames.append(task.gsi_modifier(df))
 
+        if not frames:
+            return None
         result = pd.concat(frames, ignore_index=True)
         return result[[name for name in schema.names if name in result.columns]]
 
