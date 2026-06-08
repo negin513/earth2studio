@@ -263,6 +263,7 @@ da-healda = [
     "nvidia-physicsnemo>=2.0",
     "cupy-cuda13x",
     "cudf-cu13>=26.2.0",
+    "obstore>=0.8,<0.11",
 ]
 da-interp = [
     "cupy-cuda13x",
