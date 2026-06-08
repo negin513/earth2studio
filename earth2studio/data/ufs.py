@@ -24,19 +24,28 @@ import uuid
 from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime, timedelta
+from typing import TYPE_CHECKING
 
 import h5netcdf
 import numpy as np
 import pandas as pd
 import pyarrow as pa
-import s3fs
 from loguru import logger
 from tqdm.asyncio import tqdm
 
-from earth2studio.data.utils import _sync_async, datasource_cache_root, prep_data_inputs
+from earth2studio.data.utils import (
+    _sync_async,
+    datasource_cache_root,
+    get_obstore_s3_store,
+    obstore_cat_file,
+    prep_data_inputs,
+)
 from earth2studio.lexicon import GSIConventionalLexicon, GSISatelliteLexicon
 from earth2studio.utils.time import normalize_time_tolerance
 from earth2studio.utils.type import TimeArray, TimeTolerance, VariableArray
+
+if TYPE_CHECKING:
+    from obstore.store import S3Store
 
 
 @dataclass
@@ -78,17 +87,15 @@ class _UFSObsBase:
         self._max_workers = max_workers
         self.async_timeout = async_timeout
         self._tmp_cache_hash: str | None = None
-        self.fs: s3fs.S3FileSystem | None = None
+        self.store: S3Store | None = None
 
         lower, upper = normalize_time_tolerance(time_tolerance)
         self._tolerance_lower = pd.to_timedelta(lower).to_pytimedelta()
         self._tolerance_upper = pd.to_timedelta(upper).to_pytimedelta()
 
     async def _async_init(self) -> None:
-        """Async initialization of S3 filesystem"""
-        self.fs = s3fs.S3FileSystem(
-            anon=True, client_kwargs={}, asynchronous=True, skip_instance_cache=True
-        )
+        """Async initialization of the obstore S3 store"""
+        self.store = get_obstore_s3_store(self.UFS_BUCKET, anon=True)
 
     def __call__(
         self,
@@ -124,10 +131,8 @@ class _UFSObsBase:
         fields: str | list[str] | pa.Schema | None = None,
     ) -> pd.DataFrame:
         """Async function to get data."""
-        if self.fs is None:
+        if self.store is None:
             await self._async_init()
-
-        session = await self.fs.set_session(refresh=True)  # type: ignore[union-attr]
 
         time_list, variable_list = prep_data_inputs(time, variable)
         self._validate_time(time_list)
@@ -140,9 +145,6 @@ class _UFSObsBase:
         await tqdm.gather(
             *fetch_jobs, desc="Fetching GSI files", disable=(not self._verbose)
         )
-
-        if session:
-            await session.close()
 
         df = self._compile_dataframe(async_tasks, variable_list, schema)
 
@@ -171,15 +173,19 @@ class _UFSObsBase:
         byte_length : int | None, optional
             Number of bytes to read, by default None (read all)
         """
-        if self.fs is None:
-            raise ValueError("File system is not initialized")
+        if self.store is None:
+            raise ValueError("Object store is not initialized")
 
         cache_path = self.cache_path(path, byte_offset, byte_length)
         if not pathlib.Path(cache_path).is_file():
-            if byte_length:
-                byte_length = int(byte_offset + byte_length)
+            # obstore stores are bucket-scoped, so strip the s3://{bucket}/ prefix
+            # down to the object key.
+            key = path.removeprefix(f"s3://{self.UFS_BUCKET}/")
+            end = int(byte_offset + byte_length) if byte_length else None
             try:
-                data = await self.fs._cat_file(path, start=byte_offset, end=byte_length)
+                data = await obstore_cat_file(
+                    self.store, key, start=byte_offset, end=end
+                )
                 with open(cache_path, "wb") as file:
                     file.write(data)
             except FileNotFoundError:
