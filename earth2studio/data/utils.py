@@ -70,6 +70,7 @@ from earth2studio.utils.type import (
 
 if TYPE_CHECKING:
     from fsspec.implementations.cache_mapper import AbstractCacheMapper
+    from obstore.store import S3Store
 
 try:
     import cupy as cp
@@ -798,6 +799,81 @@ def get_msc_filesystem() -> filesystem | None:
         return MultiStorageAsyncFileSystem
     except ImportError:
         return None
+
+
+def get_obstore_s3_store(
+    bucket: str, anon: bool = True, region: str = "us-east-1"
+) -> S3Store:
+    """Create a native obstore S3 store for a given bucket.
+
+    obstore provides a high-throughput, Rust-backed interface to object storage.
+    It is used in place of fsspec/s3fs on byte-fetch hot paths (e.g. the GSI
+    observation sources) for higher throughput on many concurrent requests.
+
+    Note
+    ----
+    obstore is imported lazily so that importing :mod:`earth2studio.data` does
+    not require obstore to be installed unless this helper is actually used.
+
+    Parameters
+    ----------
+    bucket : str
+        Name of the S3 bucket (without the ``s3://`` prefix).
+    anon : bool, optional
+        If True, requests are not signed (anonymous access to public buckets),
+        by default True.
+    region : str, optional
+        AWS region of the bucket, by default "us-east-1".
+
+    Returns
+    -------
+    obstore.store.S3Store
+        Configured obstore S3 store.
+    """
+    from obstore.store import S3Store
+
+    return S3Store(bucket, region=region, skip_signature=anon)
+
+
+async def obstore_cat_file(
+    store: S3Store, key: str, start: int = 0, end: int | None = None
+) -> bytes:
+    """Fetch an object (or byte range) from an obstore store.
+
+    Mirrors the semantics of fsspec's ``_cat_file`` (``end`` is the exclusive
+    end offset) so it can act as a drop-in on existing fetch paths. obstore's
+    :class:`~obstore.exceptions.NotFoundError` is re-raised as the built-in
+    :class:`FileNotFoundError` so existing missing-file handling keeps working.
+
+    Parameters
+    ----------
+    store : obstore.store.S3Store
+        Store to read from.
+    key : str
+        Object key within the store's bucket (no ``s3://bucket/`` prefix).
+    start : int, optional
+        Byte offset to start reading from, by default 0.
+    end : int | None, optional
+        Exclusive end byte offset. If None, the whole object is read, by
+        default None.
+
+    Returns
+    -------
+    bytes
+        The requested bytes.
+    """
+    import obstore
+    from obstore.exceptions import NotFoundError
+
+    try:
+        if end is not None:
+            return bytes(
+                await obstore.get_range_async(store, key, start=start, end=end)
+            )
+        result = await obstore.get_async(store, key)
+        return bytes(await result.bytes_async())
+    except NotFoundError as e:
+        raise FileNotFoundError(key) from e
 
 
 T = TypeVar("T")
