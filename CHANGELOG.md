@@ -26,6 +26,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   GRIB fetches; downloads now use bounded concurrency with retry on transient errors
 - Refactored UFS observation sources (`UFSObsConv`, `UFSObsSat`) onto the shared
   obstore byte-range helpers
+- Migrated GEFS forecast sources (`GEFS_FX`, `GEFS_FX_721x1440`) from s3fs to
+  obstore for index and byte-range GRIB fetches
 
 ### Deprecated
 

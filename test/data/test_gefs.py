@@ -14,9 +14,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import asyncio
 import pathlib
 import shutil
 from datetime import datetime, timedelta
+from unittest.mock import AsyncMock, patch
 
 import numpy as np
 import pytest
@@ -255,3 +257,124 @@ def test_gefs_invalid_variable(variable):
 def test_gefs_invalid_product(product):
     with pytest.raises(ValueError):
         GEFS_FX(product, cache=False)
+
+
+# ----------------------------------------------------------------------
+# Index parser (offline, no network)
+# ----------------------------------------------------------------------
+
+
+_MOCK_PGRB2_IDX = (
+    "1:0:d=2024010100:PRMSL:mean sea level:3 hour fcst:\n"
+    "2:65300:d=2024010100:HGT:500 mb:3 hour fcst:\n"
+    "3:96515:d=2024010100:TMP:2 m above ground:3 hour fcst:\n"
+)
+
+
+@pytest.mark.timeout(10)
+def test_gefs_index_parser(tmp_path):
+    # Write a fake .idx file and patch _fetch_remote_file to return it.
+    idx_path = tmp_path / "fake.pgrb2.idx"
+    idx_path.write_text(_MOCK_PGRB2_IDX)
+
+    ds = GEFS_FX(cache=False)
+
+    async def _fake_fetch(uri):
+        return str(idx_path)
+
+    with patch.object(ds, "_fetch_remote_file", side_effect=_fake_fetch):
+        table = asyncio.run(ds._fetch_index("dummy-uri"))
+
+    # All records are kept; the last record reads to EOF (byte length None)
+    assert len(table) == 3
+    assert table["1::PRMSL::mean sea level::3 hour fcst"] == (0, 65300)
+    assert table["2::HGT::500 mb::3 hour fcst"] == (65300, 96515 - 65300)
+    assert table["3::TMP::2 m above ground::3 hour fcst"] == (96515, None)
+
+
+@pytest.mark.timeout(10)
+def test_gefs_index_parser_max_byte_size(tmp_path):
+    # A record spanning more than MAX_BYTE_SIZE must raise.
+    idx_path = tmp_path / "fake.pgrb2.idx"
+    idx_path.write_text(
+        "1:0:d=2024010100:PRMSL:mean sea level:3 hour fcst:\n"
+        "2:6000000:d=2024010100:HGT:500 mb:3 hour fcst:\n"
+        "3:6000100:d=2024010100:TMP:2 m above ground:3 hour fcst:\n"
+    )
+
+    ds = GEFS_FX(cache=False)
+
+    async def _fake_fetch(uri):
+        return str(idx_path)
+
+    with patch.object(ds, "_fetch_remote_file", side_effect=_fake_fetch):
+        with pytest.raises(ValueError):
+            asyncio.run(ds._fetch_index("dummy-uri"))
+
+
+# ----------------------------------------------------------------------
+# Mock end-to-end (no network, exercises __call__ path)
+# ----------------------------------------------------------------------
+
+
+@pytest.mark.timeout(15)
+def test_gefs_call_mock(tmp_path, monkeypatch):
+    """Exercise the full __call__ path using mocked index + grib decode."""
+    monkeypatch.setenv("EARTH2STUDIO_CACHE", str(tmp_path))
+
+    # t2m -> product pgrb2a, key contains "TMP::2 m above ground"
+    fake_index = {"1::TMP::2 m above ground::anl": (0, 65300)}
+    fake_grid = np.random.rand(361, 720).astype(np.float32)
+
+    async def _fake_fetch_index(uri):
+        return fake_index
+
+    async def _fake_fetch_remote_file(*args, **kwargs):
+        return str(tmp_path / "ignored.pgrb2")
+
+    ds = GEFS_FX(cache=True, verbose=False)
+
+    with (
+        patch.object(ds, "_async_init", new=AsyncMock(return_value=None)),
+        patch.object(ds, "_fetch_index", side_effect=_fake_fetch_index),
+        patch.object(ds, "_fetch_remote_file", side_effect=_fake_fetch_remote_file),
+        patch("earth2studio.data.gefs._decode_gefs_grib", return_value=fake_grid),
+    ):
+        ds.store = object()  # type: ignore[assignment]
+        data = ds(datetime(2024, 1, 1), timedelta(hours=3), ["t2m"])
+
+    assert data.shape == (1, 1, 1, 361, 720)
+    np.testing.assert_allclose(data.values[0, 0, 0], fake_grid)
+
+
+@pytest.mark.timeout(15)
+def test_gefs_read_to_eof_task(tmp_path, monkeypatch):
+    """A trailing record (byte length None) must flow through as read-to-EOF."""
+    monkeypatch.setenv("EARTH2STUDIO_CACHE", str(tmp_path))
+
+    # t2m is the last record -> byte length None (read to end of file)
+    fake_index = {"1::TMP::2 m above ground::anl": (96515, None)}
+    fake_grid = np.random.rand(361, 720).astype(np.float32)
+    seen_lengths = []
+
+    async def _fake_fetch_index(uri):
+        return fake_index
+
+    async def _fake_fetch_remote_file(path, byte_offset=0, byte_length=None):
+        seen_lengths.append(byte_length)
+        return str(tmp_path / "ignored.pgrb2")
+
+    ds = GEFS_FX(cache=True, verbose=False)
+
+    with (
+        patch.object(ds, "_async_init", new=AsyncMock(return_value=None)),
+        patch.object(ds, "_fetch_index", side_effect=_fake_fetch_index),
+        patch.object(ds, "_fetch_remote_file", side_effect=_fake_fetch_remote_file),
+        patch("earth2studio.data.gefs._decode_gefs_grib", return_value=fake_grid),
+    ):
+        ds.store = object()  # type: ignore[assignment]
+        data = ds(datetime(2024, 1, 1), timedelta(hours=3), ["t2m"])
+
+    assert data.shape == (1, 1, 1, 361, 720)
+    # The None byte length (read-to-EOF) is preserved down to the fetch call
+    assert seen_lengths == [None]
