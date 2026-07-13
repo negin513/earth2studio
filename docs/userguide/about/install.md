@@ -786,6 +786,26 @@ uv add earth2studio --extra da-healda
 :::
 ::::
 :::::
+:::::{tab-item} VideoHealDA
+::::{tab-set}
+:::{tab-item} pip
+
+```bash
+pip install hatchling
+pip install --no-build-isolation "earth2grid @ git+https://github.com/NVlabs/earth2grid@11dcf1b0787a7eb6a8497a3a5a5e1fdcc31232d3"
+pip install earth2studio[da-healda-v2]
+```
+
+:::
+:::{tab-item} uv
+
+```bash
+uv add earth2studio --extra da-healda-v2
+```
+
+:::
+::::
+:::::
 :::::{tab-item} InterpEquirectangular
 ::::{tab-set}
 :::{tab-item} pip

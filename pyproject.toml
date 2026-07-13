@@ -270,6 +270,14 @@ da-healda = [
     "cupy-cuda13x",
     "cudf-cu13>=26.2.0",
 ]
+# TODO: bump the physicsnemo lower bound to the first release shipping
+# physicsnemo.experimental.models.healda.VideoHealDA / prepare_obs_context
+da-healda-v2 = [
+    "earth2grid",
+    "nvidia-physicsnemo>=2.1.1",
+    "cupy-cuda13x",
+    "cudf-cu13>=26.2.0",
+]
 da-interp = [
     "cupy-cuda13x",
     "cudf-cu13>=26.2.0",
@@ -284,7 +292,7 @@ all = [
     "earth2studio[data,perturbation,statistics,utils,serve]",
     "earth2studio[atlas,aurora,dlesym,dlwp,fcn,fcn3,fengwu,gencast,interp-modafno,pangu,stormcast,sfno,stormscope,graphcast,ucast]",
     "earth2studio[cbottle,climatenet,corrdiff,orbit,precip-afno,cyclone,precip-afno-v2,solarradiation-afno,windgust-afno]",
-    "earth2studio[da-interp,da-stormcast,da-healda]",
+    "earth2studio[da-interp,da-stormcast,da-healda,da-healda-v2]",
 ]
 
 # ==== UV configuration ====

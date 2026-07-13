@@ -39,3 +39,4 @@ to process observations independently or maintain internal state across time ste
       HealDA
       InterpEquirectangular
       StormCastSDA
+      VideoHealDA

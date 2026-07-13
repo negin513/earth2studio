@@ -17,3 +17,4 @@
 from .healda import HealDA
 from .interp import InterpEquirectangular
 from .sda_stormcast import StormCastSDA
+from .video_healda import VideoHealDA
