@@ -29,6 +29,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   GRIB fetches; downloads now use bounded concurrency with retry on transient errors
 - Refactored UFS observation sources (`UFSObsConv`, `UFSObsSat`) onto the shared
   obstore byte-range helpers
+- Migrated GOES satellite data source from s3fs to obstore for whole-file NetCDF
+  fetches and object listing
 - Zarr-reading data sources (`ARCO`, `WB2ERA5` and other WeatherBench 2 sources, and
   the `rx` prescriptive sources) now read via `obstore`-backed zarr stores instead of
   fsspec
