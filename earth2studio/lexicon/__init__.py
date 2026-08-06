@@ -27,6 +27,8 @@ from .earthmover import (
     EarthMoverERA5Lexicon,
     EarthMoverIFSInitialConditionLexicon,
     EarthMoverIFSLexicon,
+    EarthMoverNOAAGEFSLexicon,
+    EarthMoverNOAAGFSLexicon,
 )
 from .ecmwf import AIFSLexicon, IFSLexicon
 from .gdas import GDASObsConvLexicon

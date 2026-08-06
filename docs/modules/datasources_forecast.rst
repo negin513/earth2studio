@@ -37,6 +37,8 @@ Typically used in intercomparison workflows.
       data.DynamicalAIFS_FX
       data.DynamicalAIFSENS_FX
       data.EarthMoverBrightBandIFS_FX
+      data.EarthMoverGEFS_FX
+      data.EarthMoverGFS_FX
       data.GFS_FX
       data.GEFS_FX
       data.GEFS_FX_721x1440

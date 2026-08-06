@@ -38,6 +38,8 @@ from earth2studio.lexicon.earthmover import (
     EarthMoverERA5Lexicon,
     EarthMoverIFSInitialConditionLexicon,
     EarthMoverIFSLexicon,
+    EarthMoverNOAAGEFSLexicon,
+    EarthMoverNOAAGFSLexicon,
     VariableSpec,
     make_modifier,
 )
@@ -73,6 +75,7 @@ _VERTICAL_NAMES = (
     "lev",
 )
 _SOIL_NAMES = ("soil_level", "soilLayer", "soil_layer", "depthBelowLandLayer")
+_ENSEMBLE_NAMES = ("ensemble_member", "member", "number", "realization")
 _API_KEY_ENV_VAR = "EARTHMOVER_API_KEY"  # noqa: S105
 
 
@@ -1018,6 +1021,530 @@ class EarthMoverBrightBandIFS_FX(_EarthMoverBase):
             da = self._select_variable(
                 resolved, time_sel, extra_sel={lead_coord: lead_sel}
             )
+            da = da.rename({lead_coord: "lead_time"})
+            arrays.append(da.transpose("time", "lead_time", "lat", "lon"))
+
+        out = xr.concat(arrays, dim="variable")
+        out = out.assign_coords(variable=variable_list).transpose(
+            "time", "lead_time", "variable", "lat", "lon"
+        )
+        return await asyncio.to_thread(out.load)
+
+
+@check_optional_dependencies()
+class EarthMoverGFS_FX(_EarthMoverBase):
+    """NOAA GFS forecast data source on Earthmover Arraylake (dynamical.org).
+
+    Deterministic NOAA Global Forecast System forecasts on a global 0.25 degree
+    regular latitude/longitude grid, out to 16 days, initialized every 6 hours.
+
+    Parameters
+    ----------
+    repo : str, optional
+        Arraylake repository name as ``org/repo``. When omitted, derives the
+        repo from ``EARTHMOVER_ORGANIZATION`` as
+        ``<org>/noaa-gfs-forecast-subscription``, by default None.
+    branch : str, optional
+        Repository branch to read, by default "main".
+    client : arraylake.AsyncClient, optional
+        Pre-authenticated Arraylake async client. When omitted, this data source
+        uses the API key stored in ``EARTHMOVER_API_KEY``, by default None.
+    cache : bool, optional
+        Retained for API compatibility; Arraylake reads lazily via Icechunk, by
+        default True.
+    verbose : bool, optional
+        Print progress, by default True.
+
+    Warning
+    -------
+    This is a remote data source and can download a large amount of data for large
+    requests.
+
+    Note
+    ----
+    Configure Earthmover access before using this data source:
+
+    - Set the ``EARTHMOVER_API_KEY`` environment variable to an Earthmover /
+      Arraylake API key, unless passing a pre-authenticated ``client``.
+    - Pass ``repo="org/repo"`` to open a specific Arraylake repository.
+    - If ``repo`` is omitted, set the ``EARTHMOVER_ORGANIZATION`` environment
+      variable. The default repository is
+      ``<EARTHMOVER_ORGANIZATION>/noaa-gfs-forecast-subscription``.
+
+    Arraylake-backed Earthmover sources require Python 3.12 or newer.
+
+    Additional information on the data repository can be referenced here:
+
+    - https://app.earthmover.io/marketplace/697056d6fe533c1523faf4ca
+    - https://dynamical.org/catalog/noaa-gfs-forecast/
+
+    Badges
+    ------
+    region:global dataclass:forecast product:wind product:precip product:temp product:atmos
+    """
+
+    MARKETPLACE_URL = "https://app.earthmover.io/marketplace/697056d6fe533c1523faf4ca"
+    DEFAULT_BRANCH = "main"
+    ORG_ENV_VAR = "EARTHMOVER_ORGANIZATION"
+    SUBSCRIPTION_REPO_NAME = "noaa-gfs-forecast-subscription"
+    LEXICON = EarthMoverNOAAGFSLexicon
+    TIME_START = datetime(year=2021, month=5, day=1)
+    VARIABLES = tuple(EarthMoverNOAAGFSLexicon.VOCAB)
+
+    def __init__(
+        self,
+        repo: str | None = None,
+        branch: str = DEFAULT_BRANCH,
+        client: arraylake.AsyncClient | None = None,
+        cache: bool = True,
+        verbose: bool = True,
+    ) -> None:
+        super().__init__(
+            self._derive_repo_name(repo),
+            group=None,
+            branch=branch,
+            client=client,
+            cache=cache,
+            verbose=verbose,
+            marketplace_url=self.MARKETPLACE_URL,
+        )
+
+    def _validate_time(self, times: list[datetime]) -> None:
+        """Verify a date time is valid for GFS forecasts based on offline knowledge."""
+        for time in times:
+            if not (time - datetime(1900, 1, 1)).total_seconds() % 21600 == 0:
+                raise ValueError(
+                    f"Requested date time {time} needs to be a 6 hour interval "
+                    "(00, 06, 12, 18 UTC) for GFS forecasts"
+                )
+            if time < self.TIME_START:
+                raise ValueError(
+                    f"Requested date time {time} needs to be on or after May 1st, "
+                    "2021 for the NOAA GFS forecast dataset"
+                )
+
+    def __call__(
+        self,
+        time: datetime | list[datetime] | TimeArray,
+        lead_time: timedelta | list[timedelta] | LeadTimeArray,
+        variable: str | list[str] | VariableArray,
+    ) -> xr.DataArray:
+        """Retrieve GFS forecast data for init times, lead times and variables.
+
+        Parameters
+        ----------
+        time : datetime | list[datetime] | TimeArray
+            Forecast initialization timestamps (UTC).
+        lead_time : timedelta | list[timedelta] | LeadTimeArray
+            Forecast lead times.
+        variable : str | list[str] | VariableArray
+            Earth2Studio variable id(s).
+
+        Returns
+        -------
+        xr.DataArray
+            Data array with dimensions ``[time, lead_time, variable, lat, lon]``.
+        """
+        return _sync_async(self.fetch, time, lead_time, variable)
+
+    async def fetch(
+        self,
+        time: datetime | list[datetime] | TimeArray,
+        lead_time: timedelta | list[timedelta] | LeadTimeArray,
+        variable: str | list[str] | VariableArray,
+    ) -> xr.DataArray:
+        """Retrieve GFS forecast data asynchronously.
+
+        Parameters
+        ----------
+        time : datetime | list[datetime] | TimeArray
+            Forecast initialization timestamps (UTC).
+        lead_time : timedelta | list[timedelta] | LeadTimeArray
+            Forecast lead times.
+        variable : str | list[str] | VariableArray
+            Earth2Studio variable id(s).
+
+        Returns
+        -------
+        xr.DataArray
+            Data array with dimensions ``[time, lead_time, variable, lat, lon]``.
+        """
+        time_list, lead_list, variable_list = prep_forecast_inputs(
+            time, lead_time, variable
+        )
+        self._validate_time(time_list)
+        await self._connect()
+        await self._validate_times(time_list)
+
+        time_sel = np.array(time_list, dtype="datetime64[ns]")
+        lead_sel = np.array(lead_list, dtype="timedelta64[ns]")
+
+        arrays = []
+        for v in variable_list:
+            resolved = self._resolve(v)
+            lead_coord = self._find_coord(resolved.dataset, _LEAD_NAMES)
+            if lead_coord is None:
+                raise ValueError(
+                    f"Repo '{self._repo_name}' has no lead-time/step coordinate."
+                )
+            if self._verbose:
+                logger.debug(
+                    f"{v} -> {self._repo_name}:{resolved.var_name} "
+                    f"(matched by {resolved.rule})"
+                )
+            da = self._select_variable(
+                resolved, time_sel, extra_sel={lead_coord: lead_sel}
+            )
+            da = da.rename({lead_coord: "lead_time"})
+            arrays.append(da.transpose("time", "lead_time", "lat", "lon"))
+
+        out = xr.concat(arrays, dim="variable")
+        out = out.assign_coords(variable=variable_list).transpose(
+            "time", "lead_time", "variable", "lat", "lon"
+        )
+        return await asyncio.to_thread(out.load)
+
+
+@check_optional_dependencies()
+class EarthMoverGEFS(_EarthMoverBase):
+    """NOAA GEFS analysis data source on Earthmover Arraylake (dynamical.org).
+
+    NOAA Global Ensemble Forecast System analysis on a global 0.25 degree
+    regular latitude/longitude grid, 3-hourly from January 1st, 2000.
+
+    Parameters
+    ----------
+    repo : str, optional
+        Arraylake repository name as ``org/repo``. When omitted, derives the
+        repo from ``EARTHMOVER_ORGANIZATION`` as
+        ``<org>/noaa-gefs-analysis-subscription``, by default None.
+    branch : str, optional
+        Repository branch to read, by default "main".
+    client : arraylake.AsyncClient, optional
+        Pre-authenticated Arraylake async client. When omitted, this data source
+        uses the API key stored in ``EARTHMOVER_API_KEY``, by default None.
+    cache : bool, optional
+        Retained for API compatibility; Arraylake reads lazily via Icechunk, by
+        default True.
+    verbose : bool, optional
+        Print progress, by default True.
+
+    Warning
+    -------
+    This is a remote data source and can download a large amount of data for large
+    requests.
+
+    Note
+    ----
+    Configure Earthmover access before using this data source:
+
+    - Set the ``EARTHMOVER_API_KEY`` environment variable to an Earthmover /
+      Arraylake API key, unless passing a pre-authenticated ``client``.
+    - Pass ``repo="org/repo"`` to open a specific Arraylake repository.
+    - If ``repo`` is omitted, set the ``EARTHMOVER_ORGANIZATION`` environment
+      variable. The default repository is
+      ``<EARTHMOVER_ORGANIZATION>/noaa-gefs-analysis-subscription``.
+
+    Arraylake-backed Earthmover sources require Python 3.12 or newer.
+
+    Additional information on the data repository can be referenced here:
+
+    - https://app.earthmover.io/marketplace/6970566255e09e23d5bcbbc0
+    - https://dynamical.org/catalog/noaa-gefs-analysis/
+
+    Badges
+    ------
+    region:global dataclass:analysis product:wind product:precip product:temp product:atmos
+    """
+
+    MARKETPLACE_URL = "https://app.earthmover.io/marketplace/6970566255e09e23d5bcbbc0"
+    DEFAULT_BRANCH = "main"
+    ORG_ENV_VAR = "EARTHMOVER_ORGANIZATION"
+    SUBSCRIPTION_REPO_NAME = "noaa-gefs-analysis-subscription"
+    LEXICON = EarthMoverNOAAGEFSLexicon
+    TIME_START = datetime(year=2000, month=1, day=1)
+    VARIABLES = tuple(EarthMoverNOAAGEFSLexicon.VOCAB)
+
+    def __init__(
+        self,
+        repo: str | None = None,
+        branch: str = DEFAULT_BRANCH,
+        client: arraylake.AsyncClient | None = None,
+        cache: bool = True,
+        verbose: bool = True,
+    ) -> None:
+        super().__init__(
+            self._derive_repo_name(repo),
+            group=None,
+            branch=branch,
+            client=client,
+            cache=cache,
+            verbose=verbose,
+            marketplace_url=self.MARKETPLACE_URL,
+        )
+
+    def _validate_time(self, times: list[datetime]) -> None:
+        """Verify a date time is valid for GEFS analysis based on offline knowledge."""
+        for time in times:
+            if not (time - datetime(1900, 1, 1)).total_seconds() % 10800 == 0:
+                raise ValueError(
+                    f"Requested date time {time} needs to be a 3 hour interval "
+                    "for the NOAA GEFS analysis dataset"
+                )
+            if time < self.TIME_START:
+                raise ValueError(
+                    f"Requested date time {time} needs to be on or after January "
+                    "1st, 2000 for the NOAA GEFS analysis dataset"
+                )
+
+    def __call__(
+        self,
+        time: datetime | list[datetime] | TimeArray,
+        variable: str | list[str] | VariableArray,
+    ) -> xr.DataArray:
+        """Retrieve GEFS analysis data for times and variables.
+
+        Parameters
+        ----------
+        time : datetime | list[datetime] | TimeArray
+            Analysis timestamps (UTC).
+        variable : str | list[str] | VariableArray
+            Earth2Studio variable id(s).
+
+        Returns
+        -------
+        xr.DataArray
+            Data array with dimensions ``[time, variable, lat, lon]``.
+        """
+        return _sync_async(self.fetch, time, variable)
+
+    async def fetch(
+        self,
+        time: datetime | list[datetime] | TimeArray,
+        variable: str | list[str] | VariableArray,
+    ) -> xr.DataArray:
+        """Retrieve GEFS analysis data for times and variables asynchronously.
+
+        Parameters
+        ----------
+        time : datetime | list[datetime] | TimeArray
+            Analysis timestamps (UTC).
+        variable : str | list[str] | VariableArray
+            Earth2Studio variable id(s).
+
+        Returns
+        -------
+        xr.DataArray
+            Data array with dimensions ``[time, variable, lat, lon]``.
+        """
+        time_list, variable_list = prep_data_inputs(time, variable)
+        self._validate_time(time_list)
+        await self._connect()
+        await self._validate_times(time_list)
+
+        time_sel = np.array(time_list, dtype="datetime64[ns]")
+
+        arrays = []
+        for v in variable_list:
+            resolved = self._resolve(v)
+            if self._verbose:
+                logger.debug(
+                    f"{v} -> {self._repo_name}:{resolved.var_name} "
+                    f"(matched by {resolved.rule})"
+                )
+            da = self._select_variable(resolved, time_sel)
+            arrays.append(da.transpose("time", "lat", "lon"))
+
+        out = xr.concat(arrays, dim="variable")
+        out = out.assign_coords(variable=variable_list).transpose(
+            "time", "variable", "lat", "lon"
+        )
+        return await asyncio.to_thread(out.load)
+
+
+@check_optional_dependencies()
+class EarthMoverGEFS_FX(_EarthMoverBase):
+    """NOAA GEFS 35-day ensemble forecast data source on Earthmover Arraylake
+    (dynamical.org).
+
+    NOAA Global Ensemble Forecast System forecasts on a global 0.25 degree
+    regular latitude/longitude grid, out to 35 days, with 31 ensemble members.
+    A single ensemble member is selected via ``member``.
+
+    Parameters
+    ----------
+    repo : str, optional
+        Arraylake repository name as ``org/repo``. When omitted, derives the
+        repo from ``EARTHMOVER_ORGANIZATION`` as
+        ``<org>/noaa-gefs-forecast-35-day-subscription``, by default None.
+    branch : str, optional
+        Repository branch to read, by default "main".
+    client : arraylake.AsyncClient, optional
+        Pre-authenticated Arraylake async client. When omitted, this data source
+        uses the API key stored in ``EARTHMOVER_API_KEY``, by default None.
+    cache : bool, optional
+        Retained for API compatibility; Arraylake reads lazily via Icechunk, by
+        default True.
+    verbose : bool, optional
+        Print progress, by default True.
+    member : int, optional
+        Ensemble member index to select, by default 0 (control member).
+
+    Warning
+    -------
+    This is a remote data source and can download a large amount of data for large
+    requests.
+
+    Note
+    ----
+    Configure Earthmover access before using this data source:
+
+    - Set the ``EARTHMOVER_API_KEY`` environment variable to an Earthmover /
+      Arraylake API key, unless passing a pre-authenticated ``client``.
+    - Pass ``repo="org/repo"`` to open a specific Arraylake repository.
+    - If ``repo`` is omitted, set the ``EARTHMOVER_ORGANIZATION`` environment
+      variable. The default repository is
+      ``<EARTHMOVER_ORGANIZATION>/noaa-gefs-forecast-35-day-subscription``.
+
+    Arraylake-backed Earthmover sources require Python 3.12 or newer.
+
+    Additional information on the data repository can be referenced here:
+
+    - https://app.earthmover.io/marketplace/697055dd0ddd53afe1329ca7
+    - https://dynamical.org/catalog/noaa-gefs-forecast-35-day/
+
+    Badges
+    ------
+    region:global dataclass:forecast product:wind product:precip product:temp product:atmos
+    """
+
+    MARKETPLACE_URL = "https://app.earthmover.io/marketplace/697055dd0ddd53afe1329ca7"
+    DEFAULT_BRANCH = "main"
+    ORG_ENV_VAR = "EARTHMOVER_ORGANIZATION"
+    SUBSCRIPTION_REPO_NAME = "noaa-gefs-forecast-35-day-subscription"
+    LEXICON = EarthMoverNOAAGEFSLexicon
+    TIME_START = datetime(year=2020, month=10, day=1)
+    VARIABLES = tuple(EarthMoverNOAAGEFSLexicon.VOCAB)
+
+    def __init__(
+        self,
+        repo: str | None = None,
+        branch: str = DEFAULT_BRANCH,
+        client: arraylake.AsyncClient | None = None,
+        cache: bool = True,
+        verbose: bool = True,
+        member: int = 0,
+    ) -> None:
+        super().__init__(
+            self._derive_repo_name(repo),
+            group=None,
+            branch=branch,
+            client=client,
+            cache=cache,
+            verbose=verbose,
+            marketplace_url=self.MARKETPLACE_URL,
+        )
+        if member < 0:
+            raise ValueError(f"Ensemble member index must be non-negative: {member}")
+        self._member = member
+
+    def _validate_time(self, times: list[datetime]) -> None:
+        """Verify a date time is valid for GEFS forecasts based on offline
+        knowledge."""
+        for time in times:
+            if time < self.TIME_START:
+                raise ValueError(
+                    f"Requested date time {time} needs to be on or after October "
+                    "1st, 2020 for the NOAA GEFS 35-day forecast dataset"
+                )
+
+    def _select_member(self, da: xr.DataArray) -> xr.DataArray:
+        """Select the configured ensemble member, if the dataset has that axis."""
+        ens_coord = next(
+            (str(d) for d in da.dims if str(d).lower() in _ENSEMBLE_NAMES), None
+        )
+        if ens_coord is None:
+            return da
+        if self._member >= da.sizes[ens_coord]:
+            raise ValueError(
+                f"Ensemble member {self._member} out of range; repo "
+                f"'{self._repo_name}' has {da.sizes[ens_coord]} members."
+            )
+        return da.isel({ens_coord: self._member}, drop=True)
+
+    def __call__(
+        self,
+        time: datetime | list[datetime] | TimeArray,
+        lead_time: timedelta | list[timedelta] | LeadTimeArray,
+        variable: str | list[str] | VariableArray,
+    ) -> xr.DataArray:
+        """Retrieve GEFS forecast data for init times, lead times and variables.
+
+        Parameters
+        ----------
+        time : datetime | list[datetime] | TimeArray
+            Forecast initialization timestamps (UTC).
+        lead_time : timedelta | list[timedelta] | LeadTimeArray
+            Forecast lead times.
+        variable : str | list[str] | VariableArray
+            Earth2Studio variable id(s).
+
+        Returns
+        -------
+        xr.DataArray
+            Data array with dimensions ``[time, lead_time, variable, lat, lon]``.
+        """
+        return _sync_async(self.fetch, time, lead_time, variable)
+
+    async def fetch(
+        self,
+        time: datetime | list[datetime] | TimeArray,
+        lead_time: timedelta | list[timedelta] | LeadTimeArray,
+        variable: str | list[str] | VariableArray,
+    ) -> xr.DataArray:
+        """Retrieve GEFS forecast data asynchronously.
+
+        Parameters
+        ----------
+        time : datetime | list[datetime] | TimeArray
+            Forecast initialization timestamps (UTC).
+        lead_time : timedelta | list[timedelta] | LeadTimeArray
+            Forecast lead times.
+        variable : str | list[str] | VariableArray
+            Earth2Studio variable id(s).
+
+        Returns
+        -------
+        xr.DataArray
+            Data array with dimensions ``[time, lead_time, variable, lat, lon]``.
+        """
+        time_list, lead_list, variable_list = prep_forecast_inputs(
+            time, lead_time, variable
+        )
+        self._validate_time(time_list)
+        await self._connect()
+        await self._validate_times(time_list)
+
+        time_sel = np.array(time_list, dtype="datetime64[ns]")
+        lead_sel = np.array(lead_list, dtype="timedelta64[ns]")
+
+        arrays = []
+        for v in variable_list:
+            resolved = self._resolve(v)
+            lead_coord = self._find_coord(resolved.dataset, _LEAD_NAMES)
+            if lead_coord is None:
+                raise ValueError(
+                    f"Repo '{self._repo_name}' has no lead-time/step coordinate."
+                )
+            if self._verbose:
+                logger.debug(
+                    f"{v} -> {self._repo_name}:{resolved.var_name} "
+                    f"(matched by {resolved.rule})"
+                )
+            da = self._select_variable(
+                resolved, time_sel, extra_sel={lead_coord: lead_sel}
+            )
+            da = self._select_member(da)
             da = da.rename({lead_coord: "lead_time"})
             arrays.append(da.transpose("time", "lead_time", "lat", "lon"))
 

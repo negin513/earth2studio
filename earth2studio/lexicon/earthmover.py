@@ -298,9 +298,12 @@ def make_modifier(spec: VariableSpec, src_units: str | None) -> Callable:
     if src == "k" and dst == "degc":
         return lambda x: x - 273.15
 
-    if spec.short_name in {"gh", "z"} and src == "m" and dst == "m2s-2":
+    is_geopotential = spec.short_name in {"gh", "z"} or spec.short_name.startswith(
+        "geopotential_height"
+    )
+    if is_geopotential and src == "m" and dst == "m2s-2":
         return lambda x: x * GRAVITY
-    if spec.short_name in {"gh", "z"} and src == "m2s-2" and dst == "m":
+    if is_geopotential and src == "m2s-2" and dst == "m":
         return lambda x: x / GRAVITY
 
     if src == "percent" and dst == "1":
@@ -471,3 +474,84 @@ class EarthMoverERA5Lexicon(_EarthMoverLexiconBase):
         **PRESSURE_VARIABLES,
     }
     SPECS: dict[str, VariableSpec] = _build_specs(VOCAB)
+
+
+# NOAA datasets contributed by dynamical.org bake the vertical level into
+# descriptive variable names (e.g. ``geopotential_height_500hpa``) instead of
+# using a level dimension, and store temperatures in Celsius. Specs therefore
+# match by native variable name with explicit canonical units.
+_NOAA_CANONICAL_UNITS: dict[str, str] = {
+    "cfrzr": "1",
+    "cicep": "1",
+    "crain": "1",
+    "csnow": "1",
+    "fg10m": "m s-1",
+    "msl": "Pa",
+    "r2m": "%",
+    "sp": "Pa",
+    "t2m": "K",
+    "tcc": "1",
+    "tcwv": "kg m-2",
+    "tpf": "kg m-2 s-1",
+    "u100m": "m s-1",
+    "u10m": "m s-1",
+    "v100m": "m s-1",
+    "v10m": "m s-1",
+    "z500": "m2 s-2",
+}
+
+
+def _build_noaa_specs(vocab: dict[str, str]) -> dict[str, VariableSpec]:
+    specs: dict[str, VariableSpec] = {}
+    for e2s, native_name in vocab.items():
+        specs[e2s] = VariableSpec(
+            e2s=e2s,
+            short_name=native_name,
+            param_id=None,
+            standard_name="",
+            level_type="surface",
+            level=None,
+            canonical_units=_NOAA_CANONICAL_UNITS.get(e2s, ""),
+        )
+    return specs
+
+
+_NOAA_COMMON_VARIABLES: dict[str, str] = {
+    "cfrzr": "categorical_freezing_rain_surface",
+    "cicep": "categorical_ice_pellets_surface",
+    "crain": "categorical_rain_surface",
+    "csnow": "categorical_snow_surface",
+    "msl": "pressure_reduced_to_mean_sea_level",
+    "r2m": "relative_humidity_2m",
+    "sp": "pressure_surface",
+    "t2m": "temperature_2m",
+    "tcc": "total_cloud_cover_atmosphere",
+    "tcwv": "precipitable_water_atmosphere",
+    "tpf": "precipitation_surface",
+    "u100m": "wind_u_100m",
+    "u10m": "wind_u_10m",
+    "v100m": "wind_v_100m",
+    "v10m": "wind_v_10m",
+}
+
+
+class EarthMoverNOAAGFSLexicon(_EarthMoverLexiconBase):
+    """Earthmover NOAA GFS forecast Marketplace lexicon (dynamical.org)."""
+
+    VOCAB: dict[str, str] = dict(_NOAA_COMMON_VARIABLES)
+    SPECS: dict[str, VariableSpec] = _build_noaa_specs(VOCAB)
+
+
+class EarthMoverNOAAGEFSLexicon(_EarthMoverLexiconBase):
+    """Earthmover NOAA GEFS Marketplace lexicon (dynamical.org).
+
+    Shared by the GEFS analysis and GEFS 35-day forecast datasets, which
+    provide the same variable inventory.
+    """
+
+    VOCAB: dict[str, str] = {
+        **_NOAA_COMMON_VARIABLES,
+        "fg10m": "wind_gust_surface",
+        "z500": "geopotential_height_500hpa",
+    }
+    SPECS: dict[str, VariableSpec] = _build_noaa_specs(VOCAB)

@@ -44,6 +44,9 @@ from .earthmover import (
     EarthMoverBrightBandIFS,
     EarthMoverBrightBandIFS_FX,
     EarthMoverERA5,
+    EarthMoverGEFS,
+    EarthMoverGEFS_FX,
+    EarthMoverGFS_FX,
 )
 from .ecmwf import AIFS_ENS_FX, AIFS_FX, IFS, IFS_ENS, IFS_ENS_FX, IFS_FX
 from .gdas import NomadsGDASObsConv

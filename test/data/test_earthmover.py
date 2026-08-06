@@ -27,6 +27,9 @@ from earth2studio.data import (
     EarthMoverBrightBandIFS,
     EarthMoverBrightBandIFS_FX,
     EarthMoverERA5,
+    EarthMoverGEFS,
+    EarthMoverGEFS_FX,
+    EarthMoverGFS_FX,
 )
 from earth2studio.data.base import DataSource, ForecastSource
 from earth2studio.utils.imports import OptionalDependencyFailure
@@ -150,6 +153,24 @@ IFS_ANALYSIS_PRESSURE_VARIABLES = tuple(
 IFS_ANALYSIS_VARIABLES = (
     IFS_ANALYSIS_SURFACE_VARIABLES + IFS_ANALYSIS_PRESSURE_VARIABLES
 )
+NOAA_COMMON_VARIABLES = (
+    "cfrzr",
+    "cicep",
+    "crain",
+    "csnow",
+    "msl",
+    "r2m",
+    "sp",
+    "t2m",
+    "tcc",
+    "tcwv",
+    "tpf",
+    "u100m",
+    "u10m",
+    "v100m",
+    "v10m",
+)
+NOAA_GEFS_VARIABLES = NOAA_COMMON_VARIABLES + ("fg10m", "z500")
 TEST_TIME = datetime(2022, 1, 1, 0)
 
 
@@ -398,6 +419,88 @@ def mock_earthmover_brightband_ifs_fx() -> xr.Dataset:
         "standard_name": "air_pressure_at_mean_sea_level",
         "units": "Pa",
     }
+    return ds
+
+
+def _noaa_var_attrs() -> dict[str, dict[str, str]]:
+    return {
+        "temperature_2m": {"units": "degree_Celsius"},
+        "pressure_reduced_to_mean_sea_level": {"units": "Pa"},
+        "total_cloud_cover_atmosphere": {"units": "percent"},
+        "geopotential_height_500hpa": {"units": "m"},
+        "wind_u_10m": {"units": "m s-1"},
+    }
+
+
+def mock_earthmover_gefs() -> xr.Dataset:
+    coords = {
+        "time": ("time", TIMES),
+        "latitude": LAT,
+        "longitude": LON,
+    }
+    dims = ("time", "latitude", "longitude")
+    shape = (TIMES.size, LAT.size, LON.size)
+    ds = xr.Dataset(
+        {
+            "temperature_2m": (dims, _grid(shape)),
+            "pressure_reduced_to_mean_sea_level": (dims, _grid(shape) + 10.0),
+            "total_cloud_cover_atmosphere": (
+                dims,
+                np.full(shape, 50.0, dtype=np.float32),
+            ),
+            "geopotential_height_500hpa": (dims, np.full(shape, 5500.0, np.float32)),
+            "wind_u_10m": (dims, _grid(shape) + 20.0),
+        },
+        coords=coords,
+    )
+    for name, attrs in _noaa_var_attrs().items():
+        ds[name].attrs = attrs
+    return ds
+
+
+def mock_earthmover_gfs_fx() -> xr.Dataset:
+    coords = {
+        "init_time": ("init_time", TIMES),
+        "lead_time": ("lead_time", LEAD_TIMES),
+        "latitude": LAT,
+        "longitude": LON,
+    }
+    dims = ("init_time", "lead_time", "latitude", "longitude")
+    shape = (TIMES.size, LEAD_TIMES.size, LAT.size, LON.size)
+    ds = xr.Dataset(
+        {
+            "temperature_2m": (dims, _grid(shape)),
+            "pressure_reduced_to_mean_sea_level": (dims, _grid(shape) + 10.0),
+            "wind_u_10m": (dims, _grid(shape) + 20.0),
+        },
+        coords=coords,
+    )
+    for name, attrs in _noaa_var_attrs().items():
+        if name in ds:
+            ds[name].attrs = attrs
+    return ds
+
+
+def mock_earthmover_gefs_fx(members: int = 3) -> xr.Dataset:
+    coords = {
+        "init_time": ("init_time", TIMES),
+        "ensemble_member": ("ensemble_member", np.arange(members)),
+        "lead_time": ("lead_time", LEAD_TIMES),
+        "latitude": LAT,
+        "longitude": LON,
+    }
+    dims = ("init_time", "ensemble_member", "lead_time", "latitude", "longitude")
+    shape = (TIMES.size, members, LEAD_TIMES.size, LAT.size, LON.size)
+    ds = xr.Dataset(
+        {
+            "temperature_2m": (dims, _grid(shape)),
+            "geopotential_height_500hpa": (dims, np.full(shape, 5500.0, np.float32)),
+        },
+        coords=coords,
+    )
+    for name, attrs in _noaa_var_attrs().items():
+        if name in ds:
+            ds[name].attrs = attrs
     return ds
 
 
@@ -701,3 +804,261 @@ class TestEarthMoverErrors:
             ds(datetime(2022, 1, 1), timedelta(hours=0), "q500")
         with pytest.raises(ValueError, match="not available"):
             ds(datetime(1999, 1, 1), timedelta(hours=0), "t2m")
+
+
+@pytest.mark.slow
+@pytest.mark.xfail
+@pytest.mark.timeout(60)
+@pytest.mark.parametrize(
+    "time,lead_time",
+    [
+        (TEST_TIME, timedelta(hours=0)),
+        (TEST_TIME, [timedelta(hours=0), timedelta(hours=6)]),
+    ],
+)
+@pytest.mark.parametrize("variable", ["t2m", ["t2m", "msl"]])
+def test_earthmover_gfs_fx_fetch(time, lead_time, variable):
+    ds = EarthMoverGFS_FX(cache=False)
+    data = ds(time, lead_time, variable)
+
+    if isinstance(variable, str):
+        variable = [variable]
+    if isinstance(lead_time, timedelta):
+        lead_time = [lead_time]
+
+    assert data.shape == (1, len(lead_time), len(variable), 721, 1440)
+    assert not np.isnan(data.values).any()
+    assert np.array_equal(data.coords["variable"].values, np.array(variable))
+
+
+@pytest.mark.slow
+@pytest.mark.xfail
+@pytest.mark.timeout(60)
+@pytest.mark.parametrize(
+    "time",
+    [
+        TEST_TIME,
+        [TEST_TIME, TEST_TIME + timedelta(hours=6)],
+    ],
+)
+@pytest.mark.parametrize("variable", ["t2m", ["t2m", "msl", "z500"]])
+def test_earthmover_gefs_fetch(time, variable):
+    ds = EarthMoverGEFS(cache=False)
+    data = ds(time, variable)
+
+    if isinstance(variable, str):
+        variable = [variable]
+    if isinstance(time, datetime):
+        time = [time]
+
+    assert data.shape == (len(time), len(variable), 721, 1440)
+    assert not np.isnan(data.values).any()
+    assert np.array_equal(data.coords["variable"].values, np.array(variable))
+
+
+@pytest.mark.slow
+@pytest.mark.xfail
+@pytest.mark.timeout(60)
+@pytest.mark.parametrize(
+    "time,lead_time",
+    [
+        (TEST_TIME, timedelta(hours=0)),
+        (TEST_TIME, [timedelta(hours=0), timedelta(hours=24)]),
+    ],
+)
+@pytest.mark.parametrize("variable", ["t2m", ["t2m", "z500"]])
+def test_earthmover_gefs_fx_fetch(time, lead_time, variable):
+    ds = EarthMoverGEFS_FX(cache=False)
+    data = ds(time, lead_time, variable)
+
+    if isinstance(variable, str):
+        variable = [variable]
+    if isinstance(lead_time, timedelta):
+        lead_time = [lead_time]
+
+    assert data.shape == (1, len(lead_time), len(variable), 721, 1440)
+    assert not np.isnan(data.values).any()
+    assert np.array_equal(data.coords["variable"].values, np.array(variable))
+
+
+class TestEarthMoverNOAASources:
+    def test_constructor_signatures(self):
+        for cls in (EarthMoverGFS_FX, EarthMoverGEFS):
+            assert list(inspect.signature(cls.__init__).parameters) == [
+                "self",
+                "repo",
+                "branch",
+                "client",
+                "cache",
+                "verbose",
+            ]
+        assert list(inspect.signature(EarthMoverGEFS_FX.__init__).parameters) == [
+            "self",
+            "repo",
+            "branch",
+            "client",
+            "cache",
+            "verbose",
+            "member",
+        ]
+
+    def test_protocols(self):
+        assert isinstance(EarthMoverGEFS("org/repo"), DataSource)
+        assert isinstance(EarthMoverGFS_FX("org/repo"), ForecastSource)
+        assert isinstance(EarthMoverGEFS_FX("org/repo"), ForecastSource)
+
+    def test_supported_variables_match_marketplace_listing(self):
+        assert EarthMoverGFS_FX.VARIABLES == NOAA_COMMON_VARIABLES
+        assert EarthMoverGEFS.VARIABLES == NOAA_GEFS_VARIABLES
+        assert EarthMoverGEFS_FX.VARIABLES == NOAA_GEFS_VARIABLES
+        assert "z500" not in EarthMoverGFS_FX.VARIABLES
+        assert "z500" in EarthMoverGEFS.VARIABLES
+        assert "fg10m" in EarthMoverGEFS_FX.VARIABLES
+
+    def test_repo_from_organization_env(self, monkeypatch):
+        monkeypatch.setenv("EARTHMOVER_ORGANIZATION", "my-org")
+
+        assert (
+            EarthMoverGFS_FX()._repo_name
+            == "my-org/noaa-gfs-forecast-subscription"
+        )
+        assert (
+            EarthMoverGEFS()._repo_name == "my-org/noaa-gefs-analysis-subscription"
+        )
+        assert (
+            EarthMoverGEFS_FX()._repo_name
+            == "my-org/noaa-gefs-forecast-35-day-subscription"
+        )
+
+    def test_missing_repo_requires_config(self, monkeypatch):
+        monkeypatch.delenv("EARTHMOVER_ORGANIZATION", raising=False)
+
+        for cls in (EarthMoverGFS_FX, EarthMoverGEFS, EarthMoverGEFS_FX):
+            with pytest.raises(ValueError, match="EARTHMOVER_ORGANIZATION"):
+                cls()
+
+    def test_earthmover_gefs_call_mock(self, patch_earthmover):
+        patch_earthmover(mock_earthmover_gefs())
+        variables = ["t2m", "msl", "tcc", "z500", "u10m"]
+        ds = EarthMoverGEFS("vandelay-industries/gefs")
+
+        out = ds(datetime(2022, 1, 1), variables)
+
+        assert_analysis_data_array(out, variables)
+        # Celsius -> Kelvin
+        assert float(
+            out.sel(variable="t2m").isel(time=0, lat=0, lon=0)
+        ) == pytest.approx(2.0 + 273.15)
+        # percent -> fraction
+        assert float(
+            out.sel(variable="tcc").isel(time=0, lat=0, lon=0)
+        ) == pytest.approx(0.5)
+        # geopotential height (m) -> geopotential (m2 s-2)
+        assert float(
+            out.sel(variable="z500").isel(time=0, lat=0, lon=0)
+        ) == pytest.approx(5500.0 * 9.80665)
+
+    def test_earthmover_gfs_fx_call_mock(self, patch_earthmover):
+        patch_earthmover(mock_earthmover_gfs_fx())
+        variables = ["t2m", "msl", "u10m"]
+        ds = EarthMoverGFS_FX("vandelay-industries/gfs")
+
+        out = ds(
+            datetime(2022, 1, 1),
+            [timedelta(hours=0), timedelta(hours=6)],
+            variables,
+        )
+
+        assert_forecast_data_array(out, variables, lead_time_count=2)
+        assert float(
+            out.sel(variable="t2m").isel(time=0, lead_time=0, lat=0, lon=0)
+        ) == pytest.approx(2.0 + 273.15)
+
+    def test_earthmover_gefs_fx_call_mock(self, patch_earthmover):
+        patch_earthmover(mock_earthmover_gefs_fx())
+        variables = ["t2m", "z500"]
+        ds = EarthMoverGEFS_FX("vandelay-industries/gefs")
+
+        out = ds(
+            datetime(2022, 1, 1),
+            [timedelta(hours=0), timedelta(hours=6)],
+            variables,
+        )
+
+        assert_forecast_data_array(out, variables, lead_time_count=2)
+        assert float(
+            out.sel(variable="t2m").isel(time=0, lead_time=0, lat=0, lon=0)
+        ) == pytest.approx(2.0 + 273.15)
+
+    def test_earthmover_gefs_fx_member_selection(self, patch_earthmover):
+        patch_earthmover(mock_earthmover_gefs_fx(members=3))
+        member_stride = LEAD_TIMES.size * LAT.size * LON.size
+
+        for member in range(3):
+            ds = EarthMoverGEFS_FX("vandelay-industries/gefs", member=member)
+            out = ds(datetime(2022, 1, 1), timedelta(hours=0), "t2m")
+            assert float(
+                out.sel(variable="t2m").isel(time=0, lead_time=0, lat=0, lon=0)
+            ) == pytest.approx(member * member_stride + 2.0 + 273.15)
+
+    def test_earthmover_gefs_fx_member_out_of_range(self, patch_earthmover):
+        patch_earthmover(mock_earthmover_gefs_fx(members=3))
+
+        with pytest.raises(ValueError, match="non-negative"):
+            EarthMoverGEFS_FX("vandelay-industries/gefs", member=-1)
+
+        ds = EarthMoverGEFS_FX("vandelay-industries/gefs", member=31)
+        with pytest.raises(ValueError, match="out of range"):
+            ds(datetime(2022, 1, 1), timedelta(hours=0), "t2m")
+
+    def test_gefs_available(self, patch_earthmover):
+        patch_earthmover(mock_earthmover_gefs())
+        ds = EarthMoverGEFS("vandelay-industries/gefs")
+
+        assert ds.available(datetime(2022, 1, 1, 0))
+        assert ds.available(np.datetime64("2022-01-01T06:00:00"))
+        assert not ds.available(datetime(1999, 12, 31, 21))
+        assert not ds.available(datetime(2022, 1, 1, 1))
+
+    def test_gfs_fx_available(self, patch_earthmover):
+        patch_earthmover(mock_earthmover_gfs_fx())
+        ds = EarthMoverGFS_FX("vandelay-industries/gfs")
+
+        assert ds.available(datetime(2022, 1, 1, 0))
+        assert not ds.available(datetime(2021, 4, 30, 18))
+        assert not ds.available(datetime(2022, 1, 1, 3))
+
+    def test_gefs_exceptions(self, patch_earthmover):
+        patch_earthmover(mock_earthmover_gefs())
+        ds = EarthMoverGEFS("vandelay-industries/gefs")
+
+        with pytest.raises(ValueError, match="not a known Earth2Studio variable"):
+            ds(datetime(2022, 1, 1), "definitely_not_a_var")
+        with pytest.raises(ValueError, match="Could not resolve"):
+            ds(datetime(2022, 1, 1), "tpf")
+        with pytest.raises(ValueError, match="January 1st, 2000"):
+            ds(datetime(1999, 12, 31, 21), "t2m")
+        with pytest.raises(ValueError, match="3 hour interval"):
+            ds(datetime(2022, 1, 1, 1), "t2m")
+        with pytest.raises(ValueError, match="not available"):
+            ds(datetime(2022, 1, 1, 12), "t2m")
+
+    def test_gfs_fx_exceptions(self, patch_earthmover):
+        patch_earthmover(mock_earthmover_gfs_fx())
+        ds = EarthMoverGFS_FX("vandelay-industries/gfs")
+
+        with pytest.raises(ValueError, match="not a known Earth2Studio variable"):
+            ds(datetime(2022, 1, 1), timedelta(hours=0), "z500")
+        with pytest.raises(ValueError, match="6 hour interval"):
+            ds(datetime(2022, 1, 1, 3), timedelta(hours=0), "t2m")
+        with pytest.raises(ValueError, match="May 1st, 2021"):
+            ds(datetime(2021, 4, 30, 18), timedelta(hours=0), "t2m")
+
+    def test_gefs_fx_exceptions(self, patch_earthmover):
+        patch_earthmover(mock_earthmover_gefs_fx())
+        ds = EarthMoverGEFS_FX("vandelay-industries/gefs")
+
+        with pytest.raises(ValueError, match="not a known Earth2Studio variable"):
+            ds(datetime(2022, 1, 1), timedelta(hours=0), "definitely_not_a_var")
+        with pytest.raises(ValueError, match="October 1st, 2020"):
+            ds(datetime(2020, 9, 30), timedelta(hours=0), "t2m")
