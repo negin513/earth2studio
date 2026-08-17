@@ -1,0 +1,2034 @@
+{
+ "ARCO__after__trial0": {
+  "source": "ARCO",
+  "version": "after",
+  "n_variables": 1408,
+  "seconds": 15.1,
+  "error": null,
+  "reconstructed": true,
+  "earth2studio_version": "0.18.0a0"
+ },
+ "ARCO__after__trial1": {
+  "source": "ARCO",
+  "version": "after",
+  "n_variables": 1408,
+  "seconds": 17.0,
+  "error": null,
+  "reconstructed": true,
+  "earth2studio_version": "0.18.0a0"
+ },
+ "ARCO__before__trial0": {
+  "source": "ARCO",
+  "version": "before",
+  "n_variables": 1408,
+  "seconds": 179.9,
+  "error": null,
+  "reconstructed": true,
+  "earth2studio_version": "0.14.0rc0"
+ },
+ "ARCO__before__trial1": {
+  "source": "ARCO",
+  "version": "before",
+  "n_variables": 1408,
+  "seconds": 180.0,
+  "error": null,
+  "reconstructed": true,
+  "earth2studio_version": "0.14.0rc0"
+ },
+ "CFS_FX_Flux__after__trial0": {
+  "source": "CFS_FX_Flux",
+  "version": "after",
+  "n_variables": 13,
+  "seconds": 2.680280159052927,
+  "error": null,
+  "earth2studio_version": "0.18.0a0",
+  "ctor_seconds": 1.0720046702772379e-05,
+  "call_seconds": 2.6802694390062243,
+  "result_shape": [
+   1,
+   1,
+   13,
+   190,
+   384
+  ],
+  "cache_bytes": 666668
+ },
+ "CFS_FX_Flux__after__trial1": {
+  "source": "CFS_FX_Flux",
+  "version": "after",
+  "n_variables": 13,
+  "seconds": 2.2310076960129663,
+  "error": null,
+  "earth2studio_version": "0.18.0a0",
+  "ctor_seconds": 9.375973604619503e-06,
+  "call_seconds": 2.2309983200393617,
+  "result_shape": [
+   1,
+   1,
+   13,
+   190,
+   384
+  ],
+  "cache_bytes": 666668
+ },
+ "CFS_FX_Flux__before__trial0": {
+  "source": "CFS_FX_Flux",
+  "version": "before",
+  "n_variables": 13,
+  "seconds": 4.249422499036882,
+  "error": null,
+  "earth2studio_version": "0.17.0a0",
+  "ctor_seconds": 9.600014891475439e-06,
+  "call_seconds": 4.249412899021991,
+  "result_shape": [
+   1,
+   1,
+   13,
+   190,
+   384
+  ],
+  "cache_bytes": 666668
+ },
+ "CFS_FX_Flux__before__trial1": {
+  "source": "CFS_FX_Flux",
+  "version": "before",
+  "n_variables": 13,
+  "seconds": 2.986077373032458,
+  "error": null,
+  "earth2studio_version": "0.17.0a0",
+  "ctor_seconds": 9.504030458629131e-06,
+  "call_seconds": 2.9860678690019995,
+  "result_shape": [
+   1,
+   1,
+   13,
+   190,
+   384
+  ],
+  "cache_bytes": 666668
+ },
+ "CFS_FX__after__trial0": {
+  "source": "CFS_FX",
+  "version": "after",
+  "n_variables": 81,
+  "seconds": 3.8485129939508624,
+  "error": null,
+  "earth2studio_version": "0.18.0a0",
+  "ctor_seconds": 1.0431976988911629e-05,
+  "call_seconds": 3.8485025619738735,
+  "result_shape": [
+   1,
+   1,
+   81,
+   181,
+   360
+  ],
+  "cache_bytes": 3161746
+ },
+ "CFS_FX__after__trial1": {
+  "source": "CFS_FX",
+  "version": "after",
+  "n_variables": 81,
+  "seconds": 3.5684557909844443,
+  "error": null,
+  "earth2studio_version": "0.18.0a0",
+  "ctor_seconds": 9.823997970670462e-06,
+  "call_seconds": 3.5684459669864736,
+  "result_shape": [
+   1,
+   1,
+   81,
+   181,
+   360
+  ],
+  "cache_bytes": 3161746
+ },
+ "CFS_FX__before__trial0": {
+  "source": "CFS_FX",
+  "version": "before",
+  "n_variables": 81,
+  "seconds": 4.631997474003583,
+  "error": null,
+  "earth2studio_version": "0.17.0a0",
+  "ctor_seconds": 9.568990208208561e-06,
+  "call_seconds": 4.631987905013375,
+  "result_shape": [
+   1,
+   1,
+   81,
+   181,
+   360
+  ],
+  "cache_bytes": 3161746
+ },
+ "CFS_FX__before__trial1": {
+  "source": "CFS_FX",
+  "version": "before",
+  "n_variables": 81,
+  "seconds": 4.496428903017659,
+  "error": null,
+  "earth2studio_version": "0.17.0a0",
+  "ctor_seconds": 6.624031811952591e-06,
+  "call_seconds": 4.496422278985847,
+  "result_shape": [
+   1,
+   1,
+   81,
+   181,
+   360
+  ],
+  "cache_bytes": 3161746
+ },
+ "CFS_Reforecast_FX_Flux__after__trial0": {
+  "source": "CFS_Reforecast_FX_Flux",
+  "version": "after",
+  "n_variables": 13,
+  "seconds": 3.4645925459917635,
+  "error": null,
+  "earth2studio_version": "0.18.0a0",
+  "ctor_seconds": 6.879970896989107e-06,
+  "call_seconds": 3.4645856660208665,
+  "result_shape": [
+   1,
+   1,
+   13,
+   190,
+   384
+  ],
+  "cache_bytes": 4203644
+ },
+ "CFS_Reforecast_FX_Flux__after__trial1": {
+  "source": "CFS_Reforecast_FX_Flux",
+  "version": "after",
+  "n_variables": 13,
+  "seconds": 3.1809559710673057,
+  "error": null,
+  "earth2studio_version": "0.18.0a0",
+  "ctor_seconds": 5.600042641162872e-06,
+  "call_seconds": 3.1809503710246645,
+  "result_shape": [
+   1,
+   1,
+   13,
+   190,
+   384
+  ],
+  "cache_bytes": 4203644
+ },
+ "CFS_Reforecast_FX_Flux__before__trial0": {
+  "source": "CFS_Reforecast_FX_Flux",
+  "version": "before",
+  "n_variables": 13,
+  "seconds": 5.325561720004771,
+  "error": null,
+  "earth2studio_version": "0.18.0a0",
+  "ctor_seconds": 6.688002031296492e-06,
+  "call_seconds": 5.32555503200274,
+  "result_shape": [
+   1,
+   1,
+   13,
+   190,
+   384
+  ],
+  "cache_bytes": 4203644
+ },
+ "CFS_Reforecast_FX_Flux__before__trial1": {
+  "source": "CFS_Reforecast_FX_Flux",
+  "version": "before",
+  "n_variables": 13,
+  "seconds": 4.908598876965698,
+  "error": null,
+  "earth2studio_version": "0.18.0a0",
+  "ctor_seconds": 8.191971573978662e-06,
+  "call_seconds": 4.908590684994124,
+  "result_shape": [
+   1,
+   1,
+   13,
+   190,
+   384
+  ],
+  "cache_bytes": 4203644
+ },
+ "CFS_Reforecast_FX__after__trial0": {
+  "source": "CFS_Reforecast_FX",
+  "version": "after",
+  "n_variables": 81,
+  "seconds": 6.015518975968007,
+  "error": null,
+  "earth2studio_version": "0.18.0a0",
+  "ctor_seconds": 4.57599526271224e-06,
+  "call_seconds": 6.015514399972744,
+  "result_shape": [
+   1,
+   1,
+   81,
+   181,
+   360
+  ],
+  "cache_bytes": 22683445
+ },
+ "CFS_Reforecast_FX__after__trial1": {
+  "source": "CFS_Reforecast_FX",
+  "version": "after",
+  "n_variables": 81,
+  "seconds": 6.016533102025278,
+  "error": null,
+  "earth2studio_version": "0.18.0a0",
+  "ctor_seconds": 6.0480087995529175e-06,
+  "call_seconds": 6.016527054016478,
+  "result_shape": [
+   1,
+   1,
+   81,
+   181,
+   360
+  ],
+  "cache_bytes": 22683445
+ },
+ "CFS_Reforecast_FX__before__trial0": {
+  "source": "CFS_Reforecast_FX",
+  "version": "before",
+  "n_variables": 81,
+  "seconds": 59.82788181601791,
+  "error": null,
+  "earth2studio_version": "0.18.0a0",
+  "ctor_seconds": 4.3199979700148106e-06,
+  "call_seconds": 59.82787749601994,
+  "result_shape": [
+   1,
+   1,
+   81,
+   181,
+   360
+  ],
+  "cache_bytes": 22683445
+ },
+ "CFS_Reforecast_FX__before__trial1": {
+  "source": "CFS_Reforecast_FX",
+  "version": "before",
+  "n_variables": 81,
+  "seconds": 58.149485024041496,
+  "error": null,
+  "earth2studio_version": "0.18.0a0",
+  "ctor_seconds": 4.544039256870747e-06,
+  "call_seconds": 58.14948048000224,
+  "result_shape": [
+   1,
+   1,
+   81,
+   181,
+   360
+  ],
+  "cache_bytes": 22683445
+ },
+ "GEFS_FX__after__trial0": {
+  "source": "GEFS_FX",
+  "version": "after",
+  "n_variables": 214,
+  "seconds": 3.76,
+  "error": null,
+  "reconstructed": true,
+  "earth2studio_version": "0.18.0a0"
+ },
+ "GEFS_FX__after__trial1": {
+  "source": "GEFS_FX",
+  "version": "after",
+  "n_variables": 214,
+  "seconds": 3.84,
+  "error": null,
+  "reconstructed": true,
+  "earth2studio_version": "0.18.0a0"
+ },
+ "GEFS_FX__before__trial0": {
+  "source": "GEFS_FX",
+  "version": "before",
+  "n_variables": 214,
+  "seconds": 9.38,
+  "error": null,
+  "reconstructed": true,
+  "earth2studio_version": "0.14.0rc0"
+ },
+ "GEFS_FX__before__trial1": {
+  "source": "GEFS_FX",
+  "version": "before",
+  "n_variables": 214,
+  "seconds": 8.72,
+  "error": null,
+  "reconstructed": true,
+  "earth2studio_version": "0.14.0rc0"
+ },
+ "GFS__after__trial0": {
+  "source": "GFS",
+  "version": "after",
+  "n_variables": 246,
+  "seconds": 5.35,
+  "error": null,
+  "reconstructed": true,
+  "earth2studio_version": "0.18.0a0"
+ },
+ "GFS__after__trial1": {
+  "source": "GFS",
+  "version": "after",
+  "n_variables": 246,
+  "seconds": 6.19,
+  "error": null,
+  "reconstructed": true,
+  "earth2studio_version": "0.18.0a0"
+ },
+ "GFS__before__trial0": {
+  "source": "GFS",
+  "version": "before",
+  "n_variables": 246,
+  "seconds": 10.51,
+  "error": null,
+  "reconstructed": true,
+  "earth2studio_version": "0.14.0rc0"
+ },
+ "GFS__before__trial1": {
+  "source": "GFS",
+  "version": "before",
+  "n_variables": 246,
+  "seconds": 10.81,
+  "error": null,
+  "reconstructed": true,
+  "earth2studio_version": "0.14.0rc0"
+ },
+ "GHCNDaily__after__trial0": {
+  "source": "GHCNDaily",
+  "version": "after",
+  "n_variables": 12,
+  "seconds": 6.3679032070213,
+  "error": null,
+  "earth2studio_version": "0.18.0a0",
+  "ctor_seconds": 8.179200813174248e-05,
+  "call_seconds": 6.367821415013168,
+  "result_shape": [
+   18,
+   7
+  ],
+  "cache_bytes": 13763929
+ },
+ "GHCNDaily__after__trial1": {
+  "source": "GHCNDaily",
+  "version": "after",
+  "n_variables": 12,
+  "seconds": 6.592760966974311,
+  "error": null,
+  "earth2studio_version": "0.18.0a0",
+  "ctor_seconds": 8.998496923595667e-05,
+  "call_seconds": 6.592670982005075,
+  "result_shape": [
+   18,
+   7
+  ],
+  "cache_bytes": 13763929
+ },
+ "GHCNDaily__before__trial0": {
+  "source": "GHCNDaily",
+  "version": "before",
+  "n_variables": 12,
+  "seconds": null,
+  "error": "Traceback (most recent call last):\n  File \"/lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/earth2studio-main-bench/benchmarks/dataloaders/bench_source.py\", line 375, in main\n    out = ds(*call_args)\n          ^^^^^^^^^^^^^^\n  File \"/lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/earth2studio-pre1058/earth2studio/data/ghcn.py\", line 109, in __call__\n    df = _sync_async(\n         ^^^^^^^^^^^^\n  File \"/lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/earth2studio-pre1058/earth2studio/data/utils.py\", line 586, in _sync_async\n    return fsspec.asyn.sync(loop, coro, *args, timeout=timeout, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/root/work/forks/earth2studio-pre1058/.venv/lib/python3.12/site-packages/fsspec/asyn.py\", line 103, in sync\n    raise return_result\n  File \"/root/work/forks/earth2studio-pre1058/.venv/lib/python3.12/site-packages/fsspec/asyn.py\", line 56, in _runner\n    result[0] = await coro\n                ^^^^^^^^^^\n  File \"/usr/lib/python3.12/asyncio/tasks.py\", line 520, in wait_for\n    return await fut\n           ^^^^^^^^^\n  File \"/lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/earth2studio-pre1058/earth2studio/data/ghcn.py\", line 512, in fetch\n    self._station_meta = self.get_station_metadata()\n                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/earth2studio-pre1058/earth2studio/data/ghcn.py\", line 424, in get_station_metadata\n    fs.get(\"s3://noaa-ghcn-pds/ghcnd-stations.txt\", stations_file)\n  File \"/root/work/forks/earth2studio-pre1058/.venv/lib/python3.12/site-packages/fsspec/asyn.py\", line 118, in wrapper\n    return sync(self.loop, func, *args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/root/work/forks/earth2studio-pre1058/.venv/lib/python3.12/site-packages/fsspec/asyn.py\", line 80, in sync\n    raise NotImplementedError(\"Calling sync() from within a running loop\")\nNotImplementedError: Calling sync() from within a running loop\n",
+  "earth2studio_version": "0.18.0a0"
+ },
+ "GHCNDaily__before__trial1": {
+  "source": "GHCNDaily",
+  "version": "before",
+  "n_variables": 12,
+  "seconds": null,
+  "error": "Traceback (most recent call last):\n  File \"/lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/earth2studio-main-bench/benchmarks/dataloaders/bench_source.py\", line 375, in main\n    out = ds(*call_args)\n          ^^^^^^^^^^^^^^\n  File \"/lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/earth2studio-pre1058/earth2studio/data/ghcn.py\", line 109, in __call__\n    df = _sync_async(\n         ^^^^^^^^^^^^\n  File \"/lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/earth2studio-pre1058/earth2studio/data/utils.py\", line 586, in _sync_async\n    return fsspec.asyn.sync(loop, coro, *args, timeout=timeout, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/root/work/forks/earth2studio-pre1058/.venv/lib/python3.12/site-packages/fsspec/asyn.py\", line 103, in sync\n    raise return_result\n  File \"/root/work/forks/earth2studio-pre1058/.venv/lib/python3.12/site-packages/fsspec/asyn.py\", line 56, in _runner\n    result[0] = await coro\n                ^^^^^^^^^^\n  File \"/usr/lib/python3.12/asyncio/tasks.py\", line 520, in wait_for\n    return await fut\n           ^^^^^^^^^\n  File \"/lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/earth2studio-pre1058/earth2studio/data/ghcn.py\", line 512, in fetch\n    self._station_meta = self.get_station_metadata()\n                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/earth2studio-pre1058/earth2studio/data/ghcn.py\", line 424, in get_station_metadata\n    fs.get(\"s3://noaa-ghcn-pds/ghcnd-stations.txt\", stations_file)\n  File \"/root/work/forks/earth2studio-pre1058/.venv/lib/python3.12/site-packages/fsspec/asyn.py\", line 118, in wrapper\n    return sync(self.loop, func, *args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/root/work/forks/earth2studio-pre1058/.venv/lib/python3.12/site-packages/fsspec/asyn.py\", line 80, in sync\n    raise NotImplementedError(\"Calling sync() from within a running loop\")\nNotImplementedError: Calling sync() from within a running loop\n",
+  "earth2studio_version": "0.18.0a0"
+ },
+ "GHCNHourly__after__trial0": {
+  "source": "GHCNHourly",
+  "version": "after",
+  "n_variables": 8,
+  "seconds": 2.7391755169956014,
+  "error": null,
+  "earth2studio_version": "0.18.0a0",
+  "ctor_seconds": 0.00012550497194752097,
+  "call_seconds": 2.739050012023654,
+  "result_shape": [
+   24,
+   7
+  ],
+  "cache_bytes": 355981
+ },
+ "GHCNHourly__after__trial1": {
+  "source": "GHCNHourly",
+  "version": "after",
+  "n_variables": 8,
+  "seconds": 2.7566706720390357,
+  "error": null,
+  "earth2studio_version": "0.18.0a0",
+  "ctor_seconds": 9.020802099257708e-05,
+  "call_seconds": 2.756580464018043,
+  "result_shape": [
+   24,
+   7
+  ],
+  "cache_bytes": 355981
+ },
+ "GHCNHourly__before__trial0": {
+  "source": "GHCNHourly",
+  "version": "before",
+  "n_variables": 8,
+  "seconds": 2.5355384930153377,
+  "error": null,
+  "earth2studio_version": "0.18.0a0",
+  "ctor_seconds": 9.29600209929049e-05,
+  "call_seconds": 2.535445532994345,
+  "result_shape": [
+   24,
+   7
+  ],
+  "cache_bytes": 355981
+ },
+ "GHCNHourly__before__trial1": {
+  "source": "GHCNHourly",
+  "version": "before",
+  "n_variables": 8,
+  "seconds": 2.435364325006958,
+  "error": null,
+  "earth2studio_version": "0.18.0a0",
+  "ctor_seconds": 9.420799324288964e-05,
+  "call_seconds": 2.435270117013715,
+  "result_shape": [
+   24,
+   7
+  ],
+  "cache_bytes": 355981
+ },
+ "GOESGLMGrid__after__trial0": {
+  "source": "GOESGLMGrid",
+  "version": "after",
+  "n_variables": 2,
+  "seconds": 5.736874308029655,
+  "error": null,
+  "earth2studio_version": "0.18.0a0",
+  "ctor_seconds": 0.00014262401964515448,
+  "call_seconds": 5.73673168401001,
+  "result_shape": [
+   6,
+   2,
+   350,
+   700
+  ],
+  "cache_bytes": 24314256
+ },
+ "GOESGLMGrid__after__trial1": {
+  "source": "GOESGLMGrid",
+  "version": "after",
+  "n_variables": 2,
+  "seconds": 5.854203030001372,
+  "error": null,
+  "earth2studio_version": "0.18.0a0",
+  "ctor_seconds": 0.00014291302068158984,
+  "call_seconds": 5.8540601169806905,
+  "result_shape": [
+   6,
+   2,
+   350,
+   700
+  ],
+  "cache_bytes": 24314256
+ },
+ "GOESGLMGrid__before__trial0": {
+  "source": "GOESGLMGrid",
+  "version": "before",
+  "n_variables": 2,
+  "seconds": 10.444429703988135,
+  "error": null,
+  "earth2studio_version": "0.18.0a0",
+  "ctor_seconds": 0.00019510503625497222,
+  "call_seconds": 10.44423459895188,
+  "result_shape": [
+   6,
+   2,
+   350,
+   700
+  ],
+  "cache_bytes": 24314256
+ },
+ "GOESGLMGrid__before__trial1": {
+  "source": "GOESGLMGrid",
+  "version": "before",
+  "n_variables": 2,
+  "seconds": 8.268835477007087,
+  "error": null,
+  "earth2studio_version": "0.18.0a0",
+  "ctor_seconds": 0.00014707300579175353,
+  "call_seconds": 8.268688404001296,
+  "result_shape": [
+   6,
+   2,
+   350,
+   700
+  ],
+  "cache_bytes": 24314256
+ },
+ "GOES__after__trial0": {
+  "source": "GOES",
+  "version": "after",
+  "n_variables": 16,
+  "seconds": 6.74,
+  "error": null,
+  "reconstructed": true,
+  "earth2studio_version": "0.18.0a0"
+ },
+ "GOES__after__trial1": {
+  "source": "GOES",
+  "version": "after",
+  "n_variables": 16,
+  "seconds": 6.83,
+  "error": null,
+  "reconstructed": true,
+  "earth2studio_version": "0.18.0a0"
+ },
+ "GOES__before__trial0": {
+  "source": "GOES",
+  "version": "before",
+  "n_variables": 16,
+  "seconds": 7.19,
+  "error": null,
+  "reconstructed": true,
+  "earth2studio_version": "0.14.0rc0"
+ },
+ "GOES__before__trial1": {
+  "source": "GOES",
+  "version": "before",
+  "n_variables": 16,
+  "seconds": 9.1,
+  "error": null,
+  "reconstructed": true,
+  "earth2studio_version": "0.14.0rc0"
+ },
+ "HRRR__after__trial0": {
+  "source": "HRRR",
+  "version": "after",
+  "n_variables": 648,
+  "seconds": 14.75,
+  "error": null,
+  "reconstructed": true,
+  "earth2studio_version": "0.18.0a0"
+ },
+ "HRRR__after__trial1": {
+  "source": "HRRR",
+  "version": "after",
+  "n_variables": 648,
+  "seconds": 14.46,
+  "error": null,
+  "reconstructed": true,
+  "earth2studio_version": "0.18.0a0"
+ },
+ "HRRR__after__trial2": {
+  "source": "HRRR",
+  "version": "after",
+  "n_variables": 648,
+  "seconds": 15.665597460989375,
+  "error": null,
+  "earth2studio_version": "0.18.0a0",
+  "ctor_seconds": 1.9808008801192045e-05,
+  "call_seconds": 15.665577652980573,
+  "result_shape": [
+   1,
+   648,
+   1059,
+   1799
+  ],
+  "cache_bytes": 571536240
+ },
+ "HRRR__after__trial3": {
+  "source": "HRRR",
+  "version": "after",
+  "n_variables": 648,
+  "seconds": 15.871692267013714,
+  "error": null,
+  "earth2studio_version": "0.18.0a0",
+  "ctor_seconds": 1.4560006093233824e-05,
+  "call_seconds": 15.87167770700762,
+  "result_shape": [
+   1,
+   648,
+   1059,
+   1799
+  ],
+  "cache_bytes": 571536240
+ },
+ "HRRR__before__trial0": {
+  "source": "HRRR",
+  "version": "before",
+  "n_variables": 648,
+  "seconds": 94.25,
+  "error": null,
+  "reconstructed": true,
+  "earth2studio_version": "0.14.0rc0"
+ },
+ "HRRR__before__trial1": {
+  "source": "HRRR",
+  "version": "before",
+  "n_variables": 648,
+  "seconds": 24.34,
+  "error": null,
+  "reconstructed": true,
+  "earth2studio_version": "0.14.0rc0"
+ },
+ "HRRR__before__trial2": {
+  "source": "HRRR",
+  "version": "before",
+  "n_variables": 648,
+  "seconds": 25.721473277022596,
+  "error": null,
+  "earth2studio_version": "0.14.0rc0",
+  "ctor_seconds": 0.0012347550364211202,
+  "call_seconds": 25.720238521986175,
+  "result_shape": [
+   1,
+   648,
+   1059,
+   1799
+  ],
+  "cache_bytes": 571536240
+ },
+ "HRRR__before__trial3": {
+  "source": "HRRR",
+  "version": "before",
+  "n_variables": 648,
+  "seconds": 24.17339471797459,
+  "error": null,
+  "earth2studio_version": "0.14.0rc0",
+  "ctor_seconds": 0.00038156897062435746,
+  "call_seconds": 24.173013149003964,
+  "result_shape": [
+   1,
+   648,
+   1059,
+   1799
+  ],
+  "cache_bytes": 571536240
+ },
+ "HimawariAHI__after__trial0": {
+  "source": "HimawariAHI",
+  "version": "after",
+  "n_variables": 16,
+  "seconds": 7.442110717936885,
+  "error": null,
+  "earth2studio_version": "0.18.0a0",
+  "ctor_seconds": 2.4492862139595672,
+  "call_seconds": 4.992824503977317,
+  "result_shape": [
+   1,
+   16,
+   166,
+   166
+  ],
+  "cache_bytes": 12990711
+ },
+ "HimawariAHI__after__trial1": {
+  "source": "HimawariAHI",
+  "version": "after",
+  "n_variables": 16,
+  "seconds": 7.537212054012343,
+  "error": null,
+  "earth2studio_version": "0.18.0a0",
+  "ctor_seconds": 2.446376770036295,
+  "call_seconds": 5.090835283976048,
+  "result_shape": [
+   1,
+   16,
+   166,
+   166
+  ],
+  "cache_bytes": 12990711
+ },
+ "HimawariAHI__before__trial0": {
+  "source": "HimawariAHI",
+  "version": "before",
+  "n_variables": 16,
+  "seconds": 9.301276512967888,
+  "error": null,
+  "earth2studio_version": "0.18.0a0",
+  "ctor_seconds": 2.4707163549610414,
+  "call_seconds": 6.830560158006847,
+  "result_shape": [
+   1,
+   16,
+   166,
+   166
+  ],
+  "cache_bytes": 12990711
+ },
+ "HimawariAHI__before__trial1": {
+  "source": "HimawariAHI",
+  "version": "before",
+  "n_variables": 16,
+  "seconds": 8.413072923955042,
+  "error": null,
+  "earth2studio_version": "0.18.0a0",
+  "ctor_seconds": 2.4445806989679113,
+  "call_seconds": 5.968492224987131,
+  "result_shape": [
+   1,
+   16,
+   166,
+   166
+  ],
+  "cache_bytes": 12990711
+ },
+ "IBTrACS__after__trial0": {
+  "source": "IBTrACS",
+  "version": "after",
+  "n_variables": 9,
+  "seconds": 2.7351771909743547,
+  "error": null,
+  "earth2studio_version": "0.18.0a0",
+  "ctor_seconds": 8.995202369987965e-05,
+  "call_seconds": 2.735087238950655,
+  "result_shape": [
+   0,
+   9
+  ],
+  "cache_bytes": 696335
+ },
+ "IBTrACS__after__trial1": {
+  "source": "IBTrACS",
+  "version": "after",
+  "n_variables": 9,
+  "seconds": 2.7053004699992016,
+  "error": null,
+  "earth2studio_version": "0.18.0a0",
+  "ctor_seconds": 0.00010275299428030849,
+  "call_seconds": 2.7051977170049213,
+  "result_shape": [
+   0,
+   9
+  ],
+  "cache_bytes": 696335
+ },
+ "IBTrACS__before__trial0": {
+  "source": "IBTrACS",
+  "version": "before",
+  "n_variables": 9,
+  "seconds": 4.204045124992263,
+  "error": null,
+  "earth2studio_version": "0.18.0a0",
+  "ctor_seconds": 8.812797022983432e-05,
+  "call_seconds": 4.203956997022033,
+  "result_shape": [
+   0,
+   9
+  ],
+  "cache_bytes": 696339
+ },
+ "IBTrACS__before__trial1": {
+  "source": "IBTrACS",
+  "version": "before",
+  "n_variables": 9,
+  "seconds": 2.4571660740184598,
+  "error": null,
+  "earth2studio_version": "0.18.0a0",
+  "ctor_seconds": 8.940801490098238e-05,
+  "call_seconds": 2.457076666003559,
+  "result_shape": [
+   0,
+   9
+  ],
+  "cache_bytes": 696339
+ },
+ "ISD__after__trial0": {
+  "source": "ISD",
+  "version": "after",
+  "n_variables": 8,
+  "seconds": 3.78,
+  "error": null,
+  "reconstructed": true,
+  "earth2studio_version": "0.18.0a0"
+ },
+ "ISD__after__trial1": {
+  "source": "ISD",
+  "version": "after",
+  "n_variables": 8,
+  "seconds": 3.44,
+  "error": null,
+  "reconstructed": true,
+  "earth2studio_version": "0.18.0a0"
+ },
+ "ISD__after__trial2": {
+  "source": "ISD",
+  "version": "after",
+  "n_variables": 8,
+  "seconds": 3.7100085679558106,
+  "error": null,
+  "earth2studio_version": "0.18.0a0",
+  "ctor_seconds": 9.379297262057662e-05,
+  "call_seconds": 3.70991477498319,
+  "result_shape": [
+   29,
+   9
+  ],
+  "cache_bytes": 2845635
+ },
+ "ISD__after__trial3": {
+  "source": "ISD",
+  "version": "after",
+  "n_variables": 8,
+  "seconds": 3.6097929389798082,
+  "error": null,
+  "earth2studio_version": "0.18.0a0",
+  "ctor_seconds": 9.804900037124753e-05,
+  "call_seconds": 3.609694889979437,
+  "result_shape": [
+   29,
+   9
+  ],
+  "cache_bytes": 2845635
+ },
+ "ISD__before__trial0": {
+  "source": "ISD",
+  "version": "before",
+  "n_variables": 8,
+  "seconds": 4.1,
+  "error": null,
+  "reconstructed": true,
+  "earth2studio_version": "0.14.0rc0"
+ },
+ "ISD__before__trial1": {
+  "source": "ISD",
+  "version": "before",
+  "n_variables": 8,
+  "seconds": 12.37,
+  "error": null,
+  "reconstructed": true,
+  "earth2studio_version": "0.14.0rc0"
+ },
+ "ISD__before__trial2": {
+  "source": "ISD",
+  "version": "before",
+  "n_variables": 8,
+  "seconds": 3.9791450049960986,
+  "error": null,
+  "earth2studio_version": "0.14.0rc0",
+  "ctor_seconds": 0.001272035005968064,
+  "call_seconds": 3.9778729699901305,
+  "result_shape": [
+   29,
+   9
+  ],
+  "cache_bytes": 2885454
+ },
+ "ISD__before__trial3": {
+  "source": "ISD",
+  "version": "before",
+  "n_variables": 8,
+  "seconds": 4.887018957990222,
+  "error": null,
+  "earth2studio_version": "0.14.0rc0",
+  "ctor_seconds": 0.0013627239968627691,
+  "call_seconds": 4.885656233993359,
+  "result_shape": [
+   29,
+   9
+  ],
+  "cache_bytes": 2885454
+ },
+ "JPSS_ATMS__after__trial0": {
+  "source": "JPSS_ATMS",
+  "version": "after",
+  "n_variables": 1,
+  "seconds": 4.902042675996199,
+  "error": null,
+  "earth2studio_version": "0.18.0a0",
+  "ctor_seconds": 0.00010204798309132457,
+  "call_seconds": 4.901940628013108,
+  "result_shape": [
+   929302,
+   15
+  ],
+  "cache_bytes": 3984768
+ },
+ "JPSS_ATMS__after__trial1": {
+  "source": "JPSS_ATMS",
+  "version": "after",
+  "n_variables": 1,
+  "seconds": 4.8981759829912335,
+  "error": null,
+  "earth2studio_version": "0.18.0a0",
+  "ctor_seconds": 0.0001046409597620368,
+  "call_seconds": 4.898071342031471,
+  "result_shape": [
+   929302,
+   15
+  ],
+  "cache_bytes": 3984768
+ },
+ "JPSS_ATMS__before__trial0": {
+  "source": "JPSS_ATMS",
+  "version": "before",
+  "n_variables": 1,
+  "seconds": 9.048187676991802,
+  "error": null,
+  "earth2studio_version": "0.14.0rc0",
+  "ctor_seconds": 0.0012646110262721777,
+  "call_seconds": 9.04692306596553,
+  "result_shape": [
+   929302,
+   14
+  ],
+  "cache_bytes": 3984768
+ },
+ "JPSS_ATMS__before__trial1": {
+  "source": "JPSS_ATMS",
+  "version": "before",
+  "n_variables": 1,
+  "seconds": 8.48327052599052,
+  "error": null,
+  "earth2studio_version": "0.14.0rc0",
+  "ctor_seconds": 0.0012015079846605659,
+  "call_seconds": 8.482069018005859,
+  "result_shape": [
+   929302,
+   14
+  ],
+  "cache_bytes": 3984768
+ },
+ "JPSS_CRIS__after__trial0": {
+  "source": "JPSS_CRIS",
+  "version": "after",
+  "n_variables": 1,
+  "seconds": 7.404198909935076,
+  "error": null,
+  "earth2studio_version": "0.18.0a0",
+  "ctor_seconds": 0.00010607996955513954,
+  "call_seconds": 7.404092829965521,
+  "result_shape": [
+   16038594,
+   18
+  ],
+  "cache_bytes": 111824651
+ },
+ "JPSS_CRIS__after__trial1": {
+  "source": "JPSS_CRIS",
+  "version": "after",
+  "n_variables": 1,
+  "seconds": 6.747864632983692,
+  "error": null,
+  "earth2studio_version": "0.18.0a0",
+  "ctor_seconds": 8.675199933350086e-05,
+  "call_seconds": 6.7477778809843585,
+  "result_shape": [
+   16038594,
+   18
+  ],
+  "cache_bytes": 111824651
+ },
+ "JPSS_CRIS__before__trial0": {
+  "source": "JPSS_CRIS",
+  "version": "before",
+  "n_variables": 1,
+  "seconds": 8.824257123982534,
+  "error": null,
+  "earth2studio_version": "0.14.0rc0",
+  "ctor_seconds": 0.0012924830080009997,
+  "call_seconds": 8.822964640974533,
+  "result_shape": [
+   13153239,
+   14
+  ],
+  "cache_bytes": 111824651
+ },
+ "JPSS_CRIS__before__trial1": {
+  "source": "JPSS_CRIS",
+  "version": "before",
+  "n_variables": 1,
+  "seconds": 8.612984989013057,
+  "error": null,
+  "earth2studio_version": "0.14.0rc0",
+  "ctor_seconds": 0.0013362279860302806,
+  "call_seconds": 8.611648761027027,
+  "result_shape": [
+   13153239,
+   14
+  ],
+  "cache_bytes": 111824651
+ },
+ "JPSS__after__trial0": {
+  "source": "JPSS",
+  "version": "after",
+  "n_variables": 16,
+  "seconds": 8.2,
+  "error": null,
+  "reconstructed": true,
+  "earth2studio_version": "0.18.0a0"
+ },
+ "JPSS__after__trial2": {
+  "source": "JPSS",
+  "version": "after",
+  "n_variables": 16,
+  "seconds": 7.408262207056396,
+  "error": null,
+  "earth2studio_version": "0.18.0a0",
+  "ctor_seconds": 9.408046025782824e-06,
+  "call_seconds": 7.40825279901037,
+  "result_shape": [
+   1,
+   18,
+   768,
+   3200
+  ],
+  "cache_bytes": 68034728
+ },
+ "JPSS__before__trial0": {
+  "source": "JPSS",
+  "version": "before",
+  "n_variables": 16,
+  "seconds": 10.04,
+  "error": null,
+  "reconstructed": true,
+  "earth2studio_version": "0.14.0rc0"
+ },
+ "JPSS__before__trial2": {
+  "source": "JPSS",
+  "version": "before",
+  "n_variables": 16,
+  "seconds": 13.990546542045195,
+  "error": null,
+  "earth2studio_version": "0.14.0rc0",
+  "ctor_seconds": 1.3760000001639128e-05,
+  "call_seconds": 13.990532782045193,
+  "result_shape": [
+   1,
+   18,
+   768,
+   3200
+  ],
+  "cache_bytes": 68034728
+ },
+ "MRMS__after__trial0": {
+  "source": "MRMS",
+  "version": "after",
+  "n_variables": 2,
+  "seconds": 3.42,
+  "error": null,
+  "reconstructed": true,
+  "earth2studio_version": "0.18.0a0"
+ },
+ "MRMS__after__trial1": {
+  "source": "MRMS",
+  "version": "after",
+  "n_variables": 2,
+  "seconds": 3.45,
+  "error": null,
+  "reconstructed": true,
+  "earth2studio_version": "0.18.0a0"
+ },
+ "MRMS__after__trial2": {
+  "source": "MRMS",
+  "version": "after",
+  "n_variables": 2,
+  "seconds": 3.753148965013679,
+  "error": null,
+  "earth2studio_version": "0.18.0a0",
+  "ctor_seconds": 8.192029781639576e-06,
+  "call_seconds": 3.7531407729838975,
+  "result_shape": [
+   1,
+   2,
+   3500,
+   7000
+  ],
+  "cache_bytes": 2091593
+ },
+ "MRMS__after__trial3": {
+  "source": "MRMS",
+  "version": "after",
+  "n_variables": 2,
+  "seconds": 3.88166093401378,
+  "error": null,
+  "earth2studio_version": "0.18.0a0",
+  "ctor_seconds": 7.90401827543974e-06,
+  "call_seconds": 3.8816530299955048,
+  "result_shape": [
+   1,
+   2,
+   3500,
+   7000
+  ],
+  "cache_bytes": 2091593
+ },
+ "MRMS__before__trial0": {
+  "source": "MRMS",
+  "version": "before",
+  "n_variables": 2,
+  "seconds": 8.97,
+  "error": null,
+  "reconstructed": true,
+  "earth2studio_version": "0.14.0rc0"
+ },
+ "MRMS__before__trial1": {
+  "source": "MRMS",
+  "version": "before",
+  "n_variables": 2,
+  "seconds": 22.9,
+  "error": null,
+  "reconstructed": true,
+  "earth2studio_version": "0.14.0rc0"
+ },
+ "MRMS__before__trial2": {
+  "source": "MRMS",
+  "version": "before",
+  "n_variables": 2,
+  "seconds": 31.3676478540292,
+  "error": null,
+  "earth2studio_version": "0.14.0rc0",
+  "ctor_seconds": 0.0011620509903877974,
+  "call_seconds": 31.366485803038813,
+  "result_shape": [
+   1,
+   2,
+   3500,
+   7000
+  ],
+  "cache_bytes": 2091593
+ },
+ "MRMS__before__trial3": {
+  "source": "MRMS",
+  "version": "before",
+  "n_variables": 2,
+  "seconds": 8.98562133096857,
+  "error": null,
+  "earth2studio_version": "0.14.0rc0",
+  "ctor_seconds": 0.0012560029863379896,
+  "call_seconds": 8.984365327982232,
+  "result_shape": [
+   1,
+   2,
+   3500,
+   7000
+  ],
+  "cache_bytes": 2091593
+ },
+ "NCAR_ERA5__after__trial0": {
+  "source": "NCAR_ERA5",
+  "version": "after",
+  "n_variables": 276,
+  "seconds": 196.5,
+  "error": null,
+  "reconstructed": true,
+  "earth2studio_version": "0.18.0a0"
+ },
+ "NCAR_ERA5__after__trial1": {
+  "source": "NCAR_ERA5",
+  "version": "after",
+  "n_variables": 276,
+  "seconds": 195.0,
+  "error": null,
+  "reconstructed": true,
+  "earth2studio_version": "0.18.0a0"
+ },
+ "NCAR_ERA5__before__trial0": {
+  "source": "NCAR_ERA5",
+  "version": "before",
+  "n_variables": 276,
+  "seconds": 356.6,
+  "error": null,
+  "reconstructed": true,
+  "earth2studio_version": "0.14.0rc0"
+ },
+ "NCAR_ERA5__before__trial1": {
+  "source": "NCAR_ERA5",
+  "version": "before",
+  "n_variables": 276,
+  "seconds": 386.6,
+  "error": null,
+  "reconstructed": true,
+  "earth2studio_version": "0.14.0rc0"
+ },
+ "NClimGridDaily__after__trial0": {
+  "source": "NClimGridDaily",
+  "version": "after",
+  "n_variables": 4,
+  "seconds": 8.07,
+  "error": null,
+  "reconstructed": true,
+  "earth2studio_version": "0.18.0a0"
+ },
+ "NClimGridDaily__after__trial1": {
+  "source": "NClimGridDaily",
+  "version": "after",
+  "n_variables": 4,
+  "seconds": 9.72,
+  "error": null,
+  "reconstructed": true,
+  "earth2studio_version": "0.18.0a0"
+ },
+ "NClimGridDaily__after__trial2": {
+  "source": "NClimGridDaily",
+  "version": "after",
+  "n_variables": 4,
+  "seconds": 9.443215415987652,
+  "error": null,
+  "earth2studio_version": "0.18.0a0",
+  "ctor_seconds": 3.96795803681016e-06,
+  "call_seconds": 9.443211448029615,
+  "result_shape": [
+   1,
+   4,
+   596,
+   1385
+  ],
+  "cache_bytes": 78064633
+ },
+ "NClimGridDaily__after__trial3": {
+  "source": "NClimGridDaily",
+  "version": "after",
+  "n_variables": 4,
+  "seconds": 8.434366922010668,
+  "error": null,
+  "earth2studio_version": "0.18.0a0",
+  "ctor_seconds": 4.736008122563362e-06,
+  "call_seconds": 8.434362186002545,
+  "result_shape": [
+   1,
+   4,
+   596,
+   1385
+  ],
+  "cache_bytes": 78064633
+ },
+ "NClimGridDaily__before__trial0": {
+  "source": "NClimGridDaily",
+  "version": "before",
+  "n_variables": 4,
+  "seconds": 9.18,
+  "error": null,
+  "reconstructed": true,
+  "earth2studio_version": "0.14.0rc0"
+ },
+ "NClimGridDaily__before__trial1": {
+  "source": "NClimGridDaily",
+  "version": "before",
+  "n_variables": 4,
+  "seconds": 15.51,
+  "error": null,
+  "reconstructed": true,
+  "earth2studio_version": "0.14.0rc0"
+ },
+ "NClimGridDaily__before__trial2": {
+  "source": "NClimGridDaily",
+  "version": "before",
+  "n_variables": 4,
+  "seconds": 10.573823246988468,
+  "error": null,
+  "earth2studio_version": "0.14.0rc0",
+  "ctor_seconds": 0.0012744039995595813,
+  "call_seconds": 10.572548842988908,
+  "result_shape": [
+   1,
+   4,
+   596,
+   1385
+  ],
+  "cache_bytes": 13271920
+ },
+ "NClimGridDaily__before__trial3": {
+  "source": "NClimGridDaily",
+  "version": "before",
+  "n_variables": 4,
+  "seconds": 10.22238642605953,
+  "error": null,
+  "earth2studio_version": "0.14.0rc0",
+  "ctor_seconds": 0.0011841960367746651,
+  "call_seconds": 10.221202230022755,
+  "result_shape": [
+   1,
+   4,
+   596,
+   1385
+  ],
+  "cache_bytes": 13271920
+ },
+ "OPERA__after__trial0": {
+  "source": "OPERA",
+  "version": "after",
+  "n_variables": 3,
+  "seconds": 3.1493598129600286,
+  "error": null,
+  "earth2studio_version": "0.18.0a0",
+  "ctor_seconds": 9.279989171773195e-06,
+  "call_seconds": 3.149350532970857,
+  "result_shape": [
+   1,
+   3,
+   2200,
+   1900
+  ],
+  "cache_bytes": 2359040
+ },
+ "OPERA__after__trial1": {
+  "source": "OPERA",
+  "version": "after",
+  "n_variables": 3,
+  "seconds": 2.5904787160106935,
+  "error": null,
+  "earth2studio_version": "0.18.0a0",
+  "ctor_seconds": 8.416012860834599e-06,
+  "call_seconds": 2.5904702999978326,
+  "result_shape": [
+   1,
+   3,
+   2200,
+   1900
+  ],
+  "cache_bytes": 2359040
+ },
+ "OPERA__before__trial0": {
+  "source": "OPERA",
+  "version": "before",
+  "n_variables": 3,
+  "seconds": 2.4958505560061894,
+  "error": null,
+  "earth2studio_version": "0.18.0a0",
+  "ctor_seconds": 9.472016245126724e-06,
+  "call_seconds": 2.4958410839899443,
+  "result_shape": [
+   1,
+   3,
+   2200,
+   1900
+  ],
+  "cache_bytes": 2359040
+ },
+ "OPERA__before__trial1": {
+  "source": "OPERA",
+  "version": "before",
+  "n_variables": 3,
+  "seconds": 2.5387037150212564,
+  "error": null,
+  "earth2studio_version": "0.18.0a0",
+  "ctor_seconds": 8.032016921788454e-06,
+  "call_seconds": 2.5386956830043346,
+  "result_shape": [
+   1,
+   3,
+   2200,
+   1900
+  ],
+  "cache_bytes": 2359040
+ },
+ "PC_GOES__after__trial0": {
+  "source": "PC_GOES",
+  "version": "after",
+  "n_variables": 16,
+  "seconds": 9.839343976986129,
+  "error": null,
+  "earth2studio_version": "0.18.0a0",
+  "ctor_seconds": 0.2699793499778025,
+  "call_seconds": 9.569364627008326,
+  "result_shape": [
+   1,
+   16,
+   1500,
+   2500
+  ],
+  "cache_bytes": 43518785
+ },
+ "PC_GOES__after__trial1": {
+  "source": "PC_GOES",
+  "version": "after",
+  "n_variables": 16,
+  "seconds": 14.183233828051016,
+  "error": null,
+  "earth2studio_version": "0.18.0a0",
+  "ctor_seconds": 0.2648979280493222,
+  "call_seconds": 13.918335900001694,
+  "result_shape": [
+   1,
+   16,
+   1500,
+   2500
+  ],
+  "cache_bytes": 43518785
+ },
+ "PC_GOES__before__trial0": {
+  "source": "PC_GOES",
+  "version": "before",
+  "n_variables": 16,
+  "seconds": 10.179266463033855,
+  "error": null,
+  "earth2studio_version": "0.14.0rc0",
+  "ctor_seconds": 0.27050642302492633,
+  "call_seconds": 9.908760040008929,
+  "result_shape": [
+   1,
+   16,
+   1500,
+   2500
+  ],
+  "cache_bytes": 43518785
+ },
+ "PC_GOES__before__trial1": {
+  "source": "PC_GOES",
+  "version": "before",
+  "n_variables": 16,
+  "seconds": 11.569770861009602,
+  "error": null,
+  "earth2studio_version": "0.14.0rc0",
+  "ctor_seconds": 0.26526311301859096,
+  "call_seconds": 11.30450774799101,
+  "result_shape": [
+   1,
+   16,
+   1500,
+   2500
+  ],
+  "cache_bytes": 43518785
+ },
+ "PC_IFS_5var__after__trial0": {
+  "source": "PC_IFS_5var",
+  "version": "after",
+  "n_variables": 5,
+  "seconds": 8.16,
+  "error": null,
+  "reconstructed": true,
+  "earth2studio_version": "0.18.0a0"
+ },
+ "PC_IFS_5var__after__trial1": {
+  "source": "PC_IFS_5var",
+  "version": "after",
+  "n_variables": 5,
+  "seconds": 5.32,
+  "error": null,
+  "reconstructed": true,
+  "earth2studio_version": "0.18.0a0"
+ },
+ "PC_IFS_5var__before__trial0": {
+  "source": "PC_IFS_5var",
+  "version": "before",
+  "n_variables": 5,
+  "seconds": 28.4,
+  "error": null,
+  "reconstructed": true,
+  "earth2studio_version": "0.14.0rc0"
+ },
+ "PC_IFS_5var__before__trial1": {
+  "source": "PC_IFS_5var",
+  "version": "before",
+  "n_variables": 5,
+  "seconds": 24.7,
+  "error": null,
+  "reconstructed": true,
+  "earth2studio_version": "0.14.0rc0"
+ },
+ "PC_IFS__after__trial0": {
+  "source": "PC_IFS",
+  "version": "after",
+  "n_variables": 157,
+  "seconds": 51.368883356044535,
+  "error": null,
+  "earth2studio_version": "0.18.0a0",
+  "ctor_seconds": 4.809600068256259e-05,
+  "call_seconds": 51.36883526004385,
+  "result_shape": [
+   1,
+   157,
+   721,
+   1440
+  ],
+  "cache_bytes": 118602328
+ },
+ "PC_IFS__after__trial1": {
+  "source": "PC_IFS",
+  "version": "after",
+  "n_variables": 157,
+  "seconds": 53.08206444996176,
+  "error": null,
+  "earth2studio_version": "0.18.0a0",
+  "ctor_seconds": 4.102394450455904e-05,
+  "call_seconds": 53.08202342601726,
+  "result_shape": [
+   1,
+   157,
+   721,
+   1440
+  ],
+  "cache_bytes": 118602328
+ },
+ "PC_IFS__before__trial0": {
+  "source": "PC_IFS",
+  "version": "before",
+  "n_variables": 157,
+  "seconds": null,
+  "error": "Traceback (most recent call last):\n  File \"/lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/earth2studio-main-bench/benchmarks/dataloaders/bench_source.py\", line 240, in main\n    out = ds(*call_args)\n          ^^^^^^^^^^^^^^\n  File \"/lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/earth2studio-0.14.0/earth2studio/data/planetary_computer.py\", line 224, in __call__\n    result = loop.run_until_complete(\n             ^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/root/work/forks/earth2studio-0.14.0/.venv/lib/python3.12/site-packages/nest_asyncio.py\", line 98, in run_until_complete\n    return f.result()\n           ^^^^^^^^^^\n  File \"/usr/lib/python3.12/asyncio/futures.py\", line 203, in result\n    raise self._exception.with_traceback(self._exception_tb)\n  File \"/usr/lib/python3.12/asyncio/tasks.py\", line 314, in __step_run_and_handle_result\n    result = coro.send(None)\n             ^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/asyncio/tasks.py\", line 520, in wait_for\n    return await fut\n           ^^^^^^^^^\n  File \"/lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/earth2studio-0.14.0/earth2studio/data/planetary_computer.py\", line 327, in fetch\n    await asyncio.gather(*tasks)\n  File \"/usr/lib/python3.12/asyncio/tasks.py\", line 385, in __wakeup\n    future.result()\n  File \"/usr/lib/python3.12/asyncio/tasks.py\", line 314, in __step_run_and_handle_result\n    result = coro.send(None)\n             ^^^^^^^^^^^^^^^\n  File \"/lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/earth2studio-0.14.0/earth2studio/data/planetary_computer.py\", line 378, in _fetch_data\n    array = self.extract_variable_numpy(plan, spec, requested_time)\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/earth2studio-0.14.0/earth2studio/data/planetary_computer.py\", line 1040, in extract_variable_numpy\n    raise e\n  File \"/lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/earth2studio-0.14.0/earth2studio/data/planetary_computer.py\", line 1033, in extract_variable_numpy\n    raise Exception(\"Selection contains more than one GRIB element\")\nException: Selection contains more than one GRIB element\n",
+  "earth2studio_version": "0.14.0rc0"
+ },
+ "PC_IFS__before__trial1": {
+  "source": "PC_IFS",
+  "version": "before",
+  "n_variables": 157,
+  "seconds": null,
+  "error": "Traceback (most recent call last):\n  File \"/lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/earth2studio-main-bench/benchmarks/dataloaders/bench_source.py\", line 240, in main\n    out = ds(*call_args)\n          ^^^^^^^^^^^^^^\n  File \"/lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/earth2studio-0.14.0/earth2studio/data/planetary_computer.py\", line 224, in __call__\n    result = loop.run_until_complete(\n             ^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/root/work/forks/earth2studio-0.14.0/.venv/lib/python3.12/site-packages/nest_asyncio.py\", line 98, in run_until_complete\n    return f.result()\n           ^^^^^^^^^^\n  File \"/usr/lib/python3.12/asyncio/futures.py\", line 203, in result\n    raise self._exception.with_traceback(self._exception_tb)\n  File \"/usr/lib/python3.12/asyncio/tasks.py\", line 314, in __step_run_and_handle_result\n    result = coro.send(None)\n             ^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/asyncio/tasks.py\", line 520, in wait_for\n    return await fut\n           ^^^^^^^^^\n  File \"/lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/earth2studio-0.14.0/earth2studio/data/planetary_computer.py\", line 327, in fetch\n    await asyncio.gather(*tasks)\n  File \"/usr/lib/python3.12/asyncio/tasks.py\", line 385, in __wakeup\n    future.result()\n  File \"/usr/lib/python3.12/asyncio/tasks.py\", line 314, in __step_run_and_handle_result\n    result = coro.send(None)\n             ^^^^^^^^^^^^^^^\n  File \"/lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/earth2studio-0.14.0/earth2studio/data/planetary_computer.py\", line 378, in _fetch_data\n    array = self.extract_variable_numpy(plan, spec, requested_time)\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/earth2studio-0.14.0/earth2studio/data/planetary_computer.py\", line 1040, in extract_variable_numpy\n    raise e\n  File \"/lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/earth2studio-0.14.0/earth2studio/data/planetary_computer.py\", line 1033, in extract_variable_numpy\n    raise Exception(\"Selection contains more than one GRIB element\")\nException: Selection contains more than one GRIB element\n",
+  "earth2studio_version": "0.14.0rc0"
+ },
+ "PC_MODISFire__after__trial0": {
+  "source": "PC_MODISFire",
+  "version": "after",
+  "n_variables": 3,
+  "seconds": 3.749446831003297,
+  "error": null,
+  "earth2studio_version": "0.18.0a0",
+  "ctor_seconds": 4.659302067011595e-05,
+  "call_seconds": 3.749400237982627,
+  "result_shape": [
+   1,
+   3,
+   1200,
+   1200
+  ],
+  "cache_bytes": 337112
+ },
+ "PC_MODISFire__after__trial1": {
+  "source": "PC_MODISFire",
+  "version": "after",
+  "n_variables": 3,
+  "seconds": 3.224091117968783,
+  "error": null,
+  "earth2studio_version": "0.18.0a0",
+  "ctor_seconds": 2.9567978344857693e-05,
+  "call_seconds": 3.224061549990438,
+  "result_shape": [
+   1,
+   3,
+   1200,
+   1200
+  ],
+  "cache_bytes": 337112
+ },
+ "PC_MODISFire__before__trial0": {
+  "source": "PC_MODISFire",
+  "version": "before",
+  "n_variables": 3,
+  "seconds": 3.6916170659824274,
+  "error": null,
+  "earth2studio_version": "0.14.0rc0",
+  "ctor_seconds": 5.2127987146377563e-05,
+  "call_seconds": 3.691564937995281,
+  "result_shape": [
+   1,
+   3,
+   1200,
+   1200
+  ],
+  "cache_bytes": 337112
+ },
+ "PC_MODISFire__before__trial1": {
+  "source": "PC_MODISFire",
+  "version": "before",
+  "n_variables": 3,
+  "seconds": 3.266169283015188,
+  "error": null,
+  "earth2studio_version": "0.14.0rc0",
+  "ctor_seconds": 3.1423987820744514e-05,
+  "call_seconds": 3.266137859027367,
+  "result_shape": [
+   1,
+   3,
+   1200,
+   1200
+  ],
+  "cache_bytes": 337112
+ },
+ "PC_OISST__after__trial0": {
+  "source": "PC_OISST",
+  "version": "after",
+  "n_variables": 4,
+  "seconds": 4.91,
+  "error": null,
+  "reconstructed": true,
+  "earth2studio_version": "0.18.0a0"
+ },
+ "PC_OISST__after__trial1": {
+  "source": "PC_OISST",
+  "version": "after",
+  "n_variables": 4,
+  "seconds": 5.28,
+  "error": null,
+  "reconstructed": true,
+  "earth2studio_version": "0.18.0a0"
+ },
+ "PC_OISST__before__trial0": {
+  "source": "PC_OISST",
+  "version": "before",
+  "n_variables": 4,
+  "seconds": 6.51,
+  "error": null,
+  "reconstructed": true,
+  "earth2studio_version": "0.14.0rc0"
+ },
+ "PC_OISST__before__trial1": {
+  "source": "PC_OISST",
+  "version": "before",
+  "n_variables": 4,
+  "seconds": 4.78,
+  "error": null,
+  "reconstructed": true,
+  "earth2studio_version": "0.14.0rc0"
+ },
+ "PC_S3AOD__after__trial0": {
+  "source": "PC_S3AOD",
+  "version": "after",
+  "n_variables": 22,
+  "seconds": 12.20694473804906,
+  "error": null,
+  "earth2studio_version": "0.18.0a0",
+  "ctor_seconds": 2.2849009837955236e-05,
+  "call_seconds": 12.206921889039222,
+  "result_shape": [
+   1,
+   22,
+   4040,
+   324
+  ],
+  "cache_bytes": 34945910
+ },
+ "PC_S3AOD__after__trial1": {
+  "source": "PC_S3AOD",
+  "version": "after",
+  "n_variables": 22,
+  "seconds": 12.5039397959481,
+  "error": null,
+  "earth2studio_version": "0.18.0a0",
+  "ctor_seconds": 2.2047956008464098e-05,
+  "call_seconds": 12.50391774799209,
+  "result_shape": [
+   1,
+   22,
+   4040,
+   324
+  ],
+  "cache_bytes": 34945910
+ },
+ "PC_S3AOD__before__trial0": {
+  "source": "PC_S3AOD",
+  "version": "before",
+  "n_variables": 22,
+  "seconds": 12.16255580203142,
+  "error": null,
+  "earth2studio_version": "0.14.0rc0",
+  "ctor_seconds": 2.4223991204053164e-05,
+  "call_seconds": 12.162531578040216,
+  "result_shape": [
+   1,
+   22,
+   4040,
+   324
+  ],
+  "cache_bytes": 34945910
+ },
+ "PC_S3AOD__before__trial1": {
+  "source": "PC_S3AOD",
+  "version": "before",
+  "n_variables": 22,
+  "seconds": 11.875746758945752,
+  "error": null,
+  "earth2studio_version": "0.14.0rc0",
+  "ctor_seconds": 2.169597428292036e-05,
+  "call_seconds": 11.875725062971469,
+  "result_shape": [
+   1,
+   22,
+   4040,
+   324
+  ],
+  "cache_bytes": 34945910
+ },
+ "UFSObsConv_PR914__after__trial0": {
+  "source": "UFSObsConv_PR914",
+  "version": "after",
+  "n_variables": 8,
+  "seconds": 70.5,
+  "error": null,
+  "reconstructed": true,
+  "earth2studio_version": "0.18.0a0"
+ },
+ "UFSObsConv_PR914__after__trial1": {
+  "source": "UFSObsConv_PR914",
+  "version": "after",
+  "n_variables": 8,
+  "seconds": 62.57,
+  "error": null,
+  "reconstructed": true,
+  "earth2studio_version": "0.18.0a0"
+ },
+ "UFSObsConv_PR914__after__trial2": {
+  "source": "UFSObsConv_PR914",
+  "version": "after",
+  "n_variables": 8,
+  "seconds": 17.35284841392422,
+  "error": null,
+  "earth2studio_version": "0.18.0a0",
+  "ctor_seconds": 0.01181008096318692,
+  "call_seconds": 17.341038332961034,
+  "result_shape": [
+   946026,
+   11
+  ],
+  "cache_bytes": 74782991
+ },
+ "UFSObsConv_PR914__after__trial3": {
+  "source": "UFSObsConv_PR914",
+  "version": "after",
+  "n_variables": 8,
+  "seconds": 20.960049956978764,
+  "error": null,
+  "earth2studio_version": "0.18.0a0",
+  "ctor_seconds": 0.011289215995930135,
+  "call_seconds": 20.948760740982834,
+  "result_shape": [
+   946026,
+   11
+  ],
+  "cache_bytes": 74782991
+ },
+ "UFSObsConv_PR914__before__trial0": {
+  "source": "UFSObsConv_PR914",
+  "version": "before",
+  "n_variables": 8,
+  "seconds": 11.69,
+  "error": null,
+  "reconstructed": true,
+  "earth2studio_version": "0.14.0rc0"
+ },
+ "UFSObsConv_PR914__before__trial1": {
+  "source": "UFSObsConv_PR914",
+  "version": "before",
+  "n_variables": 8,
+  "seconds": 79.87,
+  "error": null,
+  "reconstructed": true,
+  "earth2studio_version": "0.14.0rc0"
+ },
+ "UFSObsConv_PR914__before__trial2": {
+  "source": "UFSObsConv_PR914",
+  "version": "before",
+  "n_variables": 8,
+  "seconds": 11.162604707991704,
+  "error": null,
+  "earth2studio_version": "0.14.0rc0",
+  "ctor_seconds": 0.0013116190093569458,
+  "call_seconds": 11.161293088982347,
+  "result_shape": [
+   946026,
+   11
+  ],
+  "cache_bytes": 74782991
+ },
+ "UFSObsConv_PR914__before__trial3": {
+  "source": "UFSObsConv_PR914",
+  "version": "before",
+  "n_variables": 8,
+  "seconds": 11.745132116018794,
+  "error": null,
+  "earth2studio_version": "0.14.0rc0",
+  "ctor_seconds": 0.0012712349998764694,
+  "call_seconds": 11.743860881018918,
+  "result_shape": [
+   946026,
+   11
+  ],
+  "cache_bytes": 74782991
+ },
+ "UFSObsConv__after__trial0": {
+  "source": "UFSObsConv",
+  "version": "after",
+  "n_variables": 8,
+  "seconds": 11.28,
+  "error": null,
+  "reconstructed": true,
+  "earth2studio_version": "0.18.0a0"
+ },
+ "UFSObsConv__after__trial1": {
+  "source": "UFSObsConv",
+  "version": "after",
+  "n_variables": 8,
+  "seconds": 11.39,
+  "error": null,
+  "reconstructed": true,
+  "earth2studio_version": "0.18.0a0"
+ },
+ "UFSObsConv__after__trial2": {
+  "source": "UFSObsConv",
+  "version": "after",
+  "n_variables": 8,
+  "seconds": 11.561176842951681,
+  "error": null,
+  "earth2studio_version": "0.18.0a0",
+  "ctor_seconds": 0.011485823953989893,
+  "call_seconds": 11.549691018997692,
+  "result_shape": [
+   946026,
+   11
+  ],
+  "cache_bytes": 74782991
+ },
+ "UFSObsConv__after__trial3": {
+  "source": "UFSObsConv",
+  "version": "after",
+  "n_variables": 8,
+  "seconds": 11.463416280981619,
+  "error": null,
+  "earth2studio_version": "0.18.0a0",
+  "ctor_seconds": 0.012238434981554747,
+  "call_seconds": 11.451177846000064,
+  "result_shape": [
+   946026,
+   11
+  ],
+  "cache_bytes": 74782991
+ },
+ "UFSObsConv__before__trial0": {
+  "source": "UFSObsConv",
+  "version": "before",
+  "n_variables": 8,
+  "seconds": 12.26,
+  "error": null,
+  "reconstructed": true,
+  "earth2studio_version": "0.14.0rc0"
+ },
+ "UFSObsConv__before__trial1": {
+  "source": "UFSObsConv",
+  "version": "before",
+  "n_variables": 8,
+  "seconds": 11.79,
+  "error": null,
+  "reconstructed": true,
+  "earth2studio_version": "0.14.0rc0"
+ },
+ "UFSObsConv__before__trial2": {
+  "source": "UFSObsConv",
+  "version": "before",
+  "n_variables": 8,
+  "seconds": 11.52813862892799,
+  "error": null,
+  "earth2studio_version": "0.14.0rc0",
+  "ctor_seconds": 0.0012403879663906991,
+  "call_seconds": 11.5268982409616,
+  "result_shape": [
+   946026,
+   11
+  ],
+  "cache_bytes": 74782991
+ },
+ "UFSObsConv__before__trial3": {
+  "source": "UFSObsConv",
+  "version": "before",
+  "n_variables": 8,
+  "seconds": 11.491941182990558,
+  "error": null,
+  "earth2studio_version": "0.14.0rc0",
+  "ctor_seconds": 0.0012813479988835752,
+  "call_seconds": 11.490659834991675,
+  "result_shape": [
+   946026,
+   11
+  ],
+  "cache_bytes": 74782991
+ },
+ "UFSObsSat__after__trial0": {
+  "source": "UFSObsSat",
+  "version": "after",
+  "n_variables": 1,
+  "seconds": 4.243427968991455,
+  "error": null,
+  "earth2studio_version": "0.18.0a0",
+  "ctor_seconds": 0.011075327987782657,
+  "call_seconds": 4.232352641003672,
+  "result_shape": [
+   80586,
+   16
+  ],
+  "cache_bytes": 21618532
+ },
+ "UFSObsSat__after__trial1": {
+  "source": "UFSObsSat",
+  "version": "after",
+  "n_variables": 1,
+  "seconds": 4.298148894973565,
+  "error": null,
+  "earth2studio_version": "0.18.0a0",
+  "ctor_seconds": 0.011932897963561118,
+  "call_seconds": 4.286215997010004,
+  "result_shape": [
+   80586,
+   16
+  ],
+  "cache_bytes": 21618532
+ },
+ "UFSObsSat__before__trial0": {
+  "source": "UFSObsSat",
+  "version": "before",
+  "n_variables": 1,
+  "seconds": 5.516751270974055,
+  "error": null,
+  "earth2studio_version": "0.14.0rc0",
+  "ctor_seconds": 0.0011937000090256333,
+  "call_seconds": 5.515557570965029,
+  "result_shape": [
+   80586,
+   14
+  ],
+  "cache_bytes": 21618532
+ },
+ "UFSObsSat__before__trial1": {
+  "source": "UFSObsSat",
+  "version": "before",
+  "n_variables": 1,
+  "seconds": 4.456833213043865,
+  "error": null,
+  "earth2studio_version": "0.14.0rc0",
+  "ctor_seconds": 0.0011695390567183495,
+  "call_seconds": 4.4556636739871465,
+  "result_shape": [
+   80586,
+   14
+  ],
+  "cache_bytes": 21618532
+ },
+ "WB2ERA5__after__trial0": {
+  "source": "WB2ERA5",
+  "version": "after",
+  "n_variables": 103,
+  "seconds": 5.27,
+  "error": null,
+  "reconstructed": true,
+  "earth2studio_version": "0.18.0a0"
+ },
+ "WB2ERA5__after__trial1": {
+  "source": "WB2ERA5",
+  "version": "after",
+  "n_variables": 103,
+  "seconds": 5.56,
+  "error": null,
+  "reconstructed": true,
+  "earth2studio_version": "0.18.0a0"
+ },
+ "WB2ERA5__before__trial0": {
+  "source": "WB2ERA5",
+  "version": "before",
+  "n_variables": 103,
+  "seconds": 15.04,
+  "error": null,
+  "reconstructed": true,
+  "earth2studio_version": "0.14.0rc0"
+ },
+ "WB2ERA5__before__trial1": {
+  "source": "WB2ERA5",
+  "version": "before",
+  "n_variables": 103,
+  "seconds": 14.66,
+  "error": null,
+  "reconstructed": true,
+  "earth2studio_version": "0.14.0rc0"
+ }
+}
