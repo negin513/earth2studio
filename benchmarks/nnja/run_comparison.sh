@@ -8,9 +8,15 @@
 #
 # Usage:
 #   ./run_comparison.sh [workdir]
+#   WORKER_COUNTS="1 4 16" ./run_comparison.sh [workdir]
+#
+# By default runs at decode_workers=1 and decode_workers=<nproc>; override
+# with the WORKER_COUNTS env var (space-separated) to test other points,
+# e.g. matching a GPU node's CPU core count.
 #
 # Requires: git, uv, curl. ~2 GB disk (repo x2 + venv + BUFR file), several
-# GB RAM, and enough CPU/time to fully decode a ~200M-row aggregate twice.
+# GB RAM, and enough CPU/time to fully decode a ~200M-row aggregate at each
+# worker count, for both old and new code.
 
 set -euo pipefail
 
@@ -48,19 +54,35 @@ if [ ! -f iasi.bufr_d ]; then
 fi
 ls -la iasi.bufr_d
 
-echo "==> Running NEW-code decode benchmark"
-( cd new && python "$WORKDIR/new/benchmarks/nnja/bench_nnja_decode.py" "$WORKDIR/iasi.bufr_d" 1 ) | tee new_result.log
+# Worker counts to benchmark. decode_workers=1 isolates the per-message
+# vectorization change; decode_workers>1 also exercises the #1059 batch-level
+# change (Arrow tables crossing the process boundary instead of pickled
+# per-row dicts), which is where a many-core node pays off most.
+NPROC="$(python3 -c 'import os; print(os.cpu_count())')"
+WORKER_COUNTS="${WORKER_COUNTS:-1 ${NPROC}}"
 
-echo "==> Running OLD-code decode benchmark"
-( cd old && python "$WORKDIR/new/benchmarks/nnja/bench_nnja_decode.py" "$WORKDIR/iasi.bufr_d" 1 ) | tee old_result.log
+> comparison.log
+for W in $WORKER_COUNTS; do
+    echo "==> Running NEW-code decode benchmark (decode_workers=${W})"
+    ( cd new && python "$WORKDIR/new/benchmarks/nnja/bench_nnja_decode.py" "$WORKDIR/iasi.bufr_d" "$W" ) | tee "new_result_w${W}.log"
+
+    echo "==> Running OLD-code decode benchmark (decode_workers=${W})"
+    ( cd old && python "$WORKDIR/new/benchmarks/nnja/bench_nnja_decode.py" "$WORKDIR/iasi.bufr_d" "$W" ) | tee "old_result_w${W}.log"
+
+    OLD_S=$(grep -oE 'seconds=[0-9.]+' "old_result_w${W}.log" | cut -d= -f2)
+    NEW_S=$(grep -oE 'seconds=[0-9.]+' "new_result_w${W}.log" | cut -d= -f2)
+    echo "decode_workers=${W} old=${OLD_S}s new=${NEW_S}s" >> comparison.log
+done
 
 echo ""
-echo "==> Comparison"
-OLD_S=$(grep -oE 'seconds=[0-9.]+' old_result.log | cut -d= -f2)
-NEW_S=$(grep -oE 'seconds=[0-9.]+' new_result.log | cut -d= -f2)
+echo "==> Comparison (decode_workers: ${WORKER_COUNTS})"
 python3 -c "
-old, new = ${OLD_S}, ${NEW_S}
-print(f'old (pre-#1059):  {old:.2f}s')
-print(f'new (post-#1059): {new:.2f}s')
-print(f'speedup: {old / new:.2f}x')
+import sys
+header = ('workers', 'old(s)', 'new(s)', 'speedup')
+print(f'{header[0]:>8} {header[1]:>10} {header[2]:>10} {header[3]:>10}')
+with open('comparison.log') as f:
+    for line in f:
+        parts = dict(p.split('=') for p in line.split())
+        w, old, new = parts['decode_workers'], float(parts['old'].rstrip('s')), float(parts['new'].rstrip('s'))
+        print(f'{w:>8} {old:>10.2f} {new:>10.2f} {old / new:>9.2f}x')
 "
