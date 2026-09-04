@@ -22,6 +22,7 @@ from earth2studio.models.px.aifs2 import AIFS2
 from earth2studio.models.px.aifs2ens import AIFS2ENS
 from earth2studio.models.px.aifsens import AIFSENS
 from earth2studio.models.px.atlas import Atlas
+from earth2studio.models.px.atlas_crps import AtlasCRPS
 from earth2studio.models.px.aurora import Aurora
 from earth2studio.models.px.aurora1p5 import Aurora1p5, Aurora1p5Ensemble
 from earth2studio.models.px.base import PrognosticModel
@@ -52,6 +53,7 @@ from earth2studio.models.px.stormscope import (
     StormScopeGOES,
     StormScopeMRMS,
 )
+from earth2studio.models.px.stormscope_meteosat import StormScopeMeteosatEU
 from earth2studio.models.px.ucast import UCast
 
 # Silence warning spam from various models

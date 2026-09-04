@@ -88,6 +88,7 @@ _TEST_DEPENDENCIES: dict[str, list[str]] = {
     "test/models/px/test_aifs2.py": ["aifs2"],
     "test/models/px/test_aifs2ens.py": ["aifs2ens"],
     "test/models/px/test_atlas.py": ["atlas"],
+    "test/models/px/test_atlas_crps.py": ["atlas"],
     "test/models/px/test_aurora.py": ["aurora"],
     "test/models/px/test_cbottle_video.py": ["cbottle"],
     "test/models/px/test_dlesym.py": ["dlesym"],
@@ -105,6 +106,7 @@ _TEST_DEPENDENCIES: dict[str, list[str]] = {
     "test/models/px/test_stormcast.py": ["stormcast"],
     "test/models/px/test_stormcastconus.py": ["stormcast-conus"],
     "test/models/px/test_stormscope.py": ["stormscope"],
+    "test/models/px/test_stormscope_meteosat.py": ["stormscope"],
     "test/models/px/test_dxwrapper.py": [
         "fcn3",
         "corrdiff",

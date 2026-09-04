@@ -16,11 +16,11 @@ Used for fetching initial conditions for inference and validation data for scori
 ## Available Data Sources
 
 <!-- e2s-autosummary
-currentmodule: earth2studio
+currentmodule: earth2studio.data
 template: datasource
 output: generated/data/analysis
 -->
-<!-- mkdocs-badges:filter region:global region:na region:eu region:as region:au region:af region:sa dataclass:analysis dataclass:reanalysis dataclass:observation dataclass:simulation product:wind product:precip product:temp product:atmos product:ocean product:land product:veg product:solar product:radar product:sat product:insitu mode=or order=fixed toggle=true labels=label hidden="product" -->
+<!-- mkdocs-badges:filter region:global region:na region:eu region:as region:au region:af region:sa dataclass:analysis dataclass:reanalysis dataclass:observation dataclass:simulation dataset:era5 dataset:aifs dataset:ifs dataset:gfs dataset:hrrr dataset:cmip6 product:wind product:precip product:temp product:atmos product:ocean product:land product:veg product:solar product:radar product:sat product:insitu mode=or order=fixed toggle=true labels=label hidden="dataset product" -->
 {% autosummary %}
 earth2studio.data.ARCO
 earth2studio.data.CDS
@@ -70,11 +70,11 @@ earth2studio.data.DataArrayPathList
 ## AI Data Sources
 
 <!-- e2s-autosummary
-currentmodule: earth2studio
+currentmodule: earth2studio.data
 template: diagnostic
 output: generated/data/analysis
 -->
-<!-- mkdocs-badges:filter region:global region:na region:eu region:as region:au region:af region:sa dataclass:analysis dataclass:reanalysis dataclass:observation dataclass:simulation product:wind product:precip product:temp product:atmos product:ocean product:land product:veg product:solar product:radar product:sat product:insitu mode=or order=fixed toggle=true labels=label hidden="product" -->
+<!-- mkdocs-badges:filter region:global region:na region:eu region:as region:au region:af region:sa dataclass:analysis dataclass:reanalysis dataclass:observation dataclass:simulation dataset:era5 dataset:aifs dataset:ifs dataset:gfs dataset:hrrr dataset:cmip6 product:wind product:precip product:temp product:atmos product:ocean product:land product:veg product:solar product:radar product:sat product:insitu mode=or order=fixed toggle=true labels=label hidden="dataset product" -->
 {% autosummary %}
 earth2studio.data.CBottle3D
 {% endautosummary %}

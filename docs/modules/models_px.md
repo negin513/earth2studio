@@ -25,6 +25,7 @@ earth2studio.models.px.AIFS2
 earth2studio.models.px.AIFS2ENS
 earth2studio.models.px.AIFSENS
 earth2studio.models.px.Atlas
+earth2studio.models.px.AtlasCRPS
 earth2studio.models.px.Aurora
 earth2studio.models.px.Aurora1p5
 earth2studio.models.px.Aurora1p5Ensemble
@@ -53,6 +54,7 @@ earth2studio.models.px.SFNO
 earth2studio.models.px.StormCast
 earth2studio.models.px.StormCastCONUS
 earth2studio.models.px.StormScopeGOES
+earth2studio.models.px.StormScopeMeteosatEU
 earth2studio.models.px.StormScopeMRMS
 earth2studio.models.px.UCast
 {% endautosummary %}
