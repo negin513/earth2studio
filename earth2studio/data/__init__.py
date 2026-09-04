@@ -74,6 +74,7 @@ from .opera import OPERA
 from .planetary_computer import (
     PlanetaryComputerECMWFOpenDataIFS,
     PlanetaryComputerGOES,
+    PlanetaryComputerLandsat,
     PlanetaryComputerMODISFire,
     PlanetaryComputerOISST,
     PlanetaryComputerSentinel3AOD,

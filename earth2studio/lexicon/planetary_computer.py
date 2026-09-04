@@ -327,3 +327,53 @@ class PlanetaryComputerGOESLexicon(metaclass=LexiconType):
         if val not in cls.VOCAB:
             raise KeyError(f"Variable {val} not found in GOES lexicon")
         return cls.VOCAB[val]
+
+
+# Landsat Collection 2 Level-2 Science Product scale/offset constants, fixed by the
+# USGS Collection 2 Level-2 Science Product Guide (not read per-item from STAC).
+# Surface reflectance (optical) bands: DN -> unitless reflectance (0-1).
+_LANDSAT_SR_SCALE = np.float32(2.75e-05)
+_LANDSAT_SR_OFFSET = np.float32(-0.2)
+# Surface temperature (thermal) band: DN -> Kelvin.
+_LANDSAT_ST_SCALE = np.float32(0.00341802)
+_LANDSAT_ST_OFFSET = np.float32(149.0)
+
+
+class PlanetaryComputerLandsatLexicon(metaclass=LexiconType):
+    """Lexicon exposing Landsat Collection 2 Level-2 surface reflectance and
+    surface temperature bands."""
+
+    VOCAB: dict[str, tuple[str, Modifier]] = {
+        "landsat_blue": (
+            "blue",
+            lambda array: array * _LANDSAT_SR_SCALE + _LANDSAT_SR_OFFSET,
+        ),  # surface reflectance, blue band (0-1)
+        "landsat_green": (
+            "green",
+            lambda array: array * _LANDSAT_SR_SCALE + _LANDSAT_SR_OFFSET,
+        ),  # surface reflectance, green band (0-1)
+        "landsat_red": (
+            "red",
+            lambda array: array * _LANDSAT_SR_SCALE + _LANDSAT_SR_OFFSET,
+        ),  # surface reflectance, red band (0-1)
+        "landsat_nir08": (
+            "nir08",
+            lambda array: array * _LANDSAT_SR_SCALE + _LANDSAT_SR_OFFSET,
+        ),  # surface reflectance, near infrared band (0-1)
+        "landsat_swir16": (
+            "swir16",
+            lambda array: array * _LANDSAT_SR_SCALE + _LANDSAT_SR_OFFSET,
+        ),  # surface reflectance, short-wave infrared 1.6um band (0-1)
+        "landsat_swir22": (
+            "swir22",
+            lambda array: array * _LANDSAT_SR_SCALE + _LANDSAT_SR_OFFSET,
+        ),  # surface reflectance, short-wave infrared 2.2um band (0-1)
+        "landsat_lwir11": (
+            "lwir11",
+            lambda array: array * _LANDSAT_ST_SCALE + _LANDSAT_ST_OFFSET,
+        ),  # surface temperature, thermal infrared band (K)
+    }
+
+    @classmethod
+    def get_item(cls, val: str) -> tuple[str, Modifier]:
+        return cls.VOCAB[val]

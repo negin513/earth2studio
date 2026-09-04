@@ -50,6 +50,7 @@ from earth2studio.lexicon.base import LexiconType
 from earth2studio.lexicon.planetary_computer import (
     PlanetaryComputerECMWFOpenDataIFSLexicon,
     PlanetaryComputerGOESLexicon,
+    PlanetaryComputerLandsatLexicon,
     PlanetaryComputerMODISFireLexicon,
     PlanetaryComputerOISSTLexicon,
     PlanetaryComputerSentinel3AODLexicon,
@@ -68,6 +69,8 @@ try:
     from obstore.store import AzureStore
     from pystac import Item
     from pystac_client import Client
+    from rasterio.enums import Resampling
+    from rasterio.transform import from_bounds as rasterio_transform_from_bounds
 except ImportError:
     OptionalDependencyFailure("data")
     Client = None
@@ -75,6 +78,8 @@ except ImportError:
     AzureStore = None
     PlanetaryComputerAsyncCredentialProvider = None
     Item = TypeVar("Item")  # type: ignore
+    Resampling = None
+    rasterio_transform_from_bounds = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -1404,3 +1409,196 @@ class PlanetaryComputerGOES(_PlanetaryComputerData):
                 raise ValueError(
                     f"Requested date time {time} is after {self._satellite} was retired ({end_date})"
                 )
+
+
+class PlanetaryComputerLandsat(_PlanetaryComputerData):
+    """Landsat Collection 2 Level-2 surface reflectance and surface temperature on
+    Planetary Computer, for a single fixed WRS-2 path/row scene footprint.
+
+    Parameters
+    ----------
+    wrs_path : int
+        WRS-2 path of the scene to fetch (1-233).
+    wrs_row : int
+        WRS-2 row of the scene to fetch (1-248).
+    cache : bool, optional
+        Cache data source on local memory, by default True
+    verbose : bool, optional
+        Whether to print progress information, by default True
+    max_workers : int, optional
+        Upper bound on concurrent download and processing tasks, by default 24
+    request_timeout : int, optional
+        Connect timeout (seconds) applied to individual HTTP requests, by default 60
+    max_retries : int, optional
+        Maximum retry attempts for transient network failures, by default 4
+    async_timeout : int, optional
+        Time in sec after which download will be cancelled if not finished successfully,
+        by default 600
+
+    Note
+    ----
+    Unlike the other Planetary Computer sources in this module, individual Landsat
+    scenes are UTM-projected and vary slightly in native pixel shape between
+    acquisitions of the same path/row. To fit Earth2Studio's fixed-grid data source
+    interface, every fetch is reprojected onto a single fixed lat/lon grid (derived
+    once, at construction time, from a reference scene's footprint) rather than
+    returned on its native per-scene grid.
+
+    Additional information on the data repository can be referenced here:
+
+    - https://planetarycomputer.microsoft.com/dataset/landsat-c2-l2
+    - https://www.usgs.gov/landsat-missions/landsat-collection-2-level-2-science-products
+
+    Badges
+    ------
+    region:global dataclass:observation product:land product:sat
+    """
+
+    COLLECTION_ID = "landsat-c2-l2"
+    # Landsat Collection 2 native ground sample distance is 30m; this is the
+    # target resolution (degrees) of the fixed output lat/lon grid.
+    OUTPUT_RESOLUTION_DEG = 0.0003
+    # Landsat-8 + Landsat-9 combined revisit interval for a given path/row.
+    SEARCH_TOLERANCE = timedelta(days=8)
+
+    def __init__(
+        self,
+        wrs_path: int,
+        wrs_row: int,
+        cache: bool = True,
+        verbose: bool = True,
+        max_workers: int = 24,
+        request_timeout: int = _PlanetaryComputerData.DEFAULT_TIMEOUT,
+        max_retries: int = _PlanetaryComputerData.DEFAULT_RETRIES,
+        async_timeout: int = _PlanetaryComputerData.DEFAULT_ASYNC_TIMEOUT,
+    ) -> None:
+        self._wrs_path = f"{wrs_path:03d}"
+        self._wrs_row = f"{wrs_row:03d}"
+
+        min_lon, min_lat, max_lon, max_lat = self._reference_bbox()
+        n_lat = max(int(round((max_lat - min_lat) / self.OUTPUT_RESOLUTION_DEG)), 1)
+        n_lon = max(int(round((max_lon - min_lon) / self.OUTPUT_RESOLUTION_DEG)), 1)
+        lat = np.linspace(max_lat, min_lat, n_lat, dtype=np.float64)
+        lon = np.linspace(min_lon, max_lon, n_lon, dtype=np.float64)
+        self._dst_transform = rasterio_transform_from_bounds(
+            min_lon, min_lat, max_lon, max_lat, n_lon, n_lat
+        )
+
+        super().__init__(
+            self.COLLECTION_ID,
+            asset_key="",  # unused: _prepare_asset_plans is overridden below
+            lexicon=PlanetaryComputerLandsatLexicon,
+            search_kwargs={
+                "query": {
+                    "landsat:wrs_path": {"eq": self._wrs_path},
+                    "landsat:wrs_row": {"eq": self._wrs_row},
+                }
+            },
+            search_tolerance=self.SEARCH_TOLERANCE,
+            data_dtype=np.float32,
+            spatial_dims={"lat": lat, "lon": lon},
+            cache=cache,
+            verbose=verbose,
+            max_workers=max_workers,
+            request_timeout=request_timeout,
+            max_retries=max_retries,
+            async_timeout=async_timeout,
+        )
+
+    def _reference_bbox(self) -> tuple[float, float, float, float]:
+        """Fetch one scene for this path/row to fix the output grid's footprint."""
+        client = Client.open(self.STAC_API_URL)
+        search = client.search(
+            collections=[self.COLLECTION_ID],
+            query={
+                "landsat:wrs_path": {"eq": self._wrs_path},
+                "landsat:wrs_row": {"eq": self._wrs_row},
+            },
+            limit=1,
+            max_items=1,
+        )
+        items = list(search.items())
+        if not items:
+            raise FileNotFoundError(
+                f"No Landsat scenes found for WRS-2 path {self._wrs_path} "
+                f"row {self._wrs_row}"
+            )
+        min_lon, min_lat, max_lon, max_lat = items[0].bbox
+        return min_lon, min_lat, max_lon, max_lat
+
+    def _prepare_asset_plans(
+        self,
+        item: Item,
+        variables: Sequence[VariableSpec],
+    ) -> list[AssetPlan]:
+        """Group requested variables by their (per-band) source asset.
+
+        Unlike the single-asset collections handled by the base implementation,
+        Landsat distributes each band across a separate Cloud-Optimized GeoTIFF
+        asset, so one plan is built per distinct band asset key.
+        """
+        specs_by_asset: dict[str, list[VariableSpec]] = {}
+        for spec in variables:
+            specs_by_asset.setdefault(spec.dataset_key, []).append(spec)
+
+        plans = []
+        for asset_key, specs in specs_by_asset.items():
+            if asset_key not in item.assets:
+                raise KeyError(f"Asset '{asset_key}' not available in item {item.id}")
+            asset = item.assets[asset_key]
+            unsigned_href = asset.href
+            account_name, container_name, key = self._parse_blob_href(unsigned_href)
+            plans.append(
+                AssetPlan(
+                    unsigned_href=unsigned_href,
+                    account_name=account_name,
+                    container_name=container_name,
+                    key=key,
+                    media_type=asset.media_type,
+                    local_path=self._local_asset_path(unsigned_href),
+                    variables=specs,
+                )
+            )
+        return plans
+
+    def extract_variable_numpy(
+        self,
+        plan: AssetPlan,
+        spec: VariableSpec,
+        target_time: datetime,
+    ) -> np.ndarray:
+        """Reproject a Landsat band COG onto the fixed output lat/lon grid.
+
+        Parameters
+        ----------
+        plan : AssetPlan
+            Plan describing the cached per-band COG asset to open.
+        spec : VariableSpec
+            Variable specification describing which band to read and modifier to apply.
+
+        Returns
+        -------
+        numpy.ndarray
+            Float32 array on the fixed output lat/lon grid, with the band's
+            embedded nodata value mapped to NaN.
+        """
+        # masked=True reads the COG's embedded nodata tag and returns NaN in
+        # its place, so nodata is excluded from bilinear resampling below.
+        with rioxarray.open_rasterio(plan.local_path, masked=True) as data_array:
+            band = (
+                data_array.isel(band=0, drop=True)
+                if "band" in data_array.dims
+                else data_array
+            )
+            reprojected = band.rio.reproject(
+                "EPSG:4326",
+                shape=(
+                    len(self._spatial_coords["lat"]),
+                    len(self._spatial_coords["lon"]),
+                ),
+                transform=self._dst_transform,
+                resampling=Resampling.bilinear,
+            )
+            raw = np.asarray(reprojected.values, dtype=np.float32)
+            values = np.asarray(spec.modifier(raw), dtype=np.float32)
+            return values

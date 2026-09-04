@@ -50,6 +50,7 @@ earth2studio.data.NCAR_ERA5
 earth2studio.data.OPERA
 earth2studio.data.PlanetaryComputerECMWFOpenDataIFS
 earth2studio.data.PlanetaryComputerGOES
+earth2studio.data.PlanetaryComputerLandsat
 earth2studio.data.PlanetaryComputerMODISFire
 earth2studio.data.PlanetaryComputerOISST
 earth2studio.data.PlanetaryComputerSentinel3AOD
