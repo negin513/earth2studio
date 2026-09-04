@@ -382,9 +382,13 @@ class _PlanetaryComputerData:
             await asyncio.gather(*download_tasks)
 
         # Extract each variable from its source asset and record completion.
+        # Runs in a thread so CPU-bound extraction (e.g. GDAL reprojection)
+        # doesn't block the event loop and stall other concurrent fetches.
         for plan in asset_plans:
             for spec in plan.variables:
-                array = self.extract_variable_numpy(plan, spec, requested_time)
+                array = await asyncio.to_thread(
+                    self.extract_variable_numpy, plan, spec, requested_time
+                )
                 xr_array[time_index, spec.index] = array
 
         progress.update(len(variables))
