@@ -62,7 +62,6 @@ from earth2studio.utils.imports import (
 from earth2studio.utils.type import TimeArray, VariableArray
 
 try:
-    import rasterio
     import rioxarray
     from obstore.auth.planetary_computer import (
         PlanetaryComputerAsyncCredentialProvider,
@@ -72,18 +71,15 @@ try:
     from pystac_client import Client
     from rasterio.enums import Resampling
     from rasterio.transform import from_bounds as rasterio_transform_from_bounds
-    from rasterio.vrt import WarpedVRT
 except ImportError:
     OptionalDependencyFailure("data")
     Client = None
-    rasterio = None
     rioxarray = None
     AzureStore = None
     PlanetaryComputerAsyncCredentialProvider = None
     Item = TypeVar("Item")  # type: ignore
     Resampling = None
     rasterio_transform_from_bounds = None
-    WarpedVRT = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -1577,12 +1573,6 @@ class PlanetaryComputerLandsat(_PlanetaryComputerData):
     ) -> np.ndarray:
         """Reproject a Landsat band COG onto the fixed output lat/lon grid.
 
-        Uses a :class:`rasterio.vrt.WarpedVRT` directly against the source COG
-        instead of reading full-resolution pixels into an xarray object first:
-        GDAL resolves the warp against the COG's own overview pyramid, so
-        only the resolution actually needed for the fixed output grid is
-        read and warped rather than always the native full-resolution data.
-
         Parameters
         ----------
         plan : AssetPlan
@@ -1596,22 +1586,23 @@ class PlanetaryComputerLandsat(_PlanetaryComputerData):
             Float32 array on the fixed output lat/lon grid, with the band's
             embedded nodata value mapped to NaN.
         """
-        height = len(self._spatial_coords["lat"])
-        width = len(self._spatial_coords["lon"])
-        with rasterio.open(plan.local_path) as src:
-            with WarpedVRT(
-                src,
-                crs="EPSG:4326",
+        # masked=True reads the COG's embedded nodata tag and returns NaN in
+        # its place, so nodata is excluded from bilinear resampling below.
+        with rioxarray.open_rasterio(plan.local_path, masked=True) as data_array:
+            band = (
+                data_array.isel(band=0, drop=True)
+                if "band" in data_array.dims
+                else data_array
+            )
+            reprojected = band.rio.reproject(
+                "EPSG:4326",
+                shape=(
+                    len(self._spatial_coords["lat"]),
+                    len(self._spatial_coords["lon"]),
+                ),
                 transform=self._dst_transform,
-                width=width,
-                height=height,
                 resampling=Resampling.bilinear,
-                # Single Python thread already runs this per asyncio.to_thread
-                # call; let GDAL parallelize the warp itself instead of
-                # competing with additional Python-level thread fan-out.
-                warp_mem_limit=0,
-                num_threads="ALL_CPUS",
-            ) as vrt:
-                raw = vrt.read(1, masked=True).astype(np.float32).filled(np.nan)
-        values = np.asarray(spec.modifier(raw), dtype=np.float32)
-        return values
+            )
+            raw = np.asarray(reprojected.values, dtype=np.float32)
+            values = np.asarray(spec.modifier(raw), dtype=np.float32)
+            return values
