@@ -16,8 +16,10 @@
 
 from __future__ import annotations
 
+import errno
 import shutil
 import struct
+import time
 from dataclasses import dataclass
 from pathlib import Path
 from typing import TypeVar
@@ -27,6 +29,8 @@ from loguru import logger
 from omegaconf import DictConfig
 
 from earth2studio.utils.time import to_time_array
+
+from .regions import parse_events
 
 T = TypeVar("T")
 
@@ -59,8 +63,9 @@ def build_work_items(cfg: DictConfig) -> list[WorkItem]:
     Parameters
     ----------
     cfg : DictConfig
-        Hydra config with ``start_times`` or ``ic_block_*`` keys, and optional
-        ``ensemble`` section.
+        Hydra config with ``start_times`` or ``ic_block_*`` keys, optional
+        ``scoring.events`` entries that add initial conditions (see
+        :func:`event_initial_times`), and an optional ``ensemble`` section.
 
     Returns
     -------
@@ -359,10 +364,10 @@ def _remove_progress_dir(directory: Path) -> None:
     entries disappear underneath it — ``shutil.rmtree`` then raises
     ``FileNotFoundError`` partway through and may leave the rest behind.
 
-    A missing entry is the desired end state, so retry until the directory
-    is actually gone.  This converges immediately in practice: nothing
-    writes markers while a clear is in flight (markers are only written
-    during the run, after the store-creation barriers).
+    A missing entry is the desired end state, so retry with a short
+    backoff until the directory no longer exists. The backoff gives the winning
+    peer time to finish its in-flight ``rmtree``, and since nothing
+    writes markers while a clear is running, waiting always converges.
 
     Parameters
     ----------
@@ -372,16 +377,20 @@ def _remove_progress_dir(directory: Path) -> None:
     Raises
     ------
     RuntimeError
-        If the directory survives several attempts, which would mean
-        something other than a peer rank is holding it.
+        If the directory survives a few seconds of attempts, which
+        would mean something other than a peer rank is holding it.
     """
-    for _ in range(5):
+    for _ in range(50):
         if not directory.exists():
             return
         try:
             shutil.rmtree(directory)
         except FileNotFoundError:
-            continue  # a peer got there first; re-check and retry the rest
+            pass  # a peer got there first; re-check and retry the rest
+        except OSError as exc:
+            if exc.errno not in (errno.ENOTEMPTY, errno.ENOENT):
+                raise
+        time.sleep(0.05)
     if not directory.exists():
         return
     raise RuntimeError(
@@ -759,18 +768,68 @@ def clear_online_progress(cfg: DictConfig) -> None:
 # ---------------------------------------------------------------------------
 
 
+def event_initial_times(
+    events: dict[str, dict] | None,
+) -> list[np.datetime64]:
+    """Initial conditions added by ``scoring.events`` entries with an ``ics`` block.
+
+    For each such event the times run every ``step_hours`` from
+    ``start - lookback_hours`` up to and including ``end``.  With a
+    ``valid`` window the lookback decides the longest lead time that still
+    has valid times inside the window: a forecast started ``lookback``
+    hours before the event reaches the window only at that lead.  Events
+    without an ``ics`` block add nothing; the campaign's existing initial
+    conditions score them.
+
+    Parameters
+    ----------
+    events : dict[str, dict] | None
+        Parsed events (see :func:`src.regions.parse_events`).
+
+    Returns
+    -------
+    list[np.datetime64]
+        Sorted, de-duplicated initial times (second resolution); empty when
+        no event adds initial conditions.
+    """
+    if not events:
+        return []
+    times: list[np.ndarray] = []
+    for name, event in events.items():
+        ics = event.get("ics")
+        if ics is None:
+            continue
+        step = np.timedelta64(int(round(float(ics["step_hours"]) * 60)), "m")
+        first = event["start"] - np.timedelta64(
+            int(round(float(ics["lookback_hours"]) * 60)), "m"
+        )
+        grid = np.arange(first, event["end"] + step, step).astype("datetime64[s]")
+        grid = grid[grid <= np.datetime64(event["end"], "s")]
+        logger.info(
+            f"Event '{name}': {len(grid)} initial conditions from {grid[0]} "
+            f"to {grid[-1]} every {ics['step_hours']:g} h"
+        )
+        times.append(grid)
+    if not times:
+        return []
+    return list(np.unique(np.concatenate(times)))
+
+
 def _parse_initial_times(cfg: DictConfig) -> list[np.datetime64]:
     """Extract initial condition times from config.
 
     Parameters
     ----------
     cfg : DictConfig
-        Config containing either ``start_times`` (explicit list) or
-        ``ic_block_start`` / ``ic_block_end`` / ``ic_block_step`` (range).
+        Config containing ``start_times`` (explicit list) or
+        ``ic_block_start`` / ``ic_block_end`` / ``ic_block_step`` (range),
+        or neither when ``scoring.events`` adds the initial conditions.
         For the block form, times are ``np.arange(start, end + step, step)``
         with ``step`` in hours, so ``ic_block_end`` is **inclusive**: the last
         IC equals ``ic_block_end`` when that timestamp lies on the grid from
-        ``ic_block_start`` and ``ic_block_step``.
+        ``ic_block_start`` and ``ic_block_step``.  Initial conditions from
+        ``scoring.events`` (see :func:`event_initial_times`) join either
+        form; duplicates collapse.
 
     Returns
     -------
@@ -780,26 +839,39 @@ def _parse_initial_times(cfg: DictConfig) -> list[np.datetime64]:
     Raises
     ------
     ValueError
-        If both ``start_times`` and ``ic_block_start`` are provided, or neither.
+        If the config gives both ``start_times`` and ``ic_block_start``,
+        or no source of initial conditions at all.
     """
     has_list = bool(cfg.get("start_times"))
     has_block = cfg.get("ic_block_start") is not None
+    scoring_cfg = cfg.get("scoring", None)
+    events = parse_events(scoring_cfg.get("events", None)) if scoring_cfg else None
+    event_times = event_initial_times(events)
 
     if has_list and has_block:
         raise ValueError(
             "Provide either 'start_times' or 'ic_block_start/end/step', not both."
         )
-    if not has_list and not has_block:
+    if not has_list and not has_block and not event_times:
         raise ValueError(
-            "Config must specify either 'start_times' or 'ic_block_start/end/step'."
+            "Config must specify 'start_times', 'ic_block_start/end/step', or "
+            "scoring.events entries with an 'ics' block."
         )
 
+    base: list[np.datetime64]
     if has_list:
-        return list(to_time_array(sorted(cfg.start_times)))
+        base = list(to_time_array(sorted(cfg.start_times)))
+    elif has_block:
+        ics = to_time_array([cfg.ic_block_start, cfg.ic_block_end])
+        step = np.timedelta64(cfg.ic_block_step, "h")
+        base = list(np.arange(ics[0], ics[1] + step, step))
+    else:
+        base = []
 
-    ics = to_time_array([cfg.ic_block_start, cfg.ic_block_end])
-    step = np.timedelta64(cfg.ic_block_step, "h")
-    return list(np.arange(ics[0], ics[1] + step, step))
+    if not event_times:
+        return base
+    merged = np.unique(np.array(base + event_times, dtype="datetime64[s]"))
+    return list(merged)
 
 
 def _deterministic_seed(base: int, time: np.datetime64, ensemble_id: int) -> int:

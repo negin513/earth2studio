@@ -25,6 +25,9 @@ the API documentation [earth2studio.data.analysis](../../modules/datasources_ana
 
 ## Data Source Interface
 
+<!-- markdownlint-disable-next-line MD042 -->
+[](){ #earth2studio.data.DataSource }
+
 The full requirements for a standard diagnostic model are defined explicitly in the
 `earth2studio/models/dx/base.py`.
 
@@ -117,6 +120,14 @@ integrate seamlessly into Earth2Studio.
 We recommend that you review the [extension examples](../../examples/index.md#extend)
 examples, which will step you through the basic process of implementing your own
 data source.
+
+## Earthmover Marketplace
+
+Earth2Studio includes data sources that read directly from the
+[Earthmover Marketplace](https://app.earthmover.io/marketplace), a catalog of
+analysis-ready weather/climate datasets stored as Arraylake/Icechunk Zarr
+repositories. See [Earthmover Marketplace](earthmover_marketplace.md) for subscription,
+authentication and usage details.
 
 ## Contributing a Datasource
 
