@@ -16,9 +16,10 @@
 
 from __future__ import annotations
 
+import math
 import pathlib
 import time
-from collections.abc import Callable, Mapping, Sequence
+from collections.abc import Callable, Collection, Iterable, Iterator, Mapping, Sequence
 from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass
 from datetime import datetime, timedelta
@@ -30,7 +31,7 @@ import pandas as pd
 import pyarrow as pa
 from loguru import logger
 
-from earth2studio.data.utils import radiance_to_bt
+from earth2studio.data.utils import radiance_to_bt, table_to_dataframe
 from earth2studio.data.utils_bufr import (
     HDR_DHR,
     HDR_ELV,
@@ -76,6 +77,7 @@ GPSRO_SAID = 1007
 GPSRO_PTID = 1050
 GPSRO_QFRO = 33039
 GPSRO_ELRC = 10035
+GPSRO_GEODU = 10036
 GPSRO_LAT = 5001
 GPSRO_LON = 6001
 GPSRO_YEAR = 4001
@@ -87,6 +89,8 @@ GPSRO_SEC = 4006
 GPSRO_MEFR = 2121
 GPSRO_IMPP = 7040
 GPSRO_BNDA = 15037
+GPSRO_HEIT = 7007
+GPSRO_ARFR = 15036
 
 
 NCEP_CONVENTIONAL_PUBLIC_SCHEMA = pa.schema(
@@ -99,7 +103,7 @@ NCEP_CONVENTIONAL_PUBLIC_SCHEMA = pa.schema(
             metadata={
                 "description": (
                     "Observation pressure coordinate (Pa); null for "
-                    "source-native GPSRO bending-angle rows"
+                    "source-native GPSRO rows"
                 )
             },
         ),
@@ -109,8 +113,9 @@ NCEP_CONVENTIONAL_PUBLIC_SCHEMA = pa.schema(
             nullable=True,
             metadata={
                 "description": (
-                    "Observation height (m); GPSRO uses impact parameter "
-                    "minus Earth radius of curvature"
+                    "Observation height (m); GPSRO bending-angle rows use impact "
+                    "parameter minus Earth radius of curvature, refractivity rows "
+                    "the level's geometric height (HEIT)"
                 )
             },
         ),
@@ -153,6 +158,25 @@ NCEP_CONVENTIONAL_PUBLIC_SCHEMA = pa.schema(
             nullable=True,
             metadata={"description": "PrepBUFR pressure quality mark (PQM)"},
         ),
+        pa.field(
+            "radius_curvature",
+            pa.float64(),
+            nullable=True,
+            metadata={
+                "description": (
+                    "GPSRO local Earth radius of curvature (ELRC, m); null for "
+                    "other rows"
+                )
+            },
+        ),
+        pa.field(
+            "geoid_undulation",
+            pa.float64(),
+            nullable=True,
+            metadata={
+                "description": "GPSRO geoid undulation (GEODU, m); null for other rows"
+            },
+        ),
         E2STUDIO_SCHEMA.field("observation"),
         E2STUDIO_SCHEMA.field("variable"),
     ]
@@ -189,6 +213,8 @@ _NULL_FLOAT_DTYPES: dict[str, type[np.floating[Any]]] = {
     "pres": np.float32,
     "elev": np.float32,
     "station_elev": np.float32,
+    "radius_curvature": np.float64,
+    "geoid_undulation": np.float64,
     "lat": np.float32,
     "lon": np.float32,
     "observation": np.float32,
@@ -528,11 +554,20 @@ def _extract_gpsro_subset(
     dt_min: datetime,
     dt_max: datetime,
 ) -> list[dict[str, Any]]:
-    """Extract the MEFR=0 first-BNDA bending angle from one occultation."""
+    """Extract the requested per-level fields from one occultation.
+
+    ``BNDA`` (bending angle) rows take the MEFR=0 first-slot value with
+    ``elev`` = impact parameter minus Earth radius of curvature and the level's
+    tangent point, or the occultation's reference point where the level has none.
+    ``ARFR`` (refractivity) rows take the first-slot value with ``elev`` = the
+    level's ``HEIT`` at the reference point. Both leave ``pres`` null and carry the
+    occultation's ``ELRC``/``GEODU``; no vertical coordinate is derived.
+    """
     sat_id: Any = None
     transmitter_id: Any = None
     quality_flag: Any = None
     radius: float | None = None
+    geoid: float | None = None
     lat: float | None = None
     lon: float | None = None
     year = month = day = hour = minute = None
@@ -547,9 +582,13 @@ def _extract_gpsro_subset(
             quality_flag = value
         elif descriptor_id == GPSRO_ELRC and value is not None:
             radius = float(value)
-        elif descriptor_id == GPSRO_LAT and value is not None:
+        elif descriptor_id == GPSRO_GEODU and value is not None:
+            geoid = float(value)
+        # The occultation reference point is the first CLATH/CLONH; later ones,
+        # still ahead of the first IMPP, belong to the first level.
+        elif descriptor_id == GPSRO_LAT and value is not None and lat is None:
             lat = float(value)
-        elif descriptor_id == GPSRO_LON and value is not None:
+        elif descriptor_id == GPSRO_LON and value is not None and lon is None:
             lon = float(value)
         elif descriptor_id == GPSRO_YEAR and value is not None:
             year = int(value)
@@ -591,27 +630,63 @@ def _extract_gpsro_subset(
     )
     current_impact: float | None = None
     current_frequency: float | None = None
-    current_lat: float | None = lat
-    current_lon: float | None = lon
+    current_lat: float = lat
+    current_lon: float = lon
+    current_height: float | None = None
     bnda_slot = 0
+    arfr_slot = 0
     rows: list[dict[str, Any]] = []
 
+    def make_row(
+        variable: str, row_lat: float, row_lon: float, elev: float
+    ) -> dict[str, Any]:
+        return {
+            "time": obs_time,
+            "lat": np.float32(row_lat),
+            "lon": np.float32(row_lon % 360.0),
+            "pres": None,
+            "elev": np.float32(elev),
+            # GPSRO has no conventional TYP; store receiver SAID in this
+            # shared numeric type column (matches GSI/UFS diagnostics).
+            "type": np.uint16(int(sat_id)) if sat_id is not None else None,
+            "level_cat": None,
+            "class": "GPSRO",
+            "station": station,
+            "station_elev": None,
+            # QFRO is a GPSRO flag table stored in ``quality`` for a uniform
+            # column; it is not a PrepBUFR quality mark.
+            "quality": (
+                np.uint16(int(quality_flag)) if quality_flag is not None else None
+            ),
+            "pressure_quality": None,
+            "radius_curvature": radius,
+            "geoid_undulation": geoid,
+            "observation": None,
+            "variable": variable,
+        }
+
     # Each frequency block lays out MEFR -> IMPP -> two BNDA per frequency; count
-    # slots, not values: BNDA #1 is the observation, BNDA #2 is its error.
+    # slots, not values: BNDA #1 is the observation, BNDA #2 is its error. The
+    # refractivity block lays out HEIT -> two ARFR (value, error) the same way.
     for descriptor, value in zip(descriptors, values):
         descriptor_id = descriptor.id
         if descriptor_id == GPSRO_BNDA:
             bnda_slot += 1
+        elif descriptor_id == GPSRO_ARFR:
+            arfr_slot += 1
         if value is None:
             if descriptor_id == GPSRO_LAT:
-                current_lat = None
+                current_lat = lat
             elif descriptor_id == GPSRO_LON:
-                current_lon = None
+                current_lon = lon
             elif descriptor_id == GPSRO_IMPP:
                 current_impact = None
             elif descriptor_id == GPSRO_MEFR:
                 current_frequency = None
                 bnda_slot = 0
+            elif descriptor_id == GPSRO_HEIT:
+                current_height = None
+                arfr_slot = 0
             continue
         if descriptor_id == GPSRO_LAT:
             current_lat = float(value)
@@ -626,7 +701,11 @@ def _extract_gpsro_subset(
         if descriptor_id == GPSRO_IMPP:
             current_impact = float(value)
             continue
-        if descriptor_id not in wanted_descrs or descriptor_id != GPSRO_BNDA:
+        if descriptor_id == GPSRO_HEIT:
+            current_height = float(value)
+            arfr_slot = 0
+            continue
+        if descriptor_id not in wanted_descrs:
             continue
         try:
             observation = float(value)
@@ -634,46 +713,39 @@ def _extract_gpsro_subset(
             continue
         if not np.isfinite(observation):
             continue
+        if descriptor_id == GPSRO_ARFR:
+            if arfr_slot != 1 or current_height is None:
+                continue
+            # Refractivity levels carry no per-level position; use the
+            # occultation's reference point.
+            row = make_row(wanted_descrs[descriptor_id], lat, lon, current_height)
+            row["observation"] = np.float32(observation)
+            rows.append(row)
+            continue
+        if descriptor_id != GPSRO_BNDA:
+            continue
         # MEFR == 0 is the ionosphere-corrected (frequency-combined) angle; take
         # only its first BNDA slot (the observation, not the error).
         if current_frequency is None or round(current_frequency) != 0 or bnda_slot != 1:
             continue
         if current_impact is None or radius is None:
             continue
-        if current_lat is None or current_lon is None:
-            continue
-
-        rows.append(
-            {
-                "time": obs_time,
-                "lat": np.float32(current_lat),
-                "lon": np.float32(current_lon % 360.0),
-                "pres": None,
-                # Impact height = impact parameter - local radius of curvature.
-                "elev": np.float32(current_impact - radius),
-                # GPSRO has no conventional TYP; store receiver SAID in this
-                # shared numeric type column (matches GSI/UFS diagnostics).
-                "type": np.uint16(int(sat_id)) if sat_id is not None else None,
-                "level_cat": None,
-                "class": "GPSRO",
-                "station": station,
-                "station_elev": None,
-                # QFRO is a GPSRO flag table stored in ``quality`` for a uniform
-                # schema; it is not the conventional 0-15 QM scale.
-                "quality": (
-                    np.uint16(int(quality_flag)) if quality_flag is not None else None
-                ),
-                "pressure_quality": None,
-                "observation": np.float32(observation),
-                "variable": wanted_descrs[descriptor_id],
-            }
+        # Impact height = impact parameter - local radius of curvature.
+        row = make_row(
+            wanted_descrs[descriptor_id],
+            current_lat,
+            current_lon,
+            current_impact - radius,
         )
+        row["observation"] = np.float32(observation)
+        rows.append(row)
     return rows
 
 
 def empty_dataframe(
     schema: pa.Schema = NCEP_CONVENTIONAL_PUBLIC_SCHEMA,
 ) -> pd.DataFrame:
+    """Return an empty DataFrame with typed columns matching ``schema``."""
     # Build typed empty columns (not object-dtype ``None``) so ``pd.concat`` does
     # not emit "all-NA columns" FutureWarnings when frames from different
     # sub-archives are concatenated.
@@ -824,6 +896,7 @@ def decode_prepbufr(
     dt_min: datetime,
     dt_max: datetime,
     decode_workers: int = 8,
+    exclude_message_types: Collection[str] = (),
 ) -> pd.DataFrame:
     """Decode a merged NCEP PrepBUFR file into a DataFrame.
 
@@ -837,6 +910,9 @@ def decode_prepbufr(
         Time window for observation filtering.
     decode_workers : int
         Number of parallel decode processes (1 disables multiprocessing).
+    exclude_message_types : Collection[str]
+        PrepBUFR message families (e.g. ``"SATWND"``) whose messages are skipped
+        without decoding.
     """
     decode_workers = max(1, decode_workers)
     var_keys = [(variable, key) for variable, (key, _) in plan.items()]
@@ -850,6 +926,7 @@ def decode_prepbufr(
         (message_bytes, PREPBUFR_OBS_TYPES[data_category])
         for message_bytes, data_category in messages
         if data_category in PREPBUFR_OBS_TYPES
+        and PREPBUFR_OBS_TYPES[data_category] not in exclude_message_types
     ]
     if not work_items:
         return empty_dataframe()
@@ -1592,15 +1669,20 @@ def _decode_message_batch(
     return rows, failures
 
 
+# This module's low-cardinality string columns: a handful of platform and
+# sensor names per frame, so int8 dictionary indices always suffice
+_DICT_STRING_COLUMNS = frozenset({"satellite", "variable", "class"})
+
+
+def _table_to_dataframe(table: pa.Table) -> pd.DataFrame:
+    """Shared Arrow-to-pandas conversion with this module's string policy."""
+    return table_to_dataframe(table, dict_string_columns=_DICT_STRING_COLUMNS)
+
+
 def _rows_to_dataframe(rows: list[dict[str, Any]]) -> pd.DataFrame:
-    table = pa.Table.from_pylist(rows, schema=NCEP_MICROWAVE_OUTPUT_SCHEMA)
-
-    def types_mapper(data_type: pa.DataType) -> pd.ArrowDtype | None:
-        if pa.types.is_unsigned_integer(data_type):
-            return pd.ArrowDtype(data_type)
-        return None
-
-    return table.to_pandas(types_mapper=types_mapper)
+    return _table_to_dataframe(
+        pa.Table.from_pylist(rows, schema=NCEP_MICROWAVE_OUTPUT_SCHEMA)
+    )
 
 
 def decode_microwave(
@@ -1726,14 +1808,18 @@ _IR_QUALITY_DESCRIPTOR: dict[str, int] = {
 
 
 class _NCEPIRSounderDecodeError(RuntimeError):
+    # Raised on the first decode batch containing failures, so
+    # ``failed_messages`` counts that batch only, not the whole file.
     def __init__(self, path: str, failed_messages: int, total_messages: int) -> None:
         self.context: dict[str, object] = {
             "path": path,
-            "decoded_messages": total_messages - failed_messages,
             "failed_messages": failed_messages,
             "total_messages": total_messages,
         }
-        super().__init__(f"Incomplete IR sounder BUFR decode: {self.context}")
+        super().__init__(
+            "Incomplete IR sounder BUFR decode (first failing batch): "
+            f"{self.context}"
+        )
 
 
 def _decode_ir_subset(
@@ -1910,100 +1996,100 @@ def _decode_ir_subset(
                 return c
         return None
 
-    # Channel wavenumbers are instrument constants; resolve them once per
-    # footprint rather than once per channel, which allocated a one-element
-    # numpy array per channel and dominated decode cost for large channel
-    # counts. AIRS wavenumbers come from the per-channel LOGRCW field and
-    # cannot be pre-computed here.
-    wn_by_channel: dict[int, float] = {}
-    if sensor in ("iasi", "cris"):
-        ch_list = list(channels)
-        wn_by_channel = dict(
-            zip(ch_list, wavenumber_cm_inverse(sensor, ch_list).tolist())
+    # Vectorized conversion: one numpy pass over the footprint's channel
+    # vector rather than roughly a dozen numpy entries per channel, which
+    # dominated decode cost for the hyperspectral channel counts. Dict
+    # insertion order is the encoded CHNM order and is preserved.
+    ch_kept = [c for c in channels if channels_filter is None or c in channels_filter]
+    if not ch_kept:
+        return []
+    obs = np.array(
+        [_as_float(channels[c].get(obs_descriptor)) for c in ch_kept],
+        dtype=np.float64,
+    )
+    keep = np.isfinite(obs)
+
+    # Convert to brightness temperature. The output wavenumber comes from
+    # the instrument grids for IASI/CrIS (also used for the Planck
+    # inversion); AIRS has no formulaic grid, so its wavenumber is read
+    # from the per-channel LOGRCW field encoded in the aggregate itself
+    if sensor == "airs":
+        bt = obs  # already Kelvin
+        log10_wn = np.array(
+            [_as_float(channels[c].get(_LOG10_CENTRAL_WAVENUMBER)) for c in ch_kept],
+            dtype=np.float64,
         )
+        # LOGRCW is log10 of the central wavenumber in m⁻¹
+        with np.errstate(over="ignore", invalid="ignore"):
+            wn = np.where(np.isfinite(log10_wn), 10.0**log10_wn / 100.0, np.nan)
+    elif sensor == "iasi":
+        chsf_list = [_iasi_chsf(ch) for ch in ch_kept]
+        has_chsf = np.array([c is not None for c in chsf_list], dtype=bool)
+        iasi_skipped_no_chsf = int(np.count_nonzero(keep & ~has_chsf))
+        if iasi_skipped_no_chsf:
+            # Distinguishes a product with a narrower CHSF band table than
+            # expected from a product with no data
+            logger.debug(
+                f"IASI footprint skipped {iasi_skipped_no_chsf} channel(s) "
+                f"outside every CHSF band"
+            )
+        keep &= has_chsf
+        chsf_arr = np.array(
+            [c if c is not None else 0 for c in chsf_list], dtype=np.float64
+        )
+        wn = np.asarray(wavenumber_cm_inverse("iasi", ch_kept), dtype=np.float64)
+        bt = radiance_to_bt(iasi_radiance_mw(obs, chsf_arr), wn)
+    elif sensor == "cris":
+        wn = np.asarray(wavenumber_cm_inverse("cris", ch_kept), dtype=np.float64)
+        bt = radiance_to_bt(cris_radiance_mw(obs), wn)
+    else:
+        return []
 
-    rows: list[dict[str, Any]] = []
-    iasi_skipped_no_chsf = 0
-    for channel_number, channel in channels.items():
-        if channels_filter is not None and channel_number not in channels_filter:
-            continue
+    with np.errstate(invalid="ignore"):
+        keep &= np.isfinite(bt)
+    if not keep.any():
+        return []
 
-        raw_obs = channel.get(obs_descriptor)
-        if raw_obs is None:
-            continue
-        obs_float = _as_float(raw_obs)
-        if not np.isfinite(obs_float):
-            continue
-
-        # Convert to brightness temperature. The output wavenumber comes
-        # from the instrument grids for IASI/CrIS (also used for the Planck
-        # inversion); AIRS has no formulaic grid, so its wavenumber is read
-        # from the per-channel LOGRCW field encoded in the aggregate itself
-        if sensor == "airs":
-            bt = obs_float  # already Kelvin
-            log10_wn = _as_float(channel.get(_LOG10_CENTRAL_WAVENUMBER))
-            # LOGRCW is log10 of the central wavenumber in m⁻¹
-            wn_out = 10.0**log10_wn / 100.0 if np.isfinite(log10_wn) else np.nan
-        elif sensor == "iasi":
-            chsf = _iasi_chsf(channel_number)
-            if chsf is None:
-                iasi_skipped_no_chsf += 1
-                continue
-            radiance = iasi_radiance_mw(np.array([obs_float]), np.array([chsf]))[0]
-            wn_out = wn_by_channel[channel_number]
-            bt = float(radiance_to_bt(np.array([radiance]), wn_out)[0])
-        elif sensor == "cris":
-            radiance = cris_radiance_mw(np.array([obs_float]))[0]
-            wn_out = wn_by_channel[channel_number]
-            bt = float(radiance_to_bt(np.array([radiance]), wn_out)[0])
-        else:
-            continue
-
-        if not np.isfinite(bt):
-            continue
-
-        if sensor == "cris" and cris_nfqf:
-            # Resolve the channel to its band (0=LW, 1=MW, 2=SW) and pack that
-            # band's flags as NFQF | NCQF<<19. NFQF is 19 bits and NCQF 9, so
-            # the packed value is 28 bits and fits the uint32 quality column.
-            # NFQF is the flag that fires on real sensor failures such as the
-            # NOAA-21 neon event, whose damaged radiances are otherwise finite
-            # and physically plausible.
+    # Per-channel quality resolution
+    quality_list: list[int | None]
+    if sensor == "cris" and cris_nfqf:
+        # Resolve each channel to its band (0=LW, 1=MW, 2=SW) and pack that
+        # band's flags as NFQF | NCQF<<19. NFQF is 19 bits and NCQF 9, so
+        # the packed value is 28 bits and fits the uint32 quality column.
+        # NFQF is the flag that fires on real sensor failures such as the
+        # NOAA-21 neon event, whose damaged radiances are otherwise finite
+        # and physically plausible.
+        quality_list = []
+        for ch in ch_kept:
             band = next(
-                (
-                    i
-                    for i, (_, lo, hi) in enumerate(CRIS_BANDS)
-                    if lo <= channel_number <= hi
-                ),
+                (i for i, (_, lo, hi) in enumerate(CRIS_BANDS) if lo <= ch <= hi),
                 None,
             )
             if band is not None and band < len(cris_nfqf):
                 ncqf_val = cris_ncqf[band] if band < len(cris_ncqf) else 0
-                quality_out: int | None = cris_nfqf[band] | (ncqf_val << 19)
+                quality_list.append(cris_nfqf[band] | (ncqf_val << 19))
             else:
-                quality_out = None
-        else:
-            quality_val = (
-                channel.get(quality_descriptor) if quality_descriptor else None
-            )
-            quality_out = _as_optional_int(quality_val)
+                quality_list.append(None)
+    elif quality_descriptor:
+        quality_list = [
+            _as_optional_int(channels[c].get(quality_descriptor)) for c in ch_kept
+        ]
+    else:
+        quality_list = [None] * len(ch_kept)
 
+    rows: list[dict[str, Any]] = []
+    for i, channel_number in enumerate(ch_kept):
+        if not keep[i]:
+            continue
         rows.append(
             {
                 **scalar_values,
                 "sensor_index": channel_number,
-                "wavenumber": wn_out,
-                "quality": quality_out,
-                "observation": bt,
+                "wavenumber": float(wn[i]),
+                "quality": quality_list[i],
+                "observation": float(bt[i]),
                 "variable": sensor,
             }
-        )
-    if iasi_skipped_no_chsf:
-        # Distinguishes a product with a narrower CHSF band table than
-        # expected from a product with no data
-        logger.debug(
-            f"IASI footprint skipped {iasi_skipped_no_chsf} channel(s) "
-            f"outside every CHSF band"
         )
     return rows
 
@@ -2017,7 +2103,14 @@ def _decode_ir_message_batch(
         datetime,
         frozenset[str] | None,
     ],
-) -> tuple[list[dict[str, Any]], int]:
+) -> tuple[pa.Table, int]:
+    """Decode one batch of IR messages into a single Arrow table.
+
+    Row dicts are converted to Arrow per message and freed immediately, so
+    the worker's peak holds one message's rows rather than the whole batch,
+    and the batch crosses the process boundary as Arrow buffers rather than
+    a pickled list of per-row dicts (~550 B/row measured).
+    """
     (
         sensor,
         indexed_messages,
@@ -2030,7 +2123,7 @@ def _decode_ir_message_batch(
         # Same contract as the microwave batch worker: a worker-init bug is a
         # programming error, not a per-message decode failure
         raise RuntimeError("BUFR decoder worker is not initialized")
-    rows: list[dict[str, Any]] = []
+    tables: list[pa.Table] = []
     failures = 0
     for _index, message_bytes in indexed_messages:
         try:
@@ -2039,6 +2132,7 @@ def _decode_ir_message_batch(
             if not message.n_subsets.value:
                 continue
             td = message.template_data.value
+            rows: list[dict[str, Any]] = []
             for descs, vals in zip(
                 td.decoded_descriptors_all_subsets,
                 td.decoded_values_all_subsets,
@@ -2054,9 +2148,105 @@ def _decode_ir_message_batch(
                         satellites,
                     )
                 )
+            if rows:
+                tables.append(
+                    pa.Table.from_pylist(rows, schema=NCEP_MICROWAVE_OUTPUT_SCHEMA)
+                )
         except Exception:
             failures += 1
-    return rows, failures
+    if tables:
+        return pa.concat_tables(tables), failures
+    return NCEP_MICROWAVE_OUTPUT_SCHEMA.empty_table(), failures
+
+
+def _decode_ir_sounder_chunks(
+    path: str,
+    sensor: str,
+    channels: frozenset[int] | None,
+    datetime_min: datetime,
+    datetime_max: datetime,
+    satellites: tuple[str, ...] | None = None,
+    decode_workers: int = 8,
+) -> Iterator[pa.Table]:
+    """Yield one Arrow table per completed decode batch for ``path``.
+
+    Lets callers pipeline decode and downstream work (e.g. concat across
+    cycles) without waiting for all batches to finish.  This body contains no
+    ``yield``, so argument validation and file I/O run eagerly at call time;
+    the returned iterator raises ``_NCEPIRSounderDecodeError`` on the first
+    batch containing failed messages, so a consumer that stops early cannot
+    silently accept a partial decode.
+    """
+    if sensor not in _IR_OBS_DESCRIPTOR:
+        raise ValueError(
+            f"unsupported IR sensor {sensor!r}; valid: {sorted(_IR_OBS_DESCRIPTOR)}"
+        )
+
+    decode_workers = max(1, decode_workers)
+    file_data = pathlib.Path(path).read_bytes()
+    table_b, table_d, messages = _parse_prepbufr_messages(file_data, silence_noise=True)
+    if not table_b or not table_d:
+        raise ValueError(f"Embedded NCEP BUFR tables missing from {path}")
+
+    sat_filter = frozenset(satellites) if satellites is not None else None
+    indexed_messages = list(enumerate(msg for msg, _ in messages))
+    batches = [
+        indexed_messages[i : i + _DECODE_BATCH_SIZE]
+        for i in range(0, len(indexed_messages), _DECODE_BATCH_SIZE)
+    ]
+    arguments = [
+        (sensor, batch, channels, datetime_min, datetime_max, sat_filter)
+        for batch in batches
+    ]
+    return _yield_ir_batches(
+        path, arguments, table_b, table_d, len(messages), decode_workers
+    )
+
+
+def _yield_ir_batches(
+    path: str,
+    arguments: list[
+        tuple[
+            str,
+            list[tuple[int, bytes]],
+            frozenset[int] | None,
+            datetime,
+            datetime,
+            frozenset[str] | None,
+        ]
+    ],
+    table_b: dict[int, tuple[Any, ...]],
+    table_d: dict[int, tuple[Any, ...]],
+    message_count: int,
+    decode_workers: int,
+) -> Iterator[pa.Table]:
+    """Streaming half of ``_decode_ir_sounder_chunks``.
+
+    Raises on the first batch with failures rather than after the last yield,
+    so the completeness contract holds even if the consumer stops early.  The
+    reported failure count covers the first failing batch, not the whole file.
+    """
+    if decode_workers > 1 and len(arguments) > 1:
+        with ProcessPoolExecutor(
+            max_workers=min(decode_workers, len(arguments)),
+            initializer=_init_decode_worker,
+            initargs=(table_b, table_d),
+        ) as pool:
+            for batch_table, batch_failures in pool.map(
+                _decode_ir_message_batch, arguments
+            ):
+                if batch_failures:
+                    raise _NCEPIRSounderDecodeError(path, batch_failures, message_count)
+                if batch_table.num_rows:
+                    yield batch_table
+    else:
+        _init_decode_worker(table_b, table_d)
+        for argument in arguments:
+            batch_table, batch_failures = _decode_ir_message_batch(argument)
+            if batch_failures:
+                raise _NCEPIRSounderDecodeError(path, batch_failures, message_count)
+            if batch_table.num_rows:
+                yield batch_table
 
 
 def decode_ir_sounder(
@@ -2085,56 +2275,470 @@ def decode_ir_sounder(
     decode_workers : int
         Number of parallel decode worker processes.
     """
-    if sensor not in _IR_OBS_DESCRIPTOR:
-        raise ValueError(
-            f"unsupported IR sensor {sensor!r}; valid: {sorted(_IR_OBS_DESCRIPTOR)}"
-        )
-
-    decode_workers = max(1, decode_workers)
-    file_data = pathlib.Path(path).read_bytes()
-    table_b, table_d, messages = _parse_prepbufr_messages(file_data, silence_noise=True)
-    if not table_b or not table_d:
-        raise ValueError(f"Embedded NCEP BUFR tables missing from {path}")
-
-    sat_filter = frozenset(satellites) if satellites is not None else None
-    indexed_messages = list(enumerate(msg for msg, _ in messages))
-    batches = [
-        indexed_messages[i : i + _DECODE_BATCH_SIZE]
-        for i in range(0, len(indexed_messages), _DECODE_BATCH_SIZE)
-    ]
-    arguments = [
-        (sensor, batch, channels, datetime_min, datetime_max, sat_filter)
-        for batch in batches
-    ]
-
     started = time.perf_counter()
-    rows: list[dict[str, Any]] = []
+    tables = list(
+        _decode_ir_sounder_chunks(
+            path,
+            sensor,
+            channels,
+            datetime_min,
+            datetime_max,
+            satellites,
+            decode_workers,
+        )
+    )
+    if tables:
+        result_table = pa.concat_tables(tables)
+    else:
+        result_table = NCEP_MICROWAVE_OUTPUT_SCHEMA.empty_table()
+    logger.debug(
+        f"Decoded {result_table.num_rows:,} {sensor} IR rows in "
+        f"{time.perf_counter() - started:.1f}s"
+    )
+    # Arrow-typed like the microwave path so mixed MW+IR requests concat
+    # with one dtype contract (uint16 scan_position, uint32 scan_line, ...)
+    return _table_to_dataframe(result_table)
+
+
+# ─────────────────────────────────────────────────────────────────────
+# SATWND (atmospheric motion vector) dumps
+# ─────────────────────────────────────────────────────────────────────
+# Decode NCEP ``satwnd`` atmospheric-motion-vector BUFR dumps.
+#
+# The SATWND dump is the raw AMV stream (``NC005xxx`` subsets) before PrepBUFR
+# merges and thins it. Each subset is one wind: producer, satellite, channel,
+# computation method, a height assignment as pressure, direction/speed, and one or
+# more quality-indicator blocks. Layouts differ by producer and era and NCEP-local
+# descriptor ids drift between table versions, so fields are resolved by mnemonic
+# from each file's embedded Table B.
+#
+# A field repeated within a template (several ``PRLC`` height assignments, the
+# five-slot wind layouts) is read from its first slot that is populated anywhere
+# in the message. All subsets of a message share one template, so this picks the
+# same slot for every wind; a wind missing that slot stays missing rather than
+# being filled from a different slot. No report typing, quality control or
+# thinning is applied.
+
+
+# Standard WMO descriptor ids used when a mnemonic is absent from the file's
+# Table B. NCEP-local ids (SWQM, CMCM) drift between table versions and are
+# always taken from the file when present.
+_STANDARD_IDS: dict[str, int] = {
+    "SAID": 1007,
+    "GNAP": 1032,
+    "GNAPS": 1044,
+    "SWCM": 2023,
+    "HAMD": 2163,
+    "YEAR": 4001,
+    "MNTH": 4002,
+    "DAYS": 4003,
+    "HOUR": 4004,
+    "MINU": 4005,
+    "SECO": 4006,
+    "CLATH": 5001,
+    "CLAT": 5002,
+    "CLONH": 6001,
+    "CLON": 6002,
+    "PRLC": 7004,
+    "SAZA": 7024,
+    "WDIR": 11001,
+    "WSPD": 11002,
+    "PCCF": 33007,
+    "SWQM": 33216,
+}
+_LOCAL_MNEMONICS = ("CMCM",)
+_QUALITY_MNEMONICS = ("GNAP", "GNAPS", "PCCF")
+_SCALAR_MNEMONICS = tuple(
+    name
+    for name in (*_STANDARD_IDS, *_LOCAL_MNEMONICS)
+    if name not in _QUALITY_MNEMONICS
+)
+_SATWND_BATCH_SIZE = 64
+
+
+def resolve_mnemonics(table_b: Mapping[int, tuple[Any, ...]]) -> dict[str, int]:
+    """Mnemonic -> descriptor id from an embedded NCEP Table B, with WMO fallbacks."""
+    ids = dict(_STANDARD_IDS)
+    known = {*_STANDARD_IDS, *_LOCAL_MNEMONICS}
+    for descriptor_id, entry in table_b.items():
+        mnemonic = str(entry[0]).split()[0] if entry and entry[0] else ""
+        if mnemonic in known:
+            ids[mnemonic] = int(descriptor_id)
+    return ids
+
+
+def bufr_local_subcategory(message: bytes) -> int:
+    """Section-1 local data subcategory (the ``NC005xxx`` subset number)."""
+    edition = message[7]
+    return message[17] if edition == 3 else message[20]
+
+
+# ──────────────────────────────────────────────────────────────────────────
+# Output schema
+# ──────────────────────────────────────────────────────────────────────────
+
+_QUALITY_LIST = pa.list_(
+    pa.struct([("application", pa.uint16()), ("confidence", pa.float32())])
+)
+
+NCEP_SATWND_PUBLIC_SCHEMA = pa.schema(
+    [
+        *NCEP_CONVENTIONAL_PUBLIC_SCHEMA,
+        pa.field(
+            "satellite_id",
+            pa.uint16(),
+            nullable=True,
+            metadata={"description": "BUFR SAID satellite identifier"},
+        ),
+        pa.field(
+            "subset",
+            pa.string(),
+            nullable=True,
+            metadata={"description": "NCEP dump subset, e.g. NC005030"},
+        ),
+        pa.field(
+            "wind_method",
+            pa.uint8(),
+            nullable=True,
+            metadata={
+                "description": (
+                    "SWCM satellite-derived wind computation method: 1 IR, 2 VIS, "
+                    "3 WV cloud top, 4-7 WV clear-sky/deep-layer"
+                )
+            },
+        ),
+        pa.field(
+            "wind_method_local",
+            pa.uint8(),
+            nullable=True,
+            metadata={
+                "description": (
+                    "CMCM, the NCEP-local computation method carried by templates "
+                    "that predate SWCM"
+                )
+            },
+        ),
+        pa.field(
+            "height_method",
+            pa.uint8(),
+            nullable=True,
+            metadata={"description": "HAMD height assignment method"},
+        ),
+        pa.field(
+            "satellite_za",
+            pa.float32(),
+            nullable=True,
+            metadata={
+                "description": (
+                    "SAZA satellite zenith angle (deg), signed for cross-track "
+                    "scanners"
+                )
+            },
+        ),
+        pa.field(
+            "quality_indicators",
+            _QUALITY_LIST,
+            nullable=True,
+            metadata={
+                "description": (
+                    "Percent confidence (PCCF) per generating application (GNAP, "
+                    "0-01-032); code meanings are producer specific"
+                )
+            },
+        ),
+        pa.field(
+            "amv_quality_indicators",
+            _QUALITY_LIST,
+            nullable=True,
+            metadata={
+                "description": (
+                    "Percent confidence (PCCF) per AMV quality-indicator application "
+                    "(GNAPS, 0-01-044)"
+                )
+            },
+        ),
+    ]
+)
+
+_WIND_COLUMNS = (
+    "time",
+    "lat",
+    "lon",
+    "pres",
+    "quality",
+    "satellite_id",
+    "subset",
+    "wind_method",
+    "wind_method_local",
+    "height_method",
+    "satellite_za",
+    "quality_indicators",
+    "amv_quality_indicators",
+    "u",
+    "v",
+)
+
+
+# ──────────────────────────────────────────────────────────────────────────
+# Message decode
+# ──────────────────────────────────────────────────────────────────────────
+
+
+def _populated(value: Any) -> bool:
+    if value is None:
+        return False
+    try:
+        return math.isfinite(float(value))
+    except (TypeError, ValueError):
+        return False
+
+
+def _scan_subset(
+    descriptors: list[Any], values: list[Any], ids: Mapping[str, int]
+) -> tuple[dict[str, list[Any]], dict[int, float], dict[int, float]]:
+    """Every occurrence of each scalar mnemonic, plus GNAP/GNAPS -> PCCF maps."""
+    names = {ids[name]: name for name in _SCALAR_MNEMONICS if name in ids}
+    id_gnap, id_gnaps, id_pccf = ids["GNAP"], ids["GNAPS"], ids["PCCF"]
+    occurrences: dict[str, list[Any]] = {}
+    gnap: dict[int, float] = {}
+    gnaps: dict[int, float] = {}
+    pending: dict[int, float] | None = None
+    code = 0
+    for descriptor, value in zip(descriptors, values):
+        descriptor_id = descriptor.id
+        if descriptor_id in (id_gnap, id_gnaps):
+            pending = None
+            if value is not None:
+                pending = gnap if descriptor_id == id_gnap else gnaps
+                code = int(value)
+            continue
+        if descriptor_id == id_pccf:
+            if pending is not None and value is not None:
+                pending.setdefault(code, float(value))
+            pending = None
+            continue
+        name = names.get(descriptor_id)
+        if name is not None:
+            occurrences.setdefault(name, []).append(value)
+    return occurrences, gnap, gnaps
+
+
+def _first_populated_slots(scans: list[dict[str, list[Any]]]) -> dict[str, int]:
+    """Per mnemonic, the first slot populated in any subset of the message."""
+    slots: dict[str, int] = {}
+    for name in {name for scan in scans for name in scan}:
+        depth = max(len(scan.get(name, ())) for scan in scans)
+        slots[name] = next(
+            (
+                slot
+                for slot in range(depth)
+                if any(
+                    slot < len(scan.get(name, ())) and _populated(scan[name][slot])
+                    for scan in scans
+                )
+            ),
+            0,
+        )
+    return slots
+
+
+def _quality_list(codes: Mapping[int, float]) -> list[dict[str, float]] | None:
+    return [
+        {"application": code, "confidence": value} for code, value in codes.items()
+    ] or None
+
+
+def _decode_satwnd_message(
+    decoder: Any,
+    message_bytes: bytes,
+    ids: Mapping[str, int],
+    dt_min: datetime,
+    dt_max: datetime,
+) -> dict[str, list[Any]]:
+    """Columnar winds for one BUFR message; empty lists when nothing decodes."""
+    columns: dict[str, list[Any]] = {name: [] for name in _WIND_COLUMNS}
+    message = decoder.process(message_bytes)
+    if not message.n_subsets.value:
+        return columns
+    subset = f"NC005{bufr_local_subcategory(message_bytes):03d}"
+    template_data = message.template_data.value
+    scans = [
+        _scan_subset(descriptors, values, ids)
+        for descriptors, values in zip(
+            template_data.decoded_descriptors_all_subsets,
+            template_data.decoded_values_all_subsets,
+        )
+    ]
+    slots = _first_populated_slots([occurrences for occurrences, _, _ in scans])
+    # High-accuracy CLATH/CLONH when the template carries them, else CLAT/CLON.
+    lat_name = "CLATH" if "CLATH" in slots else "CLAT"
+    lon_name = "CLONH" if "CLONH" in slots else "CLON"
+
+    for occurrences, gnap, gnaps in scans:
+
+        def get(name: str) -> Any:
+            values = occurrences.get(name, ())
+            slot = slots.get(name, 0)
+            return values[slot] if slot < len(values) else None
+
+        lat, lon = get(lat_name), get(lon_name)
+        direction, speed = get("WDIR"), get("WSPD")
+        year, month, day = get("YEAR"), get("MNTH"), get("DAYS")
+        if not all(
+            _populated(v) for v in (lat, lon, direction, speed, year, month, day)
+        ):
+            continue
+        second = get("SECO")
+        try:
+            obs_time = datetime(
+                int(year),
+                int(month),
+                int(day),
+                int(get("HOUR") or 0),
+                int(get("MINU") or 0),
+            ) + timedelta(seconds=float(second) if _populated(second) else 0.0)
+        except (TypeError, ValueError, OverflowError):
+            continue
+        if obs_time < dt_min or obs_time > dt_max:
+            continue
+        radians = math.radians(float(direction))
+        pressure = get("PRLC")
+        columns["time"].append(obs_time)
+        columns["lat"].append(float(lat))
+        columns["lon"].append(float(lon) % 360.0)
+        columns["pres"].append(float(pressure) if _populated(pressure) else math.nan)
+        columns["quality"].append(get("SWQM"))
+        columns["satellite_id"].append(get("SAID"))
+        columns["subset"].append(subset)
+        columns["wind_method"].append(get("SWCM"))
+        columns["wind_method_local"].append(get("CMCM"))
+        columns["height_method"].append(get("HAMD"))
+        zenith = get("SAZA")
+        columns["satellite_za"].append(
+            float(zenith) if _populated(zenith) else math.nan
+        )
+        columns["quality_indicators"].append(_quality_list(gnap))
+        columns["amv_quality_indicators"].append(_quality_list(gnaps))
+        columns["u"].append(-float(speed) * math.sin(radians))
+        columns["v"].append(-float(speed) * math.cos(radians))
+    return columns
+
+
+def _decode_satwnd_batch(
+    arguments: tuple[list[bytes], Mapping[str, int], datetime, datetime],
+) -> tuple[dict[str, list[Any]], int]:
+    messages, ids, dt_min, dt_max = arguments
+    columns: dict[str, list[Any]] = {name: [] for name in _WIND_COLUMNS}
     failures = 0
-    if decode_workers > 1 and len(batches) > 1:
+    with _silence_bufr_noise():
+        for message_bytes in messages:
+            try:
+                decoded = _decode_satwnd_message(
+                    _worker_decoder, message_bytes, ids, dt_min, dt_max
+                )
+            except Exception:  # noqa: BLE001 - one corrupt message is skipped
+                failures += 1
+                continue
+            for name, values in decoded.items():
+                columns[name].extend(values)
+    return columns, failures
+
+
+def _winds_to_rows(
+    columns: Mapping[str, list[Any]], wanted: Mapping[str, str]
+) -> pd.DataFrame:
+    """One row per (wind, requested component), components in ``wanted`` order."""
+    base = pd.DataFrame(
+        {name: columns[name] for name in _WIND_COLUMNS if name not in ("u", "v")}
+    )
+    base["class"] = "SATWND"
+    frames = []
+    for component, variable in wanted.items():
+        frame = base.copy()
+        frame["observation"] = np.asarray(columns[component], dtype=np.float32)
+        frame["variable"] = variable
+        frames.append(frame)
+    return pd.concat(frames, ignore_index=True)
+
+
+def decode_satwnd(
+    path: str,
+    plan: Mapping[str, tuple[str, Callable[[pd.DataFrame], pd.DataFrame]]],
+    dt_min: datetime,
+    dt_max: datetime,
+    decode_workers: int = 8,
+) -> pd.DataFrame:
+    """Decode an NCEP ``satwnd`` AMV BUFR dump into a DataFrame.
+
+    Parameters
+    ----------
+    path : str
+        Local path to the ``gdas.*.satwnd.tm00.bufr_d`` file.
+    plan : Mapping
+        Variable decode plan ``{variable: (component, modifier)}`` where
+        component is ``"u"`` or ``"v"``.
+    dt_min, dt_max : datetime
+        Time window for observation filtering.
+    decode_workers : int
+        Number of parallel decode processes (1 disables multiprocessing).
+
+    Returns
+    -------
+    pd.DataFrame
+        One row per (wind, component) in :data:`NCEP_SATWND_PUBLIC_SCHEMA`, in
+        source-message order within each component.
+    """
+    started = time.perf_counter()
+    wanted = {component: variable for variable, (component, _) in plan.items()}
+    modifiers = {variable: modifier for variable, (_, modifier) in plan.items()}
+    with open(path, "rb") as file:
+        file_data = file.read()
+    table_b, table_d, messages = _parse_prepbufr_messages(file_data, silence_noise=True)
+    if not messages:
+        return empty_dataframe(NCEP_SATWND_PUBLIC_SCHEMA)
+    ids = resolve_mnemonics(table_b)
+    message_bytes = [message for message, _data_category in messages]
+    arguments: Iterable[tuple[list[bytes], Mapping[str, int], datetime, datetime]] = (
+        (message_bytes[i : i + _SATWND_BATCH_SIZE], ids, dt_min, dt_max)
+        for i in range(0, len(message_bytes), _SATWND_BATCH_SIZE)
+    )
+    n_batches = math.ceil(len(message_bytes) / _SATWND_BATCH_SIZE)
+    columns: dict[str, list[Any]] = {name: [] for name in _WIND_COLUMNS}
+    failures = 0
+    workers = min(max(1, decode_workers), n_batches)
+    if workers > 1:
         with ProcessPoolExecutor(
-            max_workers=min(decode_workers, len(batches)),
+            max_workers=workers,
             initializer=_init_decode_worker,
             initargs=(table_b, table_d),
         ) as pool:
-            for batch_rows, batch_failures in pool.map(
-                _decode_ir_message_batch, arguments
-            ):
-                rows.extend(batch_rows)
+            # Executor.map keeps source-message order.
+            results = pool.map(_decode_satwnd_batch, arguments)
+            for batch, batch_failures in results:
+                for name, values in batch.items():
+                    columns[name].extend(values)
                 failures += batch_failures
     else:
         _init_decode_worker(table_b, table_d)
         for argument in arguments:
-            batch_rows, batch_failures = _decode_ir_message_batch(argument)
-            rows.extend(batch_rows)
+            batch, batch_failures = _decode_satwnd_batch(argument)
+            for name, values in batch.items():
+                columns[name].extend(values)
             failures += batch_failures
-
-    if failures:
-        # Same strict completeness contract as decode_microwave: a partial
-        # decode must not silently return a truncated observation set
-        raise _NCEPIRSounderDecodeError(path, failures, len(messages))
     logger.debug(
-        f"Decoded {len(rows):,} {sensor} IR rows in {time.perf_counter() - started:.1f}s"
+        f"Decoded {len(columns['time']):,} SATWND winds from {len(message_bytes):,} "
+        f"messages in {time.perf_counter() - started:.1f}s"
     )
-    # Arrow-typed like the microwave path so mixed MW+IR requests concat
-    # with one dtype contract (uint16 scan_position, uint32 scan_line, ...)
-    return _rows_to_dataframe(rows)
+    if failures:
+        logger.warning(
+            f"{path}: skipped {failures} of {len(message_bytes)} undecodable "
+            "SATWND messages"
+        )
+    if not columns["time"]:
+        return empty_dataframe(NCEP_SATWND_PUBLIC_SCHEMA)
+    return _finalize_rows(
+        _winds_to_rows(columns, wanted),
+        modifiers,
+        convert_pres_mb_to_pa=False,
+        schema=NCEP_SATWND_PUBLIC_SCHEMA,
+    )

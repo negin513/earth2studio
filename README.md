@@ -120,23 +120,14 @@ run(["2025-01-01T00:00:00"], 4, model, data, io)
 
 ## Latest News
 
-> [!NOTE]
-> As of version `0.14.0`, Earth2Studio TOML default installs now target CUDA 13.
-
-- [**Aurora v1.5**](https://nvidia.github.io/earth2studio/main/modules/generated/models/px/Aurora1p5/),
-    Microsoft Aurora v1.5 deterministic and ensemble model wrapper for global
-    weather forecasting.
-- [**StormCast CONUS**](https://nvidia.github.io/earth2studio/main/modules/generated/models/px/StormCastCONUS/),
-    StormCast CONUS prognostic model for convective-scale forecasting over the
-    contiguous United States.
-- [**Dynamical.org Sources**](https://nvidia.github.io/earth2studio/main/modules/generated/data/analysis/data_DynamicalGFS/),
-    a comprehensive suite of analysis and forecast data sources reading from
-    anonymous Icechunk repositories (AIFS, GFS, GEFS, HRRR, MRMS, ICON-EU, IFS-ENS).
-- [**EarthMover Data Sources**](https://nvidia.github.io/earth2studio/main/modules/generated/data/analysis/data_EarthMoverERA5/),
-    EarthMover ERA5 0.25-degree reanalysis and IFS 0.1-degree forecast sources
-    hosted by BrightBand.
-- [**StormScope NSRDB**](https://nvidia.github.io/earth2studio/main/modules/generated/models/dx/StormScopeDxNSRDB/),
-    solar irradiance (GHI) estimation diagnostic model.
+- [**WeatherNext 2 Cyclones**](https://nvidia.github.io/earth2studio/main/modules/generated/models/px/WeatherNext2Cyclones/),
+    operational and Mini prognostic model wrappers.
+- [**CAMulator**](https://nvidia.github.io/earth2studio/main/modules/generated/models/px/CAMulator/),
+    NSF NCAR CAM6 climate emulator with prescribed forcing data and conservation fixers.
+- [**FuXi-S2S**](https://nvidia.github.io/earth2studio/main/modules/generated/models/px/FuXiS2S/),
+    global daily prognostic model for subseasonal-to-seasonal forecasting.
+- [**CorrDiff ERA5-HRRR**](https://nvidia.github.io/earth2studio/main/modules/generated/models/dx/CorrDiffEra5Hrrr/),
+    generative downscaling from ERA5 to HRRR over the contiguous United States.
 
 For a complete list of latest features and improvements see the [changelog](./CHANGELOG.md).
 
