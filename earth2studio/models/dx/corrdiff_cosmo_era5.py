@@ -346,9 +346,10 @@ class CorrDiffCosmoEra5(torch.nn.Module, AutoModelMixin):
     The models are trained on ERA5 (global input) paired with COSMO-REA regional
     reanalysis (high-resolution target) over Europe:
 
-    * COSMO-REA6 (~6 km), DWD: https://reanalysis.meteo.uni-bonn.de/?COSMO-REA6
-    * COSMO-REA2 (~2.2 km), DWD: https://reanalysis.meteo.uni-bonn.de/?COSMO-REA2
-    * ERA5, ECMWF: https://www.ecmwf.int/en/forecasts/dataset/ecmwf-reanalysis-v5
+    - COSMO-REA6 (~6 km), DWD: https://reanalysis.meteo.uni-bonn.de/?COSMO-REA6
+    - COSMO-REA2 (~2.2 km), DWD: https://reanalysis.meteo.uni-bonn.de/?COSMO-REA2
+    - ERA5, ECMWF: https://www.ecmwf.int/en/forecasts/dataset/ecmwf-reanalysis-v5
+    - https://huggingface.co/nvidia/corrdiff-cosmo-era5
 
     Badges
     ------
@@ -1665,7 +1666,7 @@ class CorrDiffCosmoEra5(torch.nn.Module, AutoModelMixin):
         # rea2/ subfolders; ``load_model(..., resolution=)`` selects the subfolder, so
         # one URI serves all four models.
         return Package(
-            "hf://nvidia/corrdiff-cosmo-era5@44064f304158f863f6ae02948b1b8e08d523458e",
+            "hf://nvidia/corrdiff-cosmo-era5@9e2e2388fc29e4a1aabc3d5869644c441d79af83",
             cache_options={
                 "cache_storage": Package.default_cache("corrdiff_cosmo_era5"),
                 # Include the resolution directory to distinguish files with

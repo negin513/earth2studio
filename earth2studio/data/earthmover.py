@@ -597,13 +597,17 @@ class EarthMoverERA5(_EarthMoverBase):
     groups from the ERA5 Marketplace repository. Arraylake-backed Earthmover
     sources require Python 3.12 or newer.
 
+    For a walkthrough of subscribing to a Marketplace listing, authenticating,
+    fetching data and writing output back to Arraylake, see the blog post
+    [Access Earthmover Marketplace Data with Earth2Studio](https://nvidia.github.io/earth2studio/blog/2026/10/05/earthmover-marketplace-data/).
+
     Additional information on the data repository can be referenced here:
 
     - https://app.earthmover.io/marketplace/6a19bcfe9aa6e97720a2fad2
 
     Badges
     ------
-    region:global dataclass:reanalysis product:wind product:precip product:temp product:atmos product:solar
+    region:global dataclass:reanalysis dataset:era5 product:wind product:precip product:temp product:atmos product:solar provider:earthmover
     """
 
     LEXICON = EarthMoverERA5Lexicon
@@ -751,13 +755,17 @@ class EarthMoverBrightBandIFS(_EarthMoverBase):
 
     Arraylake-backed Earthmover sources require Python 3.12 or newer.
 
+    For a walkthrough of subscribing to a Marketplace listing, authenticating,
+    fetching data and writing output back to Arraylake, see the blog post
+    [Access Earthmover Marketplace Data with Earth2Studio](https://nvidia.github.io/earth2studio/blog/2026/10/05/earthmover-marketplace-data/).
+
     Additional information on the data repository can be referenced here:
 
     - https://app.earthmover.io/marketplace/697162921880507a6587c31b
 
     Badges
     ------
-    region:global dataclass:analysis product:wind product:temp product:atmos product:ocean product:land
+    region:global dataclass:analysis dataset:ifs product:wind product:temp product:atmos product:ocean product:land provider:earthmover
     """
 
     MARKETPLACE_URL = "https://app.earthmover.io/marketplace/697162921880507a6587c31b"
@@ -896,13 +904,17 @@ class EarthMoverBrightBandIFS_FX(_EarthMoverBase):
 
     Arraylake-backed Earthmover sources require Python 3.12 or newer.
 
+    For a walkthrough of subscribing to a Marketplace listing, authenticating,
+    fetching data and writing output back to Arraylake, see the blog post
+    [Access Earthmover Marketplace Data with Earth2Studio](https://nvidia.github.io/earth2studio/blog/2026/10/05/earthmover-marketplace-data/).
+
     Additional information on the data repository can be referenced here:
 
     - https://app.earthmover.io/marketplace/6971be98fc964a0d0fb66e04
 
     Badges
     ------
-    region:global dataclass:simulation product:wind product:precip product:temp product:atmos
+    region:global dataclass:simulation dataset:ifs product:wind product:precip product:temp product:atmos provider:earthmover
     """
 
     MARKETPLACE_URL = "https://app.earthmover.io/marketplace/6971be98fc964a0d0fb66e04"

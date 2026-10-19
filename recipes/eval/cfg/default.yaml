@@ -89,7 +89,7 @@ resume: false
 # byte twice.  Disable it here unless you have a reason to populate the
 # shared cache (e.g. other recipes will reuse the same data).
 data_source:
-    _target_: earth2studio.data.ARCO
+    _target_: earth2studio.data.ARCO_ERA5
     cache: false
     verbose: false
 
@@ -263,6 +263,9 @@ scoring:
         #   3. pairwise_comm_dtype / pairwise_variables — halve the bytes,
         #      or restrict CRPS to the variables you actually report on.
         crps: true
+        # Optional Mean Absolute Error and Log Spectral Distance per member.
+        mae: false
+        lsd: false
         pairwise_comm_dtype: bfloat16  # arithmetic upcasts to fp64 on arrival
         defer_pairwise_one_step: true  # overlap the exchange with the next step
         variable_chunk: 4              # variables per exchange + compute step
@@ -276,6 +279,45 @@ scoring:
         # point CONUS-scale run from ~1.5GB to well under 250MB, at some
         # throughput cost).
         pairwise_member_tile: 8
+    # Named regional splits, used by BOTH scoring pathways (online and
+    # store-then-score): a mapping of region name to a box (or a list of
+    # boxes, scored as their union). A box maps spatial dimension names to
+    # [min, max] coordinate ranges — lat/lon degrees on a global grid, or
+    # the native grid coordinates of a limited-area model. Dimensions left
+    # out of a box cover their full extent; a null region means the whole
+    # grid. Longitudes may be negative (degrees west) and wrap the
+    # dateline where min > max. Adds a labeled "region" axis to the score
+    # stores.
+    #
+    # regions:
+    #     global: null
+    #     europe: {lat: [35, 75], lon: [-12.5, 42.5]}
+    #     extra_tropics:
+    #         - {lat: [20, 90]}
+    #         - {lat: [-90, -20]}
+    regions: null
+    # Named events: a time window paired with a region, for reporting skill
+    # during one episode (a windstorm, a heat wave, a hurricane).  An
+    # event's box joins the regions above under the event's name, so it
+    # must be configured before an online run; the time window is applied
+    # when the scorecard exporter reads the per-IC scores.  `window` picks
+    # the timestamp the window filters: `valid` (default) keeps the
+    # (IC, lead) pairs whose valid time falls inside it, `init` keeps whole
+    # forecasts by initial time.  `ics` adds initial conditions every
+    # `step_hours` from `start - lookback_hours` up to `end`; a valid
+    # window needs `lookback_hours` (set it to the forecast horizon so
+    # every lead time has valid times inside the window).  `region` may
+    # also name one of the regions above.
+    #
+    # events:
+    #     storm_eowyn:
+    #         label: "Storm Éowyn"
+    #         start: "2025-01-23 12:00:00"
+    #         end: "2025-01-25 00:00:00"
+    #         region: {lat: [48, 62], lon: [-15, 5]}
+    #         window: valid
+    #         ics: {step_hours: 12, lookback_hours: 336}
+    events: null
     output:
         store_name: scores.zarr
         overwrite: true
