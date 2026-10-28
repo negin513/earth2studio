@@ -1,0 +1,140 @@
+{
+  "benchmark": "02_ensemble_hens_lite",
+  "variant": {
+    "perturbation": "spherical_gaussian",
+    "members": 2,
+    "batch_size": 2
+  },
+  "started_utc": "2026-10-28T21:11:11.502152+00:00",
+  "total_wall_s": 441.601,
+  "peak_gpu_mem_gib": 16.529,
+  "phases": {
+    "model_download": {
+      "count": 1,
+      "total_s": 364.2107,
+      "mean_s": 364.2107,
+      "min_s": 364.2107,
+      "max_s": 364.2107
+    },
+    "model_load": {
+      "count": 1,
+      "total_s": 13.2554,
+      "mean_s": 13.2554,
+      "min_s": 13.2554,
+      "max_s": 13.2554
+    },
+    "ic_fetch": {
+      "count": 1,
+      "total_s": 5.0641,
+      "mean_s": 5.0641,
+      "min_s": 5.0641,
+      "max_s": 5.0641
+    },
+    "perturb": {
+      "count": 1,
+      "total_s": 1.3478,
+      "mean_s": 1.3478,
+      "min_s": 1.3478,
+      "max_s": 1.3478
+    },
+    "diagnostic_step": {
+      "count": 3,
+      "total_s": 2.25,
+      "mean_s": 0.75,
+      "min_s": 0.0829,
+      "max_s": 2.0842,
+      "mean_steady_s": 0.0829
+    },
+    "io_write": {
+      "count": 3,
+      "total_s": 0.0489,
+      "mean_s": 0.0163,
+      "min_s": 0.0148,
+      "max_s": 0.0186,
+      "mean_steady_s": 0.0152
+    },
+    "inference_step": {
+      "count": 2,
+      "total_s": 12.1694,
+      "mean_s": 6.0847,
+      "min_s": 0.1168,
+      "max_s": 12.0526
+    }
+  },
+  "phase_samples": {
+    "model_download": [
+      364.2107
+    ],
+    "model_load": [
+      13.2554
+    ],
+    "ic_fetch": [
+      5.0641
+    ],
+    "perturb": [
+      1.3478
+    ],
+    "diagnostic_step": [
+      2.0842,
+      0.0829,
+      0.083
+    ],
+    "io_write": [
+      0.0186,
+      0.0155,
+      0.0148
+    ],
+    "inference_step": [
+      12.0526,
+      0.1168
+    ]
+  },
+  "extra": {
+    "members": 2,
+    "batch_size": 2,
+    "steps": 2,
+    "ic_time": "2026-10-26T18:00:00.000000",
+    "bv_integration_steps": null,
+    "member_steps_per_s": 7.074,
+    "member_steps_per_s_px_only": 17.117,
+    "output_vars": [
+      "t2m",
+      "u10m",
+      "v10m",
+      "msl",
+      "tp06"
+    ],
+    "output_shape_latlon": [
+      141,
+      281
+    ],
+    "zarr_path": "/tmp/earth2studio-benchmarks/02/batch_size-2__members-2__perturbation-spherical_gaussian.zarr",
+    "cache_mode": "cold",
+    "cache_path": "/tmp/earth2studio-benchmarks/cold_cache/02_ensemble_hens_lite/20261028T211111501537Z",
+    "cache_bytes": 7452692315
+  },
+  "env": {
+    "hostname": "nvl72063-T01",
+    "python": "3.12.3",
+    "torch": "2.13.0+cu130",
+    "cuda": "13.0",
+    "earth2studio_path": "/lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/earth2studio-bench",
+    "earth2studio_sha": "fcececa9",
+    "gpu": "NVIDIA GB200",
+    "gpu_mem_gib": 184.3,
+    "gpu_count": 1
+  },
+  "argv": [
+    "02_ensemble_hens_lite/bench.py",
+    "--perturbation",
+    "spherical_gaussian",
+    "--members",
+    "2",
+    "--batch-size",
+    "2",
+    "--steps",
+    "2",
+    "--cache",
+    "cold"
+  ]
+}

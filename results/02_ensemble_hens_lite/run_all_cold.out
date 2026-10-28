@@ -1,0 +1,13 @@
+=== spherical_gaussian_m16_b8_cold  2026-10-28T21:19:12Z
+=== spherical_gaussian_m16_b16_cold  2026-10-28T21:27:56Z
+=== spherical_gaussian_m32_b8_cold  2026-10-28T21:36:48Z
+=== spherical_gaussian_m32_b16_cold  2026-10-28T21:46:13Z
+=== bred_vector_m16_b8_cold  2026-10-28T21:55:52Z
+=== bred_vector_m16_b16_cold  2026-10-28T22:05:38Z
+=== bred_vector_m32_b8_cold  2026-10-28T22:17:12Z
+=== bred_vector_m32_b16_cold  2026-10-28T22:29:29Z
+Traceback (most recent call last):
+  File "/lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/earth2studio-bench/benchmarks/workflows/common/make_table.py", line 75, in <module>
+    cells += [f"{r['extra'][k]:.4g}" if k in r["extra"] else "" for k in ekeys]
+                ^^^^^^^^^^^^^^^^^^^
+TypeError: unsupported format string passed to NoneType.__format__

@@ -4,8 +4,19 @@
 |---|---|---|---|---|---|---|---|---|
 | Weather: FCN3 (6 h) | cache=cold, dtype=bf16, io=async_zarr, steps=40 | 13.437 | 119.375 | 4.439 | 35.331 | 0.754 | 220.860 | 49.023 |
 | Weather: FCN3 (6 h) | cache=cold, dtype=bf16, io=zarr, steps=40 | 14.285 | 120.450 | 7.409 | 68.027 | 1.587 | 284.686 | 49.023 |
+| Weather: FCN3 (6 h) | cache=cold, dtype=fp32, io=async_zarr, source=arco, steps=40 | 15.382 | 117.546 | 15.389 | 34.642 | 0.753 | 245.636 | 49.023 |
 | Weather: FCN3 (6 h) | cache=cold, dtype=fp32, io=async_zarr, steps=40 | 13.303 | 119.326 | 4.494 | 35.628 | 0.754 | 218.219 | 49.023 |
 | Weather: FCN3 (6 h) | cache=cold, dtype=fp32, io=zarr, steps=40 | 16.778 | 118.246 | 4.266 | 34.072 | 0.749 | 244.041 | 49.023 |
+| Weather: FCN3 (6 h) | cache=warm, dtype=fp32, io=async_zarr, source=arco, steps=2 | 0.009 | 119.073 | 16.159 | 6.092 | 3.046 | 174.497 | 49.023 |
+| Ensemble: SFNO (6 h) | batch_size=16, members=16, perturbation=bred_vector | 582.656 | 15.967 | 5.638 | 17.507 | 0.875 | 685.083 | 41.902 |
+| Ensemble: SFNO (6 h) | batch_size=16, members=16, perturbation=spherical_gaussian | 438.586 | 12.090 | 10.594 | 22.640 | 0.868 | 525.503 | 30.796 |
+| Ensemble: SFNO (6 h) | batch_size=16, members=32, perturbation=bred_vector | 655.144 | 11.896 | 7.748 | 34.772 | 0.869 | 818.834 | 51.247 |
+| Ensemble: SFNO (6 h) | batch_size=16, members=32, perturbation=spherical_gaussian | 452.075 | 12.562 | 9.078 | 38.806 | 0.871 | 571.536 | 40.145 |
+| Ensemble: SFNO (6 h) | batch_size=2, members=2, perturbation=spherical_gaussian | 364.211 | 13.255 | 5.064 | 12.169 | 6.085 | 441.601 | 16.529 |
+| Ensemble: SFNO (6 h) | batch_size=8, members=16, perturbation=bred_vector | 481.236 | 14.727 | 20.496 | 17.648 | 0.441 | 580.217 | 33.021 |
+| Ensemble: SFNO (6 h) | batch_size=8, members=16, perturbation=spherical_gaussian | 429.769 | 13.229 | 6.274 | 22.075 | 0.443 | 518.651 | 21.929 |
+| Ensemble: SFNO (6 h) | batch_size=8, members=32, perturbation=bred_vector | 574.044 | 13.695 | 12.844 | 35.147 | 0.439 | 726.513 | 33.021 |
+| Ensemble: SFNO (6 h) | batch_size=8, members=32, perturbation=spherical_gaussian | 436.336 | 12.657 | 6.649 | 40.664 | 0.440 | 558.959 | 21.929 |
 | Downscaling: CorrDiff (forcing time) | cache=cold, diffusion_steps=18, forcing=gfs, samples=1, solver=euler | 45.157 | 5.753 | 14.095 | 3.881 | 0.962 | 69.537 | 1.217 |
 | Downscaling: CorrDiff (forcing time) | cache=cold, diffusion_steps=18, forcing=gfs, samples=4, solver=euler | 40.245 | 5.949 | 6.462 | 8.690 | 2.171 | 62.047 | 3.757 |
 | Downscaling: CorrDiff (forcing time) | cache=cold, diffusion_steps=18, forcing=gfs, samples=8, solver=euler | 35.811 | 5.677 | 6.139 | 16.345 | 4.074 | 64.755 | 7.138 |

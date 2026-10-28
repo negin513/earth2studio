@@ -72,7 +72,10 @@ for bdir in sorted(p for p in root.iterdir() if p.is_dir()):
                 if ph is None
                 else f"{ph.get('mean_steady_s', ph['mean_s']):.3f} (n={ph['count']})"
             )
-        cells += [f"{r['extra'][k]:.4g}" if k in r["extra"] else "" for k in ekeys]
+        cells += [
+            f"{r['extra'][k]:.4g}" if isinstance(r["extra"].get(k), (int, float)) else ""
+            for k in ekeys
+        ]
         out.append("| " + " | ".join(cells) + " |")
 (root / "RESULTS.md").write_text(
     "# Workflow benchmark results\n" + "\n".join(out) + "\n"
