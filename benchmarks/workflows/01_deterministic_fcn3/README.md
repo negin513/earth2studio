@@ -1,22 +1,37 @@
 # Benchmark 1: medium-range deterministic forecast (FCN3)
 
+## Use case
+
+Use this benchmark to size a daily global forecast service and compare the
+latency and GPU memory of FP32/BF16 inference and synchronous/asynchronous
+output writes.
+
 Daily-ops style run: FCN3 initialized from GFS, 40 x 6 h steps (10 days),
 0.25 deg global, 72 variables, written to a local Zarr v3 store.
 
 ## Run
 
+From the repository root, use the shared suite runner:
+
 ```bash
-source ../env.sh            # venv + PYTHONPATH overlay of this clone
-export CUDA_VISIBLE_DEVICES=0
-cd ..                       # run from benchmarks/workflows/
-python 01_deterministic_fcn3/bench.py --io zarr --dtype fp32            # one variant, cold cache
-python 01_deterministic_fcn3/bench.py --io async_zarr --dtype bf16 --steps 2 --cache warm   # smoke
-./01_deterministic_fcn3/run_all.sh                                       # full 4-variant cold matrix
-./01_deterministic_fcn3/run_all.sh --cache warm                          # optional warm pass
+bash benchmarks/workflows/run_all_benchmarks.sh --only 01             # full cold matrix
+bash benchmarks/workflows/run_all_benchmarks.sh --only 01 --cache both # cold + warm
+bash benchmarks/workflows/run_all_benchmarks.sh --only 01 --smoke      # one short run
 ```
 
-Results land in `$BENCH_RESULTS/01_deterministic_fcn3/*.json`; `python
-common/make_table.py` collates them into `$BENCH_RESULTS/RESULTS.md`.
+For custom model options, source the shared environment and run `bench.py`:
+
+```bash
+source benchmarks/workflows/env.sh
+"$PY" benchmarks/workflows/01_deterministic_fcn3/bench.py --help
+```
+
+See the [suite README](../README.md) for GPU selection, environment overrides,
+credentials and output locations. The shared runner calls `bench.py` directly;
+the individual `run_all.sh` is a legacy entry point with its own settings.
+
+Results are written below the suite invocation's results directory;
+`RESULTS.md` and `ANALYSIS.md` are generated automatically.
 
 ## Variant axes
 
@@ -47,7 +62,6 @@ output bytes on disk, variable count, cache mode/path/bytes.
 
 ## Environment notes
 
-The shared venv (`earth2studio-main-bench/.venv`) had no `makani` /
-`torch-harmonics`; they were installed per the clone's `uv.lock` pins (makani
-b38fcb27, torch-harmonics 0.8.1 a632ca74 built with `FORCE_CUDA_EXTENSION=1`
-for the disco kernels) plus makani's runtime deps (wandb, h5py, numba, ...).
+Requires the `fcn3` extra, including makani and CUDA-compatible torch-harmonics.
+Use this checkout's dependency pins and a compatible GPU environment; see the
+[suite README](../README.md).

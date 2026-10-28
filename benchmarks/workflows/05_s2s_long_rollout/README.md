@@ -1,5 +1,11 @@
 # Benchmark 5: S2S long rollout (DLESyM)
 
+## Use case
+
+Use this benchmark to estimate GPU throughput and output storage for subseasonal
+outlooks, weekly weather summaries and small atmosphere/ocean ensembles. The
+stability checks detect numerical failures; they do not measure forecast skill.
+
 Subseasonal forecast with **DLESyM-V1-ERA5** (checkpoint `v1.1`, the ECMWF AI
 Weather Quest submission): a coupled atmosphere/ocean model on a HEALPix
 `nside=64` (~1 deg) grid. One model step advances **96 h** and emits 16 six-hourly
@@ -39,33 +45,35 @@ tp6, sst`.
 `--cache cold` (default) points `EARTH2STUDIO_CACHE` at a fresh empty directory
 before anything is imported, so model weights **and** the ARCO ERA5 fetch
 download from scratch on every run. `--cache warm` reuses the normal cache.
-`/root` has a user disk quota that was hit during this session; if a warm run
-fails with "Disk quota exceeded", point the cache at scratch:
-`mkdir -p $BENCH_SCRATCH/warm_cache && export EARTH2STUDIO_CACHE=$BENCH_SCRATCH/warm_cache`.
+For a warm cache on scratch, set
+`EARTH2STUDIO_CACHE=/path/to/large-disk/warm-cache` before running.
 
 ## Environment notes
 
-- The shared venv (`earth2studio-main-bench/.venv`, physicsnemo 2.2.2) lacks
-  `earth2grid` and is too old for the DLESyM checkpoint (`residual_prediction`
-  arg). Nothing was installed into it. Both packages live in an overlay dir,
-  `$BENCH_SCRATCH/pyoverlay/05`, which `run_all.sh` prepends to `PYTHONPATH`:
-  - `earth2grid` built from NVlabs/earth2grid @ `11dcf1b` with
-    `CUDA_HOME=/usr/local/cuda TORCH_CUDA_ARCH_LIST=10.0 --no-build-isolation`
-    (the `healpixpad_cuda` extension must build, otherwise padding fails with
-    `'NoneType' object has no attribute 'forward'`).
-  - `nvidia-physicsnemo` 2.3.0a0 from NVIDIA/physicsnemo @ `426f755` (the rev
-    pinned in `pyproject.toml` for the `dlesym` extra), `--no-deps`.
-- IC time defaults to `2025-06-01T00:00` (ARCO ERA5's v3 store covers it; the
-  v2 store stops at 2021). A fixed date keeps runs comparable.
-- GPU choice: GPUs 0..3 are owned by benchmarks 1..4. `run_all.sh` picks the GPU
-  with the least memory in use before each run and `extra.gpu_shared` records
-  whether another process was on it; a shared GPU skews per-step timing.
+Requires the `dlesym` extra, including earth2grid with its CUDA HEALPix padding
+extension and the PhysicsNeMo revision pinned in `pyproject.toml`. Set `PY5`
+for a dedicated environment, or `BENCH_OVERLAY_05` for prebuilt dependencies.
+
+IC time defaults to `2025-06-01T00:00`, supported by the ARCO ERA5 v3 store.
+The suite assigns the GPU; `--parallel` queues at most one benchmark per GPU.
 
 ## Run
 
+From the repository root, use the shared suite runner:
+
 ```bash
-source benchmarks/workflows/env.sh && cd benchmarks/workflows
-bash 05_s2s_long_rollout/run_all.sh                 # members 1 and 4, 45 days, cold cache
-bash 05_s2s_long_rollout/run_all.sh --cache warm    # optional warm pass
-$PY 05_s2s_long_rollout/bench.py --days 2 --members 1 --cache warm   # smoke
+bash benchmarks/workflows/run_all_benchmarks.sh --only 05             # full cold matrix
+bash benchmarks/workflows/run_all_benchmarks.sh --only 05 --cache both # cold + warm
+bash benchmarks/workflows/run_all_benchmarks.sh --only 05 --smoke      # one short run
 ```
+
+For custom model options, source the shared environment and run `bench.py`:
+
+```bash
+source benchmarks/workflows/env.sh
+"$PY" benchmarks/workflows/05_s2s_long_rollout/bench.py --help
+```
+
+See the [suite README](../README.md) for GPU selection, environment overrides,
+credentials and output locations. The shared runner calls `bench.py` directly;
+the individual `run_all.sh` is a legacy entry point with its own settings.

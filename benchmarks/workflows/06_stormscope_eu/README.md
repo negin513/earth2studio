@@ -1,5 +1,10 @@
 # Benchmark 6: StormScope-EU satellite nowcast (booth pipeline)
 
+## Use case
+
+Use this benchmark to budget EUMETSAT acquisition, inference and output delivery
+for a European satellite nowcast service with true-colour and airmass products.
+
 The direct counterpart to the Earthmover GTC Berlin 2026 StormScope-EU booth
 pipeline (`scripts/stormscope_eu_pipeline.py` in
 https://github.com/earthmover-support/nvidia-gtc-berlin-2026-stormscope_eu-booth).
@@ -18,25 +23,33 @@ https://github.com/earthmover-support/nvidia-gtc-berlin-2026-stormscope_eu-booth
 
 ## Run
 
+From the repository root, use the shared suite runner:
+
+```bash
+bash benchmarks/workflows/run_all_benchmarks.sh --only 06             # full cold matrix
+bash benchmarks/workflows/run_all_benchmarks.sh --only 06 --cache both # cold + warm
+bash benchmarks/workflows/run_all_benchmarks.sh --only 06 --smoke      # one short run
+```
+
+For custom model options, source the shared environment and run `bench.py`:
+
 ```bash
 source benchmarks/workflows/env.sh
-cd benchmarks/workflows
-$PY 06_stormscope_eu/bench.py --steps 2 --cache warm --io zarr      # smoke
-bash 06_stormscope_eu/run_all.sh                                    # 4 cold variants
-STEPS=12 START_TIME=2026-10-28T10:00 WARM=1 bash 06_stormscope_eu/run_all.sh
+"$PY" benchmarks/workflows/06_stormscope_eu/bench.py --help
 ```
+
+See the [suite README](../README.md) for GPU selection, environment overrides,
+credentials and output locations. The shared runner calls `bench.py` directly;
+the individual `run_all.sh` is a legacy entry point with its own settings.
 
 EUMETSAT credentials come from `~/.eumdac/credentials` (or the
 `EUMETSAT_CONSUMER_KEY/SECRET` env vars). Without the NRT licence, products
 younger than ~62 min past slot time return 403, hence the 90 min default lag.
 
-GPU: `bench.py` picks the GPU with least memory in use unless
-`CUDA_VISIBLE_DEVICES` is set, and records `gpu_index` / `gpu_shared` (another
-process present at pick time). Shared-GPU runs are flagged, not excluded.
-
-No extra packages were needed in the shared venv: `eumdac`, `icechunk`,
-`omegaconf` and `physicsnemo` were already present; the model does not need
-`natten` (that is the US StormScope Flash backbone).
+The shared runner assigns the GPU explicitly and queues one benchmark per GPU
+in parallel mode. Set `PY6` to use a dedicated environment. Requires the
+`stormscope` and data/IO dependencies; this EU model does not use the GOES
+Flash backbone's NATTEN kernels.
 
 ## Phases
 
@@ -62,5 +75,3 @@ last commit, i.e. booth stages 4+5), `end_to_end_incl_model_s`, `commits`,
 Booth `docs/END2END_NEARREALTIME_PERFORMANCE.md`, stage 4 (pickup + download +
 preprocess, warm model, newest zip only) 2.1 min, stage 5 (inference + ingest to
 Arraylake, 12 x 10 min) 3.6 min, ~17 s/step, on a persistent GPU container.
-
-RESULTS_PLACEHOLDER

@@ -1,3 +1,18 @@
+# SPDX-FileCopyrightText: Copyright (c) 2024-2026 NVIDIA CORPORATION & AFFILIATES.
+# SPDX-FileCopyrightText: All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 """Shared timing/recording harness for the earth2studio workflow benchmarks.
 
 Usage pattern::
@@ -156,16 +171,9 @@ class BenchRecorder:
         return out
 
     def print_summary(self) -> None:
-        s = self.summary()
-        print(f"\n=== {self.benchmark} {self.variant} ===")
-        print(f"total wall: {s['total_wall_s']} s   peak GPU: {s['peak_gpu_mem_gib']} GiB")
-        for k, v in s["phases"].items():
-            line = f"  {k:24s} n={v['count']:<4d} total={v['total_s']:9.3f}s mean={v['mean_s']:8.3f}s"
-            if "mean_steady_s" in v:
-                line += f" steady={v['mean_steady_s']:8.3f}s"
-            print(line)
-        for k, v in s["extra"].items():
-            print(f"  extra.{k}: {v}")
+        from .presentation import print_run
+
+        print_run(self.summary())
 
 
 def pick_recent_init_time(
@@ -200,7 +208,8 @@ def setup_cache(mode: str, benchmark: str) -> str:
     if mode != "cold":
         raise ValueError(f"cache mode must be cold|warm, got {mode}")
     base = Path(os.environ.get("BENCH_SCRATCH", "/tmp/e2s_bench")) / "cold_cache" / benchmark
-    path = base / datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    base = Path(os.environ.get("BENCH_COLD_CACHE_ROOT", str(base)))
+    path = base / datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
     path.mkdir(parents=True, exist_ok=False)
     os.environ["EARTH2STUDIO_CACHE"] = str(path)
     print(f"[harness] cold cache at {path}")

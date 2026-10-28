@@ -1,5 +1,11 @@
 # Benchmark 4: StormScope GOES satellite nowcast (booth-style)
 
+## Use case
+
+Use this benchmark to choose storage, commit frequency and compilation settings
+for a frequently refreshed US satellite nowcast display. First-frame latency
+measures how quickly users can see the first forecast product.
+
 US counterpart of the Earthmover GTC Berlin StormScope-EU booth pipeline
 (`nvidia-gtc-berlin-2026-stormscope_eu-booth/scripts/stormscope_eu_pipeline.py`):
 
@@ -17,35 +23,41 @@ Grid: HRRR 3 km CONUS, 1024 x 1792. Chunks `time 1, lead_time 1, variable 1, y 5
 
 ## Run
 
+From the repository root, use the shared suite runner:
+
 ```bash
-source benchmarks/workflows/env.sh
-cd benchmarks/workflows
-export CUDA_VISIBLE_DEVICES=3
-PY4=/lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/earth2studio/.venv/bin/python
-$PY4 04_stormscope_goes/bench.py --steps 2 --cache warm            # smoke
-START=2026-10-28T16:50 BASELINE=1 bash 04_stormscope_goes/run_all.sh  # cold matrix
+bash benchmarks/workflows/run_all_benchmarks.sh --only 04             # full cold matrix
+bash benchmarks/workflows/run_all_benchmarks.sh --only 04 --cache both # cold + warm
+bash benchmarks/workflows/run_all_benchmarks.sh --only 04 --smoke      # one short run
 ```
 
-`run_all.sh` runs, cold cache (fresh `EARTH2STUDIO_CACHE` per variant, so model
-weights and GOES frames are downloaded from scratch):
+For custom model options, source the shared environment and run `bench.py`:
+
+```bash
+source benchmarks/workflows/env.sh
+"$PY" benchmarks/workflows/04_stormscope_goes/bench.py --help
+```
+
+See the [suite README](../README.md) for GPU selection, environment overrides,
+credentials and output locations. The shared runner calls `bench.py` directly;
+the individual `run_all.sh` is a legacy entry point with its own settings.
+
+The full suite matrix runs these four configurations:
 
 1. `--io zarr`
 2. `--io icechunk --commit-mode per_step`
 3. `--io icechunk --commit-mode per_init`
 4. `--io icechunk --commit-mode per_init --compile`
-5. (`BASELINE=1`) `--variant 3km_10min` baseline diffusion sampler, icechunk per_init
 
-Pin `START` so every variant sees the same init. Default init is now minus 3 h
-floored to 10 min. Logs land in `results/04_stormscope_goes/logs/`.
+Set `BASELINE=1` to add `--variant 3km_10min` with Icechunk/per-init commits.
+The suite pins one initial time for every variant, defaulting to three hours
+ago rounded down to ten minutes; override with `START=YYYY-MM-DDTHH:MM`.
 
-### Environment note
+## Environment notes
 
-`env.sh`'s `$PY` (earth2studio-main-bench venv) has no NATTEN, which StormScope
-requires. This benchmark therefore uses `forks/earth2studio/.venv` (torch 2.12.1+cu130,
-natten 0.21.7, icechunk 2.1.0, zarr 3.3.0) with the same PYTHONPATH overlay of this
-clone. Nothing was installed in either venv. The `stormscope` HF package cache was moved
-from `/root/.cache/earth2studio/stormscope` (home NFS hit its quota mid-download) to
-`forks/e2s_bench_cache/hf_cache/stormscope` and symlinked back.
+Requires the `stormscope` extra, including CUDA-compatible NATTEN for the Flash
+backbone, and Icechunk for its IO variants. Set `PY4` to use a dedicated
+StormScope environment. Model weights and GOES data use public sources.
 
 ## Phases
 

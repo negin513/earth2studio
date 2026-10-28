@@ -1,5 +1,11 @@
 # Benchmark 2: HENS-lite perturbed ensemble with attached diagnostic
 
+## Use case
+
+Use this benchmark to plan an ensemble product that represents forecast
+uncertainty, including precipitation, while balancing perturbation cost,
+throughput and GPU memory.
+
 Realistic "ops ensemble" workflow: SFNO (73 ch, 0.25 deg) initialised from GFS,
 perturbed into N members, rolled out 5 days at 6 h (20 steps) with the
 PrecipitationAFNOv2 diagnostic applied on every step, output cropped to CONUS
@@ -40,21 +46,33 @@ dominate and is not what an ensemble product pipeline does.
 
 ## Run
 
+From the repository root, use the shared suite runner:
+
 ```bash
-source ../env.sh; export CUDA_VISIBLE_DEVICES=1
-$PY 02_ensemble_hens_lite/bench.py --members 2 --steps 2 --cache warm   # smoke
-./02_ensemble_hens_lite/run_all.sh          # cold matrix
-./02_ensemble_hens_lite/run_all.sh warm     # optional warm pass
+bash benchmarks/workflows/run_all_benchmarks.sh --only 02             # full cold matrix
+bash benchmarks/workflows/run_all_benchmarks.sh --only 02 --cache both # cold + warm
+bash benchmarks/workflows/run_all_benchmarks.sh --only 02 --smoke      # one short run
 ```
+
+For custom model options, source the shared environment and run `bench.py`:
+
+```bash
+source benchmarks/workflows/env.sh
+"$PY" benchmarks/workflows/02_ensemble_hens_lite/bench.py --help
+```
+
+See the [suite README](../README.md) for GPU selection, environment overrides,
+credentials and output locations. The shared runner calls `bench.py` directly;
+the individual `run_all.sh` is a legacy entry point with its own settings.
 
 ## Environment notes
 
-The shared venv (`earth2studio-main-bench/.venv`) lacked the `sfno` extra;
-`torch-harmonics` and `makani` (uv.lock pinned git revs), `pynvml` and `moviepy`
-were installed with `--no-deps` so torch was left untouched.
+Requires `sfno`, `perturbation` and `precip-afno-v2` dependencies, including
+makani and CUDA-compatible torch-harmonics.
 
-PrecipitationAFNOv2 is used rather than v1: v1 needs `r500`/`r850` which SFNO-73ch
-does not output (it carries `q`), v2's 20 inputs are all SFNO outputs.
+PrecipitationAFNOv2 is used because its inputs are available from SFNO's
+73-channel output. The v1 model requires relative humidity fields that this
+SFNO output does not provide.
 
-`EARTH2STUDIO_PACKAGE_TIMEOUT=7200` is exported by `run_all.sh`: the 5 GB SFNO
-checkpoint from NGC does not finish inside fsspec's 300 s default on a busy link.
+The suite sets `EARTH2STUDIO_PACKAGE_TIMEOUT=7200` unless already configured,
+allowing time for the large SFNO checkpoint download.
