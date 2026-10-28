@@ -139,6 +139,8 @@ directory at completion.
 | `<benchmark>/*.json` | Variant, phase samples/statistics, wall time, peak GPU memory, extra metrics and environment |
 | `logs/<benchmark>.log` | Full stdout/stderr and command lines for that benchmark in this invocation |
 | `run_manifest.json` | This invocation: assigned GPU, start/end times, commands, exit codes and log paths |
+| `SUMMARY.txt` | Rich terminal summary saved as plain text |
+| `SUMMARY.md` | One combined table: downloads, model loading, input fetching, inference total/per step, total wall time and peak GPU memory; also printed with Rich |
 | `RESULTS.md` | Per-run comparison tables; also printed with Rich |
 | `ANALYSIS.md` | Cross-benchmark summary, phase breakdowns, variant comparisons and available cold/warm deltas |
 | `all_runs.csv` | Flat results for analysis or spreadsheets |

@@ -95,29 +95,114 @@ def print_run(run: Mapping[str, Any], console: Console | None = None) -> None:
         console.print(metrics)
 
 
+SUMMARY_COLUMNS = (
+    "Workflow",
+    "Variant",
+    "Model download s",
+    "Model load s",
+    "Input fetch s",
+    "Inference total s",
+    "Inference s/step",
+    "Total wall s",
+    "Peak GPU GiB",
+)
+WORKFLOWS = {
+    "01_deterministic_fcn3": "Weather: FCN3 (6 h)",
+    "02_ensemble_hens_lite": "Ensemble: SFNO (6 h)",
+    "03_corrdiff_taiwan": "Downscaling: CorrDiff (forcing time)",
+    "04_stormscope_goes": "Nowcasting: GOES (10 min)",
+    "05_s2s_long_rollout": "S2S: DLESyM (96 h)",
+    "06_stormscope_eu": "Nowcasting: EU (10 min)",
+}
+SUMMARY_NOTE = (
+    "Seconds per step use steady inference timing (first call excluded when available). "
+    "Ensembles are per batch step; CorrDiff is per forcing time for all requested samples, "
+    "not per diffusion iteration. Input fetch includes download/decode/preparation. "
+    "Model load includes DLESyM's lat/lon wrapper. Total wall includes IO, compilation "
+    "and other overhead; phase columns need not sum to it. Peak GPU is allocated memory."
+)
+
+
+def comparison_rows(runs: Sequence[dict[str, Any]]) -> list[list[str]]:
+    """Extract the same phase totals and step metrics for terminal and Markdown."""
+    rows = []
+    for run in sorted(
+        runs,
+        key=lambda r: (
+            r["benchmark"],
+            variant_label(r["variant"]),
+            r.get("started_utc", ""),
+        ),
+    ):
+        phases = run.get("phases", {})
+        inference = phases.get("inference_step", phases.get("downscale_step", {}))
+        extra = run.get("extra", {})
+        per_step = extra.get(
+            "step_seconds_steady", extra.get("inference_s_per_step_steady")
+        )
+        if per_step is None:
+            per_step = inference.get("mean_steady_s", inference.get("mean_s"))
+        loads = [
+            phase["total_s"]
+            for name, phase in phases.items()
+            if name.startswith("model_load")
+        ]
+        rows.append(
+            [
+                WORKFLOWS.get(run["benchmark"], run["benchmark"]),
+                variant_label(run["variant"]),
+                format_value(phases.get("model_download", {}).get("total_s")),
+                format_value(sum(loads) if loads else None),
+                format_value(phases.get("ic_fetch", {}).get("total_s")),
+                format_value(inference.get("total_s")),
+                format_value(per_step),
+                format_value(run.get("total_wall_s")),
+                format_value(run.get("peak_gpu_mem_gib")),
+            ]
+        )
+    return rows
+
+
+def summary_markdown(runs: Sequence[dict[str, Any]]) -> str:
+    """Export the combined table with the same values as the Rich output."""
+
+    def escape(value: str) -> str:
+        return value.replace("|", "\\|").replace("\n", " ")
+
+    lines = [
+        "# Workflow benchmark summary",
+        "",
+        "| " + " | ".join(SUMMARY_COLUMNS) + " |",
+        "|" + "---|" * len(SUMMARY_COLUMNS),
+    ]
+    lines.extend(
+        "| " + " | ".join(escape(cell) for cell in row) + " |"
+        for row in comparison_rows(runs)
+    )
+    return "\n".join(lines) + "\n\n" + SUMMARY_NOTE + "\n"
+
+
 def print_comparison(
     runs: Sequence[dict[str, Any]], console: Console | None = None
 ) -> None:
-    """Compare variants per benchmark using a compact set of headline columns."""
+    """Show all workflows in one table of phase totals, step time and GPU memory."""
     console = console or Console()
     if not runs:
         console.print("No benchmark runs found.")
         return
-    for benchmark in sorted({run["benchmark"] for run in runs}):
-        group = [run for run in runs if run["benchmark"] == benchmark]
-        metric_key, metric_label = HEADLINE.get(benchmark, ("", "Metric"))
-        console.rule(benchmark, style="cyan")
-        table = Table(box=box.SIMPLE_HEAD, header_style="bold cyan")
-        table.add_column("Variant", overflow="fold", ratio=3)
-        table.add_column("Started UTC", overflow="fold")
-        for label in ("Wall s", "Peak GiB", metric_label):
-            table.add_column(label, justify="right")
-        for run in group:
-            table.add_row(
-                variant_label(run["variant"]),
-                run.get("started_utc", "—"),
-                format_value(run.get("total_wall_s")),
-                format_value(run.get("peak_gpu_mem_gib")),
-                format_value(run.get("extra", {}).get(metric_key)),
-            )
-        console.print(table)
+    table = Table(
+        title="Workflow benchmark summary",
+        box=box.SIMPLE_HEAD,
+        header_style="bold cyan",
+    )
+    for index, label in enumerate(SUMMARY_COLUMNS):
+        table.add_column(
+            label,
+            justify="left" if index < 2 else "right",
+            overflow="fold",
+            min_width=7 if index >= 2 else 12,
+        )
+    for row in comparison_rows(runs):
+        table.add_row(*row)
+    console.print(table)
+    console.print(SUMMARY_NOTE, markup=False)

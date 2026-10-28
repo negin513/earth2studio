@@ -20,10 +20,12 @@ import json
 import os
 from pathlib import Path
 
+from rich.console import Console
+
 try:
-    from .presentation import latest_runs, print_comparison
+    from .presentation import latest_runs, print_comparison, summary_markdown
 except ImportError:  # Direct invocation: python common/make_table.py
-    from presentation import latest_runs, print_comparison
+    from presentation import latest_runs, print_comparison, summary_markdown
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument(
@@ -75,5 +77,8 @@ for bdir in sorted(p for p in root.iterdir() if p.is_dir()):
 (root / "RESULTS.md").write_text(
     "# Workflow benchmark results\n" + "\n".join(out) + "\n"
 )
-print_comparison(all_rows)
+(root / "SUMMARY.md").write_text(summary_markdown(all_rows))
+console = Console(record=True, width=max(160, Console().width))
+print_comparison(all_rows, console)
+console.save_text(str(root / "SUMMARY.txt"))
 print(root / "RESULTS.md")
