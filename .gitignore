@@ -114,3 +114,6 @@ docs/_static/scorecard/eval_scores_*.json
 
 # Skills
 skills/*/evals/results/
+
+# workflow benchmark outputs (committed separately once runs finish)
+/results/
