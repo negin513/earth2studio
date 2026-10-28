@@ -1,0 +1,187 @@
+{
+  "benchmark": "04_stormscope_goes",
+  "variant": {
+    "io": "icechunk",
+    "commit": "per_init",
+    "compile": 0,
+    "model": "3km_10min_flash",
+    "cache": "cold"
+  },
+  "started_utc": "2026-10-28T20:06:33.416921+00:00",
+  "total_wall_s": 162.701,
+  "peak_gpu_mem_gib": 9.616,
+  "phases": {
+    "model_download": {
+      "count": 1,
+      "total_s": 14.6175,
+      "mean_s": 14.6175,
+      "min_s": 14.6175,
+      "max_s": 14.6175
+    },
+    "model_load": {
+      "count": 1,
+      "total_s": 6.3266,
+      "mean_s": 6.3266,
+      "min_s": 6.3266,
+      "max_s": 6.3266
+    },
+    "ic_fetch": {
+      "count": 1,
+      "total_s": 102.5435,
+      "mean_s": 102.5435,
+      "min_s": 102.5435,
+      "max_s": 102.5435
+    },
+    "io_setup": {
+      "count": 1,
+      "total_s": 0.0834,
+      "mean_s": 0.0834,
+      "min_s": 0.0834,
+      "max_s": 0.0834
+    },
+    "composite": {
+      "count": 13,
+      "total_s": 0.0365,
+      "mean_s": 0.0028,
+      "min_s": 0.0006,
+      "max_s": 0.0282,
+      "mean_steady_s": 0.0007
+    },
+    "io_write": {
+      "count": 13,
+      "total_s": 0.7243,
+      "mean_s": 0.0557,
+      "min_s": 0.0188,
+      "max_s": 0.2582,
+      "mean_steady_s": 0.0586
+    },
+    "inference_step": {
+      "count": 12,
+      "total_s": 13.1635,
+      "mean_s": 1.097,
+      "min_s": 1.0747,
+      "max_s": 1.329,
+      "mean_steady_s": 1.0759
+    },
+    "io_commit": {
+      "count": 1,
+      "total_s": 0.0879,
+      "mean_s": 0.0879,
+      "min_s": 0.0879,
+      "max_s": 0.0879
+    }
+  },
+  "phase_samples": {
+    "model_download": [
+      14.6175
+    ],
+    "model_load": [
+      6.3266
+    ],
+    "ic_fetch": [
+      102.5435
+    ],
+    "io_setup": [
+      0.0834
+    ],
+    "composite": [
+      0.0282,
+      0.0006,
+      0.0007,
+      0.0006,
+      0.0006,
+      0.0006,
+      0.0006,
+      0.0015,
+      0.0006,
+      0.0006,
+      0.0006,
+      0.0006,
+      0.0007
+    ],
+    "io_write": [
+      0.0215,
+      0.0188,
+      0.0191,
+      0.0195,
+      0.0224,
+      0.0231,
+      0.021,
+      0.0204,
+      0.0203,
+      0.0202,
+      0.0222,
+      0.2582,
+      0.2377
+    ],
+    "inference_step": [
+      1.329,
+      1.0763,
+      1.076,
+      1.0758,
+      1.075,
+      1.0747,
+      1.0765,
+      1.0759,
+      1.0758,
+      1.0761,
+      1.0751,
+      1.0771
+    ],
+    "io_commit": [
+      0.0879
+    ]
+  },
+  "extra": {
+    "model_files": [
+      "config.json",
+      "lat.npy",
+      "lon.npy",
+      "checkpoints/goes/3km_10min_flash/expert_2.mdlus",
+      "checkpoints/goes/3km_10min_flash/expert_1.mdlus",
+      "checkpoints/goes/3km_10min_flash/expert_0.mdlus",
+      "topo.npy"
+    ],
+    "ic_frames": 6,
+    "ic_bytes_gpu": 720000000,
+    "steps": 12,
+    "init_time": "2026-10-28T16:50:00",
+    "step_seconds_steady": 1.076,
+    "step_seconds_first": 1.329,
+    "time_to_first_frame_s": 103.962,
+    "rollout_s": 14.037,
+    "end_to_end_s": 116.581,
+    "io_overhead_s": 0.849,
+    "io_overhead_frac_of_rollout": 0.0605,
+    "store_bytes": 606884731,
+    "satellite": "goes19",
+    "scan_mode": "C",
+    "cache_mode": "cold",
+    "cache_path": "/lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/e2s_bench_cache/workflows/cold_cache/04_stormscope_goes/20261028T200633Z",
+    "cache_bytes": 2499676731
+  },
+  "env": {
+    "hostname": "nvl72063-T01",
+    "python": "3.12.3",
+    "torch": "2.12.1+cu130",
+    "cuda": "13.0",
+    "earth2studio_path": "/lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/earth2studio-bench",
+    "earth2studio_sha": "c00d096a",
+    "gpu": "NVIDIA GB200",
+    "gpu_mem_gib": 184.3,
+    "gpu_count": 4
+  },
+  "argv": [
+    "04_stormscope_goes/bench.py",
+    "--steps",
+    "12",
+    "--cache",
+    "cold",
+    "--start-time",
+    "2026-10-28T16:50",
+    "--io",
+    "icechunk",
+    "--commit-mode",
+    "per_init"
+  ]
+}

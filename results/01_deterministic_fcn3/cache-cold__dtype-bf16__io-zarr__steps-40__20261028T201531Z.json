@@ -1,0 +1,200 @@
+{
+  "benchmark": "01_deterministic_fcn3",
+  "variant": {
+    "io": "zarr",
+    "dtype": "bf16",
+    "steps": 40,
+    "cache": "cold"
+  },
+  "started_utc": "2026-10-28T20:15:31.989046+00:00",
+  "total_wall_s": 284.686,
+  "peak_gpu_mem_gib": 49.023,
+  "phases": {
+    "model_download": {
+      "count": 1,
+      "total_s": 14.2851,
+      "mean_s": 14.2851,
+      "min_s": 14.2851,
+      "max_s": 14.2851
+    },
+    "model_load": {
+      "count": 1,
+      "total_s": 120.4499,
+      "mean_s": 120.4499,
+      "min_s": 120.4499,
+      "max_s": 120.4499
+    },
+    "ic_fetch": {
+      "count": 1,
+      "total_s": 7.4086,
+      "mean_s": 7.4086,
+      "min_s": 7.4086,
+      "max_s": 7.4086
+    },
+    "io_setup": {
+      "count": 1,
+      "total_s": 1.5798,
+      "mean_s": 1.5798,
+      "min_s": 1.5798,
+      "max_s": 1.5798
+    },
+    "io_write": {
+      "count": 41,
+      "total_s": 34.9209,
+      "mean_s": 0.8517,
+      "min_s": 0.6905,
+      "max_s": 1.1594,
+      "mean_steady_s": 0.8476
+    },
+    "inference_step": {
+      "count": 40,
+      "total_s": 68.0267,
+      "mean_s": 1.7007,
+      "min_s": 1.5678,
+      "max_s": 6.1158,
+      "mean_steady_s": 1.5875
+    },
+    "io_close": {
+      "count": 1,
+      "total_s": 0.0,
+      "mean_s": 0.0,
+      "min_s": 0.0,
+      "max_s": 0.0
+    }
+  },
+  "phase_samples": {
+    "model_download": [
+      14.2851
+    ],
+    "model_load": [
+      120.4499
+    ],
+    "ic_fetch": [
+      7.4086
+    ],
+    "io_setup": [
+      1.5798
+    ],
+    "io_write": [
+      1.0166,
+      0.6905,
+      0.6939,
+      0.7175,
+      0.7057,
+      0.7009,
+      0.7032,
+      1.1221,
+      0.7043,
+      0.7368,
+      0.7691,
+      0.7983,
+      0.7993,
+      0.8058,
+      0.9268,
+      1.1032,
+      0.8597,
+      1.0112,
+      0.8006,
+      0.7698,
+      1.1594,
+      0.8936,
+      0.7089,
+      0.8322,
+      0.7374,
+      0.7677,
+      0.7796,
+      0.8953,
+      0.9846,
+      0.8192,
+      0.8442,
+      1.0028,
+      1.0732,
+      0.9881,
+      0.789,
+      0.7827,
+      0.797,
+      0.7849,
+      0.7678,
+      0.9857,
+      1.0922
+    ],
+    "inference_step": [
+      6.1158,
+      1.5979,
+      1.5907,
+      1.5944,
+      1.5968,
+      1.5983,
+      1.6002,
+      1.5928,
+      1.5915,
+      1.5905,
+      1.5903,
+      1.5879,
+      1.5913,
+      1.5897,
+      1.5678,
+      1.5819,
+      1.58,
+      1.5821,
+      1.5806,
+      1.57,
+      1.582,
+      1.5924,
+      1.5991,
+      1.6003,
+      1.5976,
+      1.599,
+      1.5916,
+      1.5852,
+      1.5922,
+      1.5831,
+      1.591,
+      1.5907,
+      1.5928,
+      1.5818,
+      1.5719,
+      1.5817,
+      1.5809,
+      1.5726,
+      1.57,
+      1.5801
+    ],
+    "io_close": [
+      0.0
+    ]
+  },
+  "extra": {
+    "ic_source": "GFS",
+    "steps": 40,
+    "ic_time": "2026-10-26T18:00:00.000000",
+    "steps_per_s": 0.6299,
+    "io_write_total_s": 34.921,
+    "output_bytes": 12259604541,
+    "n_variables": 72,
+    "store": "/lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/e2s_bench_cache/workflows/01/fcn3_zarr_bf16_40steps.zarr",
+    "cache_mode": "cold",
+    "cache_path": "/lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/e2s_bench_cache/workflows/cold_cache/01_deterministic_fcn3/20261028T201531Z",
+    "cache_bytes": 2906469581
+  },
+  "env": {
+    "hostname": "nvl72063-T01",
+    "python": "3.12.3",
+    "torch": "2.13.0+cu130",
+    "cuda": "13.0",
+    "earth2studio_path": "/lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/earth2studio-bench",
+    "earth2studio_sha": "4070f04f",
+    "gpu": "NVIDIA GB200",
+    "gpu_mem_gib": 184.3,
+    "gpu_count": 1
+  },
+  "argv": [
+    "01_deterministic_fcn3/bench.py",
+    "--io",
+    "zarr",
+    "--dtype",
+    "bf16",
+    "--steps",
+    "40"
+  ]
+}

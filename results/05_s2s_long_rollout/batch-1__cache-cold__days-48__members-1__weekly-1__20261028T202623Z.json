@@ -1,0 +1,237 @@
+{
+  "benchmark": "05_s2s_long_rollout",
+  "variant": {
+    "members": 1,
+    "batch": 1,
+    "days": 48,
+    "cache": "cold",
+    "weekly": 1
+  },
+  "started_utc": "2026-10-28T20:26:23.529064+00:00",
+  "total_wall_s": 92.383,
+  "peak_gpu_mem_gib": 2.756,
+  "phases": {
+    "model_download": {
+      "count": 1,
+      "total_s": 5.8672,
+      "mean_s": 5.8672,
+      "min_s": 5.8672,
+      "max_s": 5.8672
+    },
+    "model_load": {
+      "count": 1,
+      "total_s": 2.6653,
+      "mean_s": 2.6653,
+      "min_s": 2.6653,
+      "max_s": 2.6653
+    },
+    "model_load_latlon_wrapper": {
+      "count": 1,
+      "total_s": 0.9657,
+      "mean_s": 0.9657,
+      "min_s": 0.9657,
+      "max_s": 0.9657
+    },
+    "ic_fetch": {
+      "count": 1,
+      "total_s": 71.7764,
+      "mean_s": 71.7764,
+      "min_s": 71.7764,
+      "max_s": 71.7764
+    },
+    "input_prep": {
+      "count": 1,
+      "total_s": 0.3761,
+      "mean_s": 0.3761,
+      "min_s": 0.3761,
+      "max_s": 0.3761
+    },
+    "inference_step": {
+      "count": 12,
+      "total_s": 7.6099,
+      "mean_s": 0.6342,
+      "min_s": 0.2415,
+      "max_s": 4.9161,
+      "mean_steady_s": 0.2449
+    },
+    "regrid": {
+      "count": 12,
+      "total_s": 0.0589,
+      "mean_s": 0.0049,
+      "min_s": 0.0048,
+      "max_s": 0.0055,
+      "mean_steady_s": 0.0049
+    },
+    "select": {
+      "count": 12,
+      "total_s": 0.0622,
+      "mean_s": 0.0052,
+      "min_s": 0.0016,
+      "max_s": 0.0374,
+      "mean_steady_s": 0.0023
+    },
+    "weekly_stats": {
+      "count": 12,
+      "total_s": 0.0075,
+      "mean_s": 0.0006,
+      "min_s": 0.0,
+      "max_s": 0.0009,
+      "mean_steady_s": 0.0006
+    },
+    "io_write": {
+      "count": 12,
+      "total_s": 1.9659,
+      "mean_s": 0.1638,
+      "min_s": 0.1397,
+      "max_s": 0.3387,
+      "mean_steady_s": 0.162
+    },
+    "io_write_weekly": {
+      "count": 1,
+      "total_s": 0.2108,
+      "mean_s": 0.2108,
+      "min_s": 0.2108,
+      "max_s": 0.2108
+    }
+  },
+  "phase_samples": {
+    "model_download": [
+      5.8672
+    ],
+    "model_load": [
+      2.6653
+    ],
+    "model_load_latlon_wrapper": [
+      0.9657
+    ],
+    "ic_fetch": [
+      71.7764
+    ],
+    "input_prep": [
+      0.3761
+    ],
+    "inference_step": [
+      4.9161,
+      0.2496,
+      0.2474,
+      0.2426,
+      0.2422,
+      0.2482,
+      0.2459,
+      0.2415,
+      0.245,
+      0.2451,
+      0.244,
+      0.2423
+    ],
+    "regrid": [
+      0.0055,
+      0.0048,
+      0.0049,
+      0.0048,
+      0.0049,
+      0.0049,
+      0.0048,
+      0.0049,
+      0.0049,
+      0.0049,
+      0.0049,
+      0.0048
+    ],
+    "select": [
+      0.0374,
+      0.0024,
+      0.0016,
+      0.0017,
+      0.0016,
+      0.0016,
+      0.0016,
+      0.0016,
+      0.0017,
+      0.0017,
+      0.0016,
+      0.0077
+    ],
+    "weekly_stats": [
+      0.0009,
+      0.0007,
+      0.0006,
+      0.0008,
+      0.0006,
+      0.0007,
+      0.0007,
+      0.0007,
+      0.0007,
+      0.0007,
+      0.0004,
+      0.0
+    ],
+    "io_write": [
+      0.1841,
+      0.1403,
+      0.1442,
+      0.1403,
+      0.1503,
+      0.1412,
+      0.1531,
+      0.145,
+      0.3387,
+      0.1483,
+      0.1397,
+      0.1409
+    ],
+    "io_write_weekly": [
+      0.2108
+    ]
+  },
+  "extra": {
+    "steps": 12,
+    "days": 48,
+    "members": 1,
+    "batch_size": 1,
+    "ic_time": "2025-06-01T00:00:00",
+    "variables": [
+      "t2m",
+      "msl",
+      "z500",
+      "t850"
+    ],
+    "model_step_hours": 96,
+    "leads_per_step": 16,
+    "inference_s_per_step_steady": 0.2449,
+    "pipeline_s_per_step_steady": 0.4146,
+    "forecast_days_per_gpu_minute": 578.89,
+    "member_days_per_gpu_minute": 578.89,
+    "output_bytes": 3189497870,
+    "weekly_output_bytes": 99693190,
+    "output_path": "/lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/e2s_bench_cache/workflows/05/batch-1__cache-cold__days-48__members-1__weekly-1/forecast.zarr",
+    "output_grid": "latlon 0.25deg (721x1440), regridded from HEALPix nside=64",
+    "t2m_final_maxabs": 324.05,
+    "nan_detected": false,
+    "gpu_index": 1,
+    "gpu_shared": false,
+    "cache_mode": "cold",
+    "cache_path": "/lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/e2s_bench_cache/workflows/cold_cache/05_s2s_long_rollout/20261028T202554Z",
+    "cache_bytes": 1729278649,
+    "pyoverlay": "/lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/e2s_bench_cache/workflows/pyoverlay/05"
+  },
+  "env": {
+    "hostname": "nvl72063-T01",
+    "python": "3.12.3",
+    "torch": "2.13.0+cu130",
+    "cuda": "13.0",
+    "earth2studio_path": "/lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/earth2studio-bench",
+    "earth2studio_sha": "4070f04f",
+    "gpu": "NVIDIA GB200",
+    "gpu_mem_gib": 184.3,
+    "gpu_count": 1
+  },
+  "argv": [
+    "05_s2s_long_rollout/bench.py",
+    "--days",
+    "45",
+    "--members",
+    "1",
+    "--weekly-stats"
+  ]
+}

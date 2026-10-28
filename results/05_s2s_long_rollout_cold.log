@@ -1,0 +1,83 @@
+== members=1 on GPU 1 ()
+[harness] cold cache at /lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/e2s_bench_cache/workflows/cold_cache/05_s2s_long_rollout/20261028T202554Z
+
+=== 05_s2s_long_rollout {'members': 1, 'batch': 1, 'days': 48, 'cache': 'cold', 'weekly': 1} ===
+total wall: 92.383 s   peak GPU: 2.756 GiB
+  model_download           n=1    total=    5.867s mean=   5.867s
+  model_load               n=1    total=    2.665s mean=   2.665s
+  model_load_latlon_wrapper n=1    total=    0.966s mean=   0.966s
+  ic_fetch                 n=1    total=   71.776s mean=  71.776s
+  input_prep               n=1    total=    0.376s mean=   0.376s
+  inference_step           n=12   total=    7.610s mean=   0.634s steady=   0.245s
+  regrid                   n=12   total=    0.059s mean=   0.005s steady=   0.005s
+  select                   n=12   total=    0.062s mean=   0.005s steady=   0.002s
+  weekly_stats             n=12   total=    0.007s mean=   0.001s steady=   0.001s
+  io_write                 n=12   total=    1.966s mean=   0.164s steady=   0.162s
+  io_write_weekly          n=1    total=    0.211s mean=   0.211s
+  extra.steps: 12
+  extra.days: 48
+  extra.members: 1
+  extra.batch_size: 1
+  extra.ic_time: 2025-06-01T00:00:00
+  extra.variables: ['t2m', 'msl', 'z500', 't850']
+  extra.model_step_hours: 96
+  extra.leads_per_step: 16
+  extra.inference_s_per_step_steady: 0.2449
+  extra.pipeline_s_per_step_steady: 0.4146
+  extra.forecast_days_per_gpu_minute: 578.89
+  extra.member_days_per_gpu_minute: 578.89
+  extra.output_bytes: 3189497870
+  extra.weekly_output_bytes: 99693190
+  extra.output_path: /lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/e2s_bench_cache/workflows/05/batch-1__cache-cold__days-48__members-1__weekly-1/forecast.zarr
+  extra.output_grid: latlon 0.25deg (721x1440), regridded from HEALPix nside=64
+  extra.t2m_final_maxabs: 324.05
+  extra.nan_detected: False
+  extra.gpu_index: 1
+  extra.gpu_shared: False
+  extra.cache_mode: cold
+  extra.cache_path: /lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/e2s_bench_cache/workflows/cold_cache/05_s2s_long_rollout/20261028T202554Z
+  extra.cache_bytes: 1729278649
+  extra.pyoverlay: /lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/e2s_bench_cache/workflows/pyoverlay/05
+[harness] wrote /lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/earth2studio-bench/results/05_s2s_long_rollout/batch-1__cache-cold__days-48__members-1__weekly-1__20261028T202623Z.json
+== members=4 on GPU 1 ()
+[harness] cold cache at /lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/e2s_bench_cache/workflows/cold_cache/05_s2s_long_rollout/20261028T202800Z
+
+=== 05_s2s_long_rollout {'members': 4, 'batch': 4, 'days': 48, 'cache': 'cold', 'weekly': 1} ===
+total wall: 98.953 s   peak GPU: 9.294 GiB
+  model_download           n=1    total=    5.747s mean=   5.747s
+  model_load               n=1    total=    2.474s mean=   2.474s
+  model_load_latlon_wrapper n=1    total=    0.980s mean=   0.980s
+  ic_fetch                 n=1    total=   67.880s mean=  67.880s
+  input_prep               n=1    total=    1.410s mean=   1.410s
+  inference_step           n=12   total=    9.775s mean=   0.815s steady=   0.316s
+  regrid                   n=12   total=    0.228s mean=   0.019s steady=   0.019s
+  select                   n=12   total=    0.104s mean=   0.009s steady=   0.006s
+  weekly_stats             n=12   total=    0.010s mean=   0.001s steady=   0.001s
+  io_write                 n=12   total=    8.330s mean=   0.694s steady=   0.693s
+  io_write_weekly          n=1    total=    0.359s mean=   0.359s
+  extra.steps: 12
+  extra.days: 48
+  extra.members: 4
+  extra.batch_size: 4
+  extra.ic_time: 2025-06-01T00:00:00
+  extra.variables: ['t2m', 'msl', 'z500', 't850']
+  extra.model_step_hours: 96
+  extra.leads_per_step: 16
+  extra.inference_s_per_step_steady: 0.3162
+  extra.pipeline_s_per_step_steady: 1.0346
+  extra.forecast_days_per_gpu_minute: 927.925
+  extra.member_days_per_gpu_minute: 927.925
+  extra.output_bytes: 12757917742
+  extra.weekly_output_bytes: 398706342
+  extra.output_path: /lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/e2s_bench_cache/workflows/05/batch-4__cache-cold__days-48__members-4__weekly-1/forecast.zarr
+  extra.output_grid: latlon 0.25deg (721x1440), regridded from HEALPix nside=64
+  extra.t2m_final_maxabs: 322.51
+  extra.nan_detected: False
+  extra.gpu_index: 1
+  extra.gpu_shared: False
+  extra.cache_mode: cold
+  extra.cache_path: /lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/e2s_bench_cache/workflows/cold_cache/05_s2s_long_rollout/20261028T202800Z
+  extra.cache_bytes: 1729278650
+  extra.pyoverlay: /lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/e2s_bench_cache/workflows/pyoverlay/05
+[harness] wrote /lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/earth2studio-bench/results/05_s2s_long_rollout/batch-4__cache-cold__days-48__members-4__weekly-1__20261028T202829Z.json
+/lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/earth2studio-bench/results/RESULTS.md

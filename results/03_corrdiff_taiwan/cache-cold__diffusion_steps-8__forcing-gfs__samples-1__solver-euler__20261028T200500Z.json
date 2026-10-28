@@ -1,0 +1,115 @@
+{
+  "benchmark": "03_corrdiff_taiwan",
+  "variant": {
+    "cache": "cold",
+    "forcing": "gfs",
+    "samples": 1,
+    "diffusion_steps": 8,
+    "solver": "euler"
+  },
+  "started_utc": "2026-10-28T20:05:00.444944+00:00",
+  "total_wall_s": 67.114,
+  "peak_gpu_mem_gib": 1.218,
+  "phases": {
+    "model_download": {
+      "count": 1,
+      "total_s": 46.2705,
+      "mean_s": 46.2705,
+      "min_s": 46.2705,
+      "max_s": 46.2705
+    },
+    "model_load": {
+      "count": 1,
+      "total_s": 5.7864,
+      "mean_s": 5.7864,
+      "min_s": 5.7864,
+      "max_s": 5.7864
+    },
+    "ic_fetch": {
+      "count": 1,
+      "total_s": 12.1128,
+      "mean_s": 12.1128,
+      "min_s": 12.1128,
+      "max_s": 12.1128
+    },
+    "downscale_step": {
+      "count": 4,
+      "total_s": 2.2771,
+      "mean_s": 0.5693,
+      "min_s": 0.4402,
+      "max_s": 0.9528,
+      "mean_steady_s": 0.4414
+    },
+    "io_write": {
+      "count": 4,
+      "total_s": 0.1768,
+      "mean_s": 0.0442,
+      "min_s": 0.0429,
+      "max_s": 0.0458,
+      "mean_steady_s": 0.0437
+    }
+  },
+  "phase_samples": {
+    "model_download": [
+      46.2705
+    ],
+    "model_load": [
+      5.7864
+    ],
+    "ic_fetch": [
+      12.1128
+    ],
+    "downscale_step": [
+      0.9528,
+      0.4438,
+      0.4402,
+      0.4402
+    ],
+    "io_write": [
+      0.0458,
+      0.0429,
+      0.0444,
+      0.0437
+    ]
+  },
+  "extra": {
+    "samples": 1,
+    "diffusion_steps": 8,
+    "times": 4,
+    "seconds_per_sample": 0.4414,
+    "seconds_per_sample_step": 0.05518,
+    "first_call_s": 0.9528,
+    "cache_mode": "cold",
+    "cache_path": "/lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/e2s_bench_cache/workflows/cold_cache/03_corrdiff_taiwan/20261028T200441Z",
+    "cache_bytes": 1556871767,
+    "zarr_store": "/lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/e2s_bench_cache/workflows/03/cache-cold__diffusion_steps-8__forcing-gfs__samples-1__solver-euler.zarr",
+    "forcing_times": [
+      "2026-10-26T00:00:00.000000",
+      "2026-10-26T06:00:00.000000",
+      "2026-10-26T12:00:00.000000",
+      "2026-10-26T18:00:00.000000"
+    ]
+  },
+  "env": {
+    "hostname": "nvl72063-T01",
+    "python": "3.12.3",
+    "torch": "2.13.0+cu130",
+    "cuda": "13.0",
+    "earth2studio_path": "/lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/earth2studio-bench",
+    "earth2studio_sha": "c00d096a",
+    "gpu": "NVIDIA GB200",
+    "gpu_mem_gib": 184.3,
+    "gpu_count": 1
+  },
+  "argv": [
+    "03_corrdiff_taiwan/bench.py",
+    "--cache",
+    "cold",
+    "--times",
+    "4",
+    "--samples",
+    "1,4,8",
+    "--diffusion-steps",
+    "8,18,36"
+  ]
+}

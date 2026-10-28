@@ -1,0 +1,172 @@
+### 20:02:05 --io zarr
+[bench4] init 2026-10-28 16:50:00 steps=12 variant={'io': 'zarr', 'commit': 'n/a', 'compile': 0, 'model': '3km_10min_flash', 'cache': 'cold'} store=/lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/e2s_bench_cache/workflows/04/cache-cold__commit-n_a__compile-0__io-zarr__model-3km_10min_flash_200208
+[bench4] model loaded: 6 input frames, step 10 minutes, grid (1024, 1792)
+[bench4] step 1/12 inference 1.39s
+[bench4] step 2/12 inference 1.08s
+[bench4] step 3/12 inference 1.07s
+[bench4] step 4/12 inference 1.07s
+[bench4] step 5/12 inference 1.07s
+[bench4] step 6/12 inference 1.07s
+[bench4] step 7/12 inference 1.07s
+[bench4] step 8/12 inference 1.07s
+[bench4] step 9/12 inference 1.07s
+[bench4] step 10/12 inference 1.07s
+[bench4] step 11/12 inference 1.07s
+[bench4] step 12/12 inference 1.07s
+total wall: 96.585 s   peak GPU: 9.616 GiB
+  extra.model_files: ['config.json', 'lat.npy', 'lon.npy', 'checkpoints/goes/3km_10min_flash/expert_2.mdlus', 'checkpoints/goes/3km_10min_flash/expert_1.mdlus', 'checkpoints/goes/3km_10min_flash/expert_0.mdlus', 'topo.npy']
+  extra.ic_frames: 6
+  extra.ic_bytes_gpu: 720000000
+  extra.steps: 12
+  extra.init_time: 2026-10-28T16:50:00
+  extra.step_seconds_steady: 1.073
+  extra.step_seconds_first: 1.386
+  extra.time_to_first_frame_s: 36.836
+  extra.rollout_s: 14.709
+  extra.end_to_end_s: 49.875
+  extra.io_overhead_s: 1.499
+  extra.io_overhead_frac_of_rollout: 0.1019
+  extra.store_bytes: 606968659
+  extra.satellite: goes19
+  extra.scan_mode: C
+  extra.cache_mode: cold
+  extra.cache_path: /lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/e2s_bench_cache/workflows/cold_cache/04_stormscope_goes/20261028T200208Z
+  extra.cache_bytes: 2499676734
+### 20:03:49 --io icechunk --commit-mode per_step
+[bench4] init 2026-10-28 16:50:00 steps=12 variant={'io': 'icechunk', 'commit': 'per_step', 'compile': 0, 'model': '3km_10min_flash', 'cache': 'cold'} store=/lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/e2s_bench_cache/workflows/04/cache-cold__commit-per_step__compile-0__io-icechunk__model-3km_10min_flash_200351
+[bench4] model loaded: 6 input frames, step 10 minutes, grid (1024, 1792)
+[bench4] step 1/12 inference 1.32s
+[bench4] step 2/12 inference 1.07s
+[bench4] step 3/12 inference 1.07s
+[bench4] step 4/12 inference 1.07s
+[bench4] step 5/12 inference 1.07s
+[bench4] step 6/12 inference 1.07s
+[bench4] step 7/12 inference 1.07s
+[bench4] step 8/12 inference 1.07s
+[bench4] step 9/12 inference 1.07s
+[bench4] step 10/12 inference 1.07s
+[bench4] step 11/12 inference 1.07s
+[bench4] step 12/12 inference 1.07s
+total wall: 156.589 s   peak GPU: 9.616 GiB
+  extra.model_files: ['config.json', 'lat.npy', 'lon.npy', 'checkpoints/goes/3km_10min_flash/expert_2.mdlus', 'checkpoints/goes/3km_10min_flash/expert_1.mdlus', 'checkpoints/goes/3km_10min_flash/expert_0.mdlus', 'topo.npy']
+  extra.ic_frames: 6
+  extra.ic_bytes_gpu: 720000000
+  extra.steps: 12
+  extra.init_time: 2026-10-28T16:50:00
+  extra.step_seconds_steady: 1.072
+  extra.step_seconds_first: 1.324
+  extra.time_to_first_frame_s: 99.037
+  extra.rollout_s: 15.339
+  extra.end_to_end_s: 112.815
+  extra.io_overhead_s: 2.23
+  extra.io_overhead_frac_of_rollout: 0.1454
+  extra.store_bytes: 607052094
+  extra.satellite: goes19
+  extra.scan_mode: C
+  extra.cache_mode: cold
+  extra.cache_path: /lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/e2s_bench_cache/workflows/cold_cache/04_stormscope_goes/20261028T200351Z
+  extra.cache_bytes: 2499676733
+### 20:06:30 --io icechunk --commit-mode per_init
+[bench4] init 2026-10-28 16:50:00 steps=12 variant={'io': 'icechunk', 'commit': 'per_init', 'compile': 0, 'model': '3km_10min_flash', 'cache': 'cold'} store=/lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/e2s_bench_cache/workflows/04/cache-cold__commit-per_init__compile-0__io-icechunk__model-3km_10min_flash_200633
+[bench4] model loaded: 6 input frames, step 10 minutes, grid (1024, 1792)
+[bench4] step 1/12 inference 1.33s
+[bench4] step 2/12 inference 1.08s
+[bench4] step 3/12 inference 1.08s
+[bench4] step 4/12 inference 1.08s
+[bench4] step 5/12 inference 1.08s
+[bench4] step 6/12 inference 1.07s
+[bench4] step 7/12 inference 1.08s
+[bench4] step 8/12 inference 1.08s
+[bench4] step 9/12 inference 1.08s
+[bench4] step 10/12 inference 1.08s
+[bench4] step 11/12 inference 1.08s
+[bench4] step 12/12 inference 1.08s
+total wall: 162.701 s   peak GPU: 9.616 GiB
+  extra.model_files: ['config.json', 'lat.npy', 'lon.npy', 'checkpoints/goes/3km_10min_flash/expert_2.mdlus', 'checkpoints/goes/3km_10min_flash/expert_1.mdlus', 'checkpoints/goes/3km_10min_flash/expert_0.mdlus', 'topo.npy']
+  extra.ic_frames: 6
+  extra.ic_bytes_gpu: 720000000
+  extra.steps: 12
+  extra.init_time: 2026-10-28T16:50:00
+  extra.step_seconds_steady: 1.076
+  extra.step_seconds_first: 1.329
+  extra.time_to_first_frame_s: 103.962
+  extra.rollout_s: 14.037
+  extra.end_to_end_s: 116.581
+  extra.io_overhead_s: 0.849
+  extra.io_overhead_frac_of_rollout: 0.0605
+  extra.store_bytes: 606884731
+  extra.satellite: goes19
+  extra.scan_mode: C
+  extra.cache_mode: cold
+  extra.cache_path: /lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/e2s_bench_cache/workflows/cold_cache/04_stormscope_goes/20261028T200633Z
+  extra.cache_bytes: 2499676731
+### 20:09:20 --io icechunk --commit-mode per_init --compile
+[bench4] init 2026-10-28 16:50:00 steps=12 variant={'io': 'icechunk', 'commit': 'per_init', 'compile': 1, 'model': '3km_10min_flash', 'cache': 'cold'} store=/lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/e2s_bench_cache/workflows/04/cache-cold__commit-per_init__compile-1__io-icechunk__model-3km_10min_flash_200923
+[bench4] model loaded: 6 input frames, step 10 minutes, grid (1024, 1792)
+[bench4] step 1/12 inference 1.67s
+[bench4] step 2/12 inference 0.73s
+[bench4] step 3/12 inference 0.47s
+[bench4] step 4/12 inference 0.47s
+[bench4] step 5/12 inference 0.47s
+[bench4] step 6/12 inference 0.47s
+[bench4] step 7/12 inference 0.47s
+[bench4] step 8/12 inference 0.47s
+[bench4] step 9/12 inference 0.47s
+[bench4] step 10/12 inference 0.47s
+[bench4] step 11/12 inference 0.47s
+[bench4] step 12/12 inference 0.47s
+total wall: 144.226 s   peak GPU: 8.085 GiB
+  extra.model_files: ['config.json', 'lat.npy', 'lon.npy', 'checkpoints/goes/3km_10min_flash/expert_2.mdlus', 'checkpoints/goes/3km_10min_flash/expert_1.mdlus', 'checkpoints/goes/3km_10min_flash/expert_0.mdlus', 'topo.npy']
+  extra.ic_frames: 6
+  extra.ic_bytes_gpu: 720000000
+  extra.steps: 12
+  extra.init_time: 2026-10-28T16:50:00
+  extra.step_seconds_steady: 0.493
+  extra.step_seconds_first: 1.665
+  extra.time_to_first_frame_s: 63.481
+  extra.rollout_s: 9.054
+  extra.end_to_end_s: 70.598
+  extra.io_overhead_s: 1.958
+  extra.io_overhead_frac_of_rollout: 0.2162
+  extra.store_bytes: 606934135
+  extra.satellite: goes19
+  extra.scan_mode: C
+  extra.cache_mode: cold
+  extra.cache_path: /lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/e2s_bench_cache/workflows/cold_cache/04_stormscope_goes/20261028T200923Z
+  extra.cache_bytes: 2499676730
+### 20:11:50 --io icechunk --commit-mode per_init --variant 3km_10min
+[bench4] init 2026-10-28 16:50:00 steps=12 variant={'io': 'icechunk', 'commit': 'per_init', 'compile': 0, 'model': '3km_10min', 'cache': 'cold'} store=/lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/e2s_bench_cache/workflows/04/cache-cold__commit-per_init__compile-0__io-icechunk__model-3km_10min_201153
+[bench4] model loaded: 6 input frames, step 10 minutes, grid (1024, 1792)
+[bench4] step 1/12 inference 31.61s
+[bench4] step 2/12 inference 31.45s
+[bench4] step 3/12 inference 31.41s
+[bench4] step 4/12 inference 31.38s
+[bench4] step 5/12 inference 31.51s
+[bench4] step 6/12 inference 50.56s
+[bench4] step 7/12 inference 48.74s
+[bench4] step 8/12 inference 31.39s
+[bench4] step 9/12 inference 31.52s
+[bench4] step 10/12 inference 31.56s
+[bench4] step 11/12 inference 31.53s
+[bench4] step 12/12 inference 31.50s
+total wall: 651.065 s   peak GPU: 9.438 GiB
+  extra.model_files: ['config.json', 'lat.npy', 'lon.npy', 'checkpoints/goes/3km_10min/expert_0.mdlus', 'checkpoints/goes/3km_10min/expert_1.mdlus', 'checkpoints/goes/3km_10min/expert_2.mdlus', 'topo.npy']
+  extra.ic_frames: 6
+  extra.ic_bytes_gpu: 720000000
+  extra.steps: 12
+  extra.init_time: 2026-10-28T16:50:00
+  extra.step_seconds_steady: 34.777
+  extra.step_seconds_first: 31.61
+  extra.time_to_first_frame_s: 73.528
+  extra.rollout_s: 414.857
+  extra.end_to_end_s: 456.683
+  extra.io_overhead_s: 0.675
+  extra.io_overhead_frac_of_rollout: 0.0016
+  extra.store_bytes: 606484074
+  extra.satellite: goes19
+  extra.scan_mode: C
+  extra.cache_mode: cold
+  extra.cache_path: /lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/e2s_bench_cache/workflows/cold_cache/04_stormscope_goes/20261028T201153Z
+  extra.cache_bytes: 3505934036
+/lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/earth2studio-bench/results/RESULTS.md
+### 20:22:52 ALL_DONE

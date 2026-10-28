@@ -1,0 +1,198 @@
+{
+  "benchmark": "04_stormscope_goes",
+  "variant": {
+    "io": "icechunk",
+    "commit": "per_init",
+    "compile": 1,
+    "model": "3km_10min_flash",
+    "cache": "cold"
+  },
+  "started_utc": "2026-10-28T20:09:23.082755+00:00",
+  "total_wall_s": 144.226,
+  "peak_gpu_mem_gib": 8.085,
+  "phases": {
+    "model_download": {
+      "count": 1,
+      "total_s": 15.901,
+      "mean_s": 15.901,
+      "min_s": 15.901,
+      "max_s": 15.901
+    },
+    "model_load": {
+      "count": 1,
+      "total_s": 6.3449,
+      "mean_s": 6.3449,
+      "min_s": 6.3449,
+      "max_s": 6.3449
+    },
+    "ic_fetch": {
+      "count": 1,
+      "total_s": 61.5443,
+      "mean_s": 61.5443,
+      "min_s": 61.5443,
+      "max_s": 61.5443
+    },
+    "compile_warmup": {
+      "count": 1,
+      "total_s": 24.9287,
+      "mean_s": 24.9287,
+      "min_s": 24.9287,
+      "max_s": 24.9287
+    },
+    "io_setup": {
+      "count": 1,
+      "total_s": 0.0893,
+      "mean_s": 0.0893,
+      "min_s": 0.0893,
+      "max_s": 0.0893
+    },
+    "composite": {
+      "count": 13,
+      "total_s": 0.0218,
+      "mean_s": 0.0017,
+      "min_s": 0.0006,
+      "max_s": 0.013,
+      "mean_steady_s": 0.0007
+    },
+    "io_write": {
+      "count": 13,
+      "total_s": 1.8474,
+      "mean_s": 0.1421,
+      "min_s": 0.0199,
+      "max_s": 0.2997,
+      "mean_steady_s": 0.1522
+    },
+    "inference_step": {
+      "count": 12,
+      "total_s": 7.0888,
+      "mean_s": 0.5907,
+      "min_s": 0.4677,
+      "max_s": 1.6651,
+      "mean_steady_s": 0.4931
+    },
+    "io_commit": {
+      "count": 1,
+      "total_s": 0.0885,
+      "mean_s": 0.0885,
+      "min_s": 0.0885,
+      "max_s": 0.0885
+    }
+  },
+  "phase_samples": {
+    "model_download": [
+      15.901
+    ],
+    "model_load": [
+      6.3449
+    ],
+    "ic_fetch": [
+      61.5443
+    ],
+    "compile_warmup": [
+      24.9287
+    ],
+    "io_setup": [
+      0.0893
+    ],
+    "composite": [
+      0.013,
+      0.001,
+      0.0009,
+      0.0006,
+      0.0006,
+      0.0007,
+      0.0007,
+      0.0007,
+      0.0009,
+      0.0006,
+      0.0007,
+      0.0007,
+      0.0007
+    ],
+    "io_write": [
+      0.0213,
+      0.2348,
+      0.2997,
+      0.0199,
+      0.0229,
+      0.0216,
+      0.0216,
+      0.0299,
+      0.2349,
+      0.2351,
+      0.227,
+      0.2292,
+      0.2496
+    ],
+    "inference_step": [
+      1.6651,
+      0.7261,
+      0.4723,
+      0.4711,
+      0.4696,
+      0.4678,
+      0.4703,
+      0.4694,
+      0.4701,
+      0.4692,
+      0.4677,
+      0.4703
+    ],
+    "io_commit": [
+      0.0885
+    ]
+  },
+  "extra": {
+    "model_files": [
+      "config.json",
+      "lat.npy",
+      "lon.npy",
+      "checkpoints/goes/3km_10min_flash/expert_2.mdlus",
+      "checkpoints/goes/3km_10min_flash/expert_1.mdlus",
+      "checkpoints/goes/3km_10min_flash/expert_0.mdlus",
+      "topo.npy"
+    ],
+    "ic_frames": 6,
+    "ic_bytes_gpu": 720000000,
+    "steps": 12,
+    "init_time": "2026-10-28T16:50:00",
+    "step_seconds_steady": 0.493,
+    "step_seconds_first": 1.665,
+    "time_to_first_frame_s": 63.481,
+    "rollout_s": 9.054,
+    "end_to_end_s": 70.598,
+    "io_overhead_s": 1.958,
+    "io_overhead_frac_of_rollout": 0.2162,
+    "store_bytes": 606934135,
+    "satellite": "goes19",
+    "scan_mode": "C",
+    "cache_mode": "cold",
+    "cache_path": "/lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/e2s_bench_cache/workflows/cold_cache/04_stormscope_goes/20261028T200923Z",
+    "cache_bytes": 2499676730
+  },
+  "env": {
+    "hostname": "nvl72063-T01",
+    "python": "3.12.3",
+    "torch": "2.12.1+cu130",
+    "cuda": "13.0",
+    "earth2studio_path": "/lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/earth2studio-bench",
+    "earth2studio_sha": "0952d61f",
+    "gpu": "NVIDIA GB200",
+    "gpu_mem_gib": 184.3,
+    "gpu_count": 4
+  },
+  "argv": [
+    "04_stormscope_goes/bench.py",
+    "--steps",
+    "12",
+    "--cache",
+    "cold",
+    "--start-time",
+    "2026-10-28T16:50",
+    "--io",
+    "icechunk",
+    "--commit-mode",
+    "per_init",
+    "--compile"
+  ]
+}

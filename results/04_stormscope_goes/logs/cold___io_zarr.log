@@ -1,0 +1,46 @@
+[harness] cold cache at /lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/e2s_bench_cache/workflows/cold_cache/04_stormscope_goes/20261028T200208Z
+[bench4] init 2026-10-28 16:50:00 steps=12 variant={'io': 'zarr', 'commit': 'n/a', 'compile': 0, 'model': '3km_10min_flash', 'cache': 'cold'} store=/lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/e2s_bench_cache/workflows/04/cache-cold__commit-n_a__compile-0__io-zarr__model-3km_10min_flash_200208
+[32m2026-10-28 13:02:51.239[0m | [33m[1mWARNING [0m | [36mearth2studio.models.px.stormscope[0m:[36m__init__[0m:[36m197[0m - [33m[1mNo conditioning data source was provided to StormScope; set the conditioning_data_source attribute of the model before running inference with iterator mode, or use the call_with_conditioning method.[0m
+[32m2026-10-28 13:02:54.573[0m | [33m[1mWARNING [0m | [36mearth2studio.models.px.stormscope[0m:[36mbuild_input_interpolator[0m:[36m660[0m - [33m[1mSome input gridpoints are invalid after interpolation. This may be expected if the input data source is not available at all gridpoints, but consider double-checking coordinates and/or the max_dist_km parameter. Invalid points will be filled with the model's _INPUT_INVALID_FILL_CONSTANT (0.0).[0m
+[bench4] model loaded: 6 input frames, step 10 minutes, grid (1024, 1792)
+[bench4] step 1/12 inference 1.39s
+[bench4] step 2/12 inference 1.08s
+[bench4] step 3/12 inference 1.07s
+[bench4] step 4/12 inference 1.07s
+[bench4] step 5/12 inference 1.07s
+[bench4] step 6/12 inference 1.07s
+[bench4] step 7/12 inference 1.07s
+[bench4] step 8/12 inference 1.07s
+[bench4] step 9/12 inference 1.07s
+[bench4] step 10/12 inference 1.07s
+[bench4] step 11/12 inference 1.07s
+[bench4] step 12/12 inference 1.07s
+
+=== 04_stormscope_goes {'io': 'zarr', 'commit': 'n/a', 'compile': 0, 'model': '3km_10min_flash', 'cache': 'cold'} ===
+total wall: 96.585 s   peak GPU: 9.616 GiB
+  model_download           n=1    total=   13.188s mean=  13.188s
+  model_load               n=1    total=    6.427s mean=   6.427s
+  ic_fetch                 n=1    total=   35.166s mean=  35.166s
+  io_setup                 n=1    total=    0.167s mean=   0.167s
+  composite                n=13   total=    0.036s mean=   0.003s steady=   0.001s
+  io_write                 n=13   total=    1.462s mean=   0.113s steady=   0.112s
+  inference_step           n=12   total=   13.186s mean=   1.099s steady=   1.073s
+  extra.model_files: ['config.json', 'lat.npy', 'lon.npy', 'checkpoints/goes/3km_10min_flash/expert_2.mdlus', 'checkpoints/goes/3km_10min_flash/expert_1.mdlus', 'checkpoints/goes/3km_10min_flash/expert_0.mdlus', 'topo.npy']
+  extra.ic_frames: 6
+  extra.ic_bytes_gpu: 720000000
+  extra.steps: 12
+  extra.init_time: 2026-10-28T16:50:00
+  extra.step_seconds_steady: 1.073
+  extra.step_seconds_first: 1.386
+  extra.time_to_first_frame_s: 36.836
+  extra.rollout_s: 14.709
+  extra.end_to_end_s: 49.875
+  extra.io_overhead_s: 1.499
+  extra.io_overhead_frac_of_rollout: 0.1019
+  extra.store_bytes: 606968659
+  extra.satellite: goes19
+  extra.scan_mode: C
+  extra.cache_mode: cold
+  extra.cache_path: /lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/e2s_bench_cache/workflows/cold_cache/04_stormscope_goes/20261028T200208Z
+  extra.cache_bytes: 2499676734
+[harness] wrote /lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/earth2studio-bench/results/04_stormscope_goes/cache-cold__commit-n_a__compile-0__io-zarr__model-3km_10min_flash__20261028T200208Z.json

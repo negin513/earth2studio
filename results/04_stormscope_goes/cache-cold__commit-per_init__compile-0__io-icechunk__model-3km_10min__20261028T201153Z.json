@@ -1,0 +1,189 @@
+{
+  "benchmark": "04_stormscope_goes",
+  "variant": {
+    "io": "icechunk",
+    "commit": "per_init",
+    "compile": 0,
+    "model": "3km_10min",
+    "cache": "cold"
+  },
+  "started_utc": "2026-10-28T20:11:53.219712+00:00",
+  "total_wall_s": 651.065,
+  "peak_gpu_mem_gib": 9.438,
+  "phases": {
+    "model_download": {
+      "count": 1,
+      "total_s": 155.8913,
+      "mean_s": 155.8913,
+      "min_s": 155.8913,
+      "max_s": 155.8913
+    },
+    "model_load": {
+      "count": 1,
+      "total_s": 11.1375,
+      "mean_s": 11.1375,
+      "min_s": 11.1375,
+      "max_s": 11.1375
+    },
+    "ic_fetch": {
+      "count": 1,
+      "total_s": 41.8255,
+      "mean_s": 41.8255,
+      "min_s": 41.8255,
+      "max_s": 41.8255
+    },
+    "io_setup": {
+      "count": 1,
+      "total_s": 0.0855,
+      "mean_s": 0.0855,
+      "min_s": 0.0855,
+      "max_s": 0.0855
+    },
+    "composite": {
+      "count": 13,
+      "total_s": 0.04,
+      "mean_s": 0.0031,
+      "min_s": 0.0005,
+      "max_s": 0.0294,
+      "mean_steady_s": 0.0009
+    },
+    "io_write": {
+      "count": 13,
+      "total_s": 0.4699,
+      "mean_s": 0.0361,
+      "min_s": 0.0184,
+      "max_s": 0.1159,
+      "mean_steady_s": 0.0371
+    },
+    "inference_step": {
+      "count": 12,
+      "total_s": 414.1555,
+      "mean_s": 34.513,
+      "min_s": 31.3781,
+      "max_s": 50.5583,
+      "mean_steady_s": 34.7769
+    },
+    "io_commit": {
+      "count": 1,
+      "total_s": 0.1653,
+      "mean_s": 0.1653,
+      "min_s": 0.1653,
+      "max_s": 0.1653
+    }
+  },
+  "phase_samples": {
+    "model_download": [
+      155.8913
+    ],
+    "model_load": [
+      11.1375
+    ],
+    "ic_fetch": [
+      41.8255
+    ],
+    "io_setup": [
+      0.0855
+    ],
+    "composite": [
+      0.0294,
+      0.0009,
+      0.0007,
+      0.0005,
+      0.0008,
+      0.0007,
+      0.0006,
+      0.0006,
+      0.0008,
+      0.001,
+      0.0026,
+      0.0008,
+      0.0005
+    ],
+    "io_write": [
+      0.0241,
+      0.0184,
+      0.0185,
+      0.0303,
+      0.0296,
+      0.0301,
+      0.0284,
+      0.0307,
+      0.0315,
+      0.0542,
+      0.0313,
+      0.1159,
+      0.027
+    ],
+    "inference_step": [
+      31.6099,
+      31.4481,
+      31.4131,
+      31.3781,
+      31.5072,
+      50.5583,
+      48.7354,
+      31.3944,
+      31.521,
+      31.561,
+      31.5305,
+      31.4985
+    ],
+    "io_commit": [
+      0.1653
+    ]
+  },
+  "extra": {
+    "model_files": [
+      "config.json",
+      "lat.npy",
+      "lon.npy",
+      "checkpoints/goes/3km_10min/expert_0.mdlus",
+      "checkpoints/goes/3km_10min/expert_1.mdlus",
+      "checkpoints/goes/3km_10min/expert_2.mdlus",
+      "topo.npy"
+    ],
+    "ic_frames": 6,
+    "ic_bytes_gpu": 720000000,
+    "steps": 12,
+    "init_time": "2026-10-28T16:50:00",
+    "step_seconds_steady": 34.777,
+    "step_seconds_first": 31.61,
+    "time_to_first_frame_s": 73.528,
+    "rollout_s": 414.857,
+    "end_to_end_s": 456.683,
+    "io_overhead_s": 0.675,
+    "io_overhead_frac_of_rollout": 0.0016,
+    "store_bytes": 606484074,
+    "satellite": "goes19",
+    "scan_mode": "C",
+    "cache_mode": "cold",
+    "cache_path": "/lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/e2s_bench_cache/workflows/cold_cache/04_stormscope_goes/20261028T201153Z",
+    "cache_bytes": 3505934036
+  },
+  "env": {
+    "hostname": "nvl72063-T01",
+    "python": "3.12.3",
+    "torch": "2.12.1+cu130",
+    "cuda": "13.0",
+    "earth2studio_path": "/lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/earth2studio-bench",
+    "earth2studio_sha": "4070f04f",
+    "gpu": "NVIDIA GB200",
+    "gpu_mem_gib": 184.3,
+    "gpu_count": 4
+  },
+  "argv": [
+    "04_stormscope_goes/bench.py",
+    "--steps",
+    "12",
+    "--cache",
+    "cold",
+    "--start-time",
+    "2026-10-28T16:50",
+    "--io",
+    "icechunk",
+    "--commit-mode",
+    "per_init",
+    "--variant",
+    "3km_10min"
+  ]
+}
