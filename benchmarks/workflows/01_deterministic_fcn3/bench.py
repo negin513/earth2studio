@@ -37,6 +37,11 @@ def parse_args() -> argparse.Namespace:
         "--cache", choices=["cold", "warm"], default="cold",
         help="cold: fresh empty EARTH2STUDIO_CACHE so weights and GFS cache download from scratch (default)",
     )
+    p.add_argument(
+        "--source", choices=["gfs", "arco"], default="gfs",
+        help="initial condition source: GFS analysis (GRIB2 byte ranges on S3) or ARCO ERA5 "
+        "(Zarr on GCS; lags real time by months, so pass --time or accept the 2025-06-01 default)",
+    )
     p.add_argument("--steps", type=int, default=40, help="6 h forecast steps (40 = 10 days)")
     p.add_argument("--time", type=str, default=None, help="IC time ISO (default: pick_recent_init_time(48))")
     p.add_argument(
@@ -71,8 +76,15 @@ def main() -> None:
     args = parse_args()
     cache_path = setup_cache(args.cache, BENCHMARK)  # before any model/data class is used
     device = torch.device("cuda")
-    ic_time = np.datetime64(args.time) if args.time else np.datetime64(pick_recent_init_time(hours_back=48))
+    if args.time:
+        ic_time = np.datetime64(args.time)
+    elif args.source == "arco":
+        ic_time = np.datetime64("2025-06-01T00:00")  # ARCO ERA5 is published months behind real time
+    else:
+        ic_time = np.datetime64(pick_recent_init_time(hours_back=48))
     variant = {"io": args.io, "dtype": args.dtype, "steps": args.steps, "cache": args.cache}
+    if args.source != "gfs":
+        variant["source"] = args.source
     if args.tag:
         variant["tag"] = args.tag
     rec = BenchRecorder(BENCHMARK, variant)
@@ -98,25 +110,26 @@ def main() -> None:
     ic = model.input_coords()
 
     # ------------------------------------------------------------- IC fetch
-    ic_cache = out_root / f"ic_{str(ic_time).replace(':', '')}.pt"
+    ic_cache = out_root / f"ic_{args.source}_{str(ic_time).replace(':', '')}.pt"
     with rec.phase("ic_fetch"):
         if args.cache == "warm" and args.local_ic and ic_cache.exists():
             blob = torch.load(ic_cache, weights_only=False)
             x, coords = blob["x"].to(device), blob["coords"]
             rec.extra["ic_source"] = "local_cache"
         else:
-            from earth2studio.data import GFS, fetch_data
+            from earth2studio.data import ARCO_ERA5, GFS, fetch_data
             from earth2studio.utils.coords import map_coords
 
+            source = GFS() if args.source == "gfs" else ARCO_ERA5(verbose=False)
             x, coords = fetch_data(
-                source=GFS(),
+                source=source,
                 time=np.array([ic_time]),
                 variable=ic["variable"],
                 lead_time=ic["lead_time"],
                 device=device,
             )
             x, coords = map_coords(x, coords, ic)
-            rec.extra["ic_source"] = "GFS"
+            rec.extra["ic_source"] = args.source.upper()
             if args.local_ic:
                 torch.save({"x": x.cpu(), "coords": coords}, ic_cache)
 

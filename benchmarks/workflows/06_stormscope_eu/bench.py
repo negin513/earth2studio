@@ -198,7 +198,12 @@ def main() -> None:
     # ------------------------------------------------------------ IC fetch (6 frames, 1 km + 2 km)
     bbox_2km = StormScopeMeteosatEU.Model_FCI_BBox
     bbox_1km = ((2 * bbox_2km[0][0], 2 * bbox_2km[0][1]), (2 * bbox_2km[1][0], 2 * bbox_2km[1][1]))
-    fci = {"2km": MeteosatFCI(resolution="2km", pixel_bbox=bbox_2km), "1km": MeteosatFCI(resolution="1km", pixel_bbox=bbox_1km)}
+    # Six ~750 MB FDHSI zips at the ~2.5 MB/s seen from this box take ~30 min; the source default is 1200 s.
+    fci_timeout = int(os.environ.get("FCI_FETCH_TIMEOUT", "7200"))
+    fci = {
+        "2km": MeteosatFCI(resolution="2km", pixel_bbox=bbox_2km, async_timeout=fci_timeout),
+        "1km": MeteosatFCI(resolution="1km", pixel_bbox=bbox_1km, async_timeout=fci_timeout),
+    }
     t_e2e0 = time.perf_counter()
     with rec.phase("ic_fetch"), torch.no_grad():
         x_res = {}
