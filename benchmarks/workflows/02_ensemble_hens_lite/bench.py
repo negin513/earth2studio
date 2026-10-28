@@ -1,7 +1,9 @@
 """Benchmark 2: HENS-lite perturbed ensemble with attached diagnostic.
 
 SFNO (73ch) initialised from GFS, perturbed with SphericalGaussian or BredVector,
-rolled out N steps at 6 h with PrecipitationAFNO applied on every step, output
+rolled out N steps at 6 h with PrecipitationAFNOv2 applied on every step
+(v2: its 20 inputs incl. q500/q850 are all SFNO-73ch outputs; v1 needs r500/r850,
+which SFNO does not produce), output
 cropped to CONUS and written to a ZarrBackend. Loop written explicitly, mirroring
 earth2studio.run.ensemble / run.diagnostic so each phase can be timed.
 """
@@ -24,7 +26,7 @@ from common.harness import BenchRecorder, cache_size_bytes, pick_recent_init_tim
 BENCHMARK = "02_ensemble_hens_lite"
 
 OUTPUT_VARS_PX = ["t2m", "u10m", "v10m", "msl"]  # from SFNO
-OUTPUT_VARS_DX = ["tp"]  # from PrecipitationAFNO
+OUTPUT_VARS_DX = ["tp"]  # from PrecipitationAFNOv2
 # CONUS crop, 0.25 deg, descending lat like the model grid
 CONUS_LAT = np.arange(55.0, 20.0 - 1e-6, -0.25)
 CONUS_LON = np.arange(230.0, 300.0 + 1e-6, 0.25)
@@ -58,7 +60,7 @@ def main() -> None:
 
     from earth2studio.data import GFS, fetch_data
     from earth2studio.io import ZarrBackend
-    from earth2studio.models.dx import PrecipitationAFNO
+    from earth2studio.models.dx import PrecipitationAFNOv2
     from earth2studio.models.px import SFNO
     from earth2studio.perturbation import BredVector, SphericalGaussian
     from earth2studio.utils.coords import map_coords, split_coords
@@ -68,7 +70,7 @@ def main() -> None:
     # Separable download step: resolve every file load_model will ask for, so the
     # network time lands in model_download and model_load is deserialisation only.
     px_pkg = SFNO.load_default_package()
-    dx_pkg = PrecipitationAFNO.load_default_package()
+    dx_pkg = PrecipitationAFNOv2.load_default_package()
     with rec.phase("model_download", sync=False):
         for f in ["config.json", "global_means.npy", "global_stds.npy"]:
             px_pkg.resolve(f)
@@ -78,10 +80,11 @@ def main() -> None:
             px_pkg.resolve(LocalPackage.MODEL_PACKAGE_CHECKPOINT_PATH)
         except Exception as e:  # pragma: no cover - fall back to load_model download
             logger.warning(f"could not pre-resolve SFNO checkpoint: {e}")
-        dx_pkg.resolve("precipitation_afno.zip")
+        for f in ["afno_precip.mdlus", "global_means.npy", "global_stds.npy", "land_sea_mask.nc", "orography.nc"]:
+            dx_pkg.resolve(f)
     with rec.phase("model_load"):
         px = SFNO.load_model(px_pkg).to(device)
-        dx = PrecipitationAFNO.load_model(dx_pkg).to(device)
+        dx = PrecipitationAFNOv2.load_model(dx_pkg).to(device)
     px_ic = px.input_coords()
     dx_ic = dx.input_coords()
 

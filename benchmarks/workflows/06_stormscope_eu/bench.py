@@ -135,6 +135,13 @@ def main() -> None:
     from common.harness import BenchRecorder, cache_size_bytes, setup_cache
 
     cache_path = setup_cache(args.cache, BENCHMARK)
+    if args.cache == "warm" and "EARTH2STUDIO_DATA_CACHE" not in os.environ:
+        # ~/.cache lives on an NFS home with a user quota that FCI zips (~1 GB each)
+        # blow through; keep warm data caches on the scratch filesystem instead.
+        os.environ["EARTH2STUDIO_DATA_CACHE"] = os.path.join(
+            os.environ.get("BENCH_SCRATCH", "/tmp/e2s_bench"), "data_cache_warm"
+        )
+        os.makedirs(os.environ["EARTH2STUDIO_DATA_CACHE"], exist_ok=True)
 
     import numpy as np
     import torch

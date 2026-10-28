@@ -7,6 +7,8 @@ HERE=$(cd "$(dirname "$0")" && pwd)
 source "$HERE/../env.sh"
 export CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES:-1}
 MODE=${1:-cold}
+# 5 GB SFNO checkpoint from NGC exceeds the 300 s default fsspec timeout on a busy link
+export EARTH2STUDIO_PACKAGE_TIMEOUT=${EARTH2STUDIO_PACKAGE_TIMEOUT:-7200}
 STEPS=${STEPS:-20}
 LOG=$BENCH_RESULTS/02_ensemble_hens_lite; mkdir -p "$LOG"
 cd "$HERE/.."
