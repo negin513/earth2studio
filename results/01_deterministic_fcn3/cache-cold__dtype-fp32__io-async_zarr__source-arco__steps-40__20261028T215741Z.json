@@ -1,0 +1,205 @@
+{
+  "benchmark": "01_deterministic_fcn3",
+  "variant": {
+    "io": "async_zarr",
+    "dtype": "fp32",
+    "steps": 40,
+    "cache": "cold",
+    "source": "arco"
+  },
+  "started_utc": "2026-10-28T21:57:41.452064+00:00",
+  "total_wall_s": 245.636,
+  "peak_gpu_mem_gib": 49.023,
+  "phases": {
+    "model_download": {
+      "count": 1,
+      "total_s": 15.3816,
+      "mean_s": 15.3816,
+      "min_s": 15.3816,
+      "max_s": 15.3816
+    },
+    "model_load": {
+      "count": 1,
+      "total_s": 117.5465,
+      "mean_s": 117.5465,
+      "min_s": 117.5465,
+      "max_s": 117.5465
+    },
+    "ic_fetch": {
+      "count": 1,
+      "total_s": 15.3886,
+      "mean_s": 15.3886,
+      "min_s": 15.3886,
+      "max_s": 15.3886
+    },
+    "io_setup": {
+      "count": 1,
+      "total_s": 2.1489,
+      "mean_s": 2.1489,
+      "min_s": 2.1489,
+      "max_s": 2.1489
+    },
+    "io_write": {
+      "count": 41,
+      "total_s": 5.0965,
+      "mean_s": 0.1243,
+      "min_s": 0.0908,
+      "max_s": 0.5197,
+      "mean_steady_s": 0.1248
+    },
+    "inference_step": {
+      "count": 40,
+      "total_s": 34.6416,
+      "mean_s": 0.866,
+      "min_s": 0.7493,
+      "max_s": 5.2791,
+      "mean_steady_s": 0.7529
+    },
+    "io_close": {
+      "count": 1,
+      "total_s": 0.3309,
+      "mean_s": 0.3309,
+      "min_s": 0.3309,
+      "max_s": 0.3309
+    }
+  },
+  "phase_samples": {
+    "model_download": [
+      15.3816
+    ],
+    "model_load": [
+      117.5465
+    ],
+    "ic_fetch": [
+      15.3886
+    ],
+    "io_setup": [
+      2.1489
+    ],
+    "io_write": [
+      0.1043,
+      0.1362,
+      0.1019,
+      0.1064,
+      0.0997,
+      0.1151,
+      0.0935,
+      0.1716,
+      0.0969,
+      0.1303,
+      0.1015,
+      0.1123,
+      0.1052,
+      0.0981,
+      0.1101,
+      0.5197,
+      0.0972,
+      0.0977,
+      0.1037,
+      0.0923,
+      0.2694,
+      0.0948,
+      0.1,
+      0.0912,
+      0.0908,
+      0.1024,
+      0.1607,
+      0.1027,
+      0.0963,
+      0.1015,
+      0.1013,
+      0.166,
+      0.1072,
+      0.104,
+      0.0958,
+      0.1058,
+      0.2042,
+      0.0983,
+      0.1039,
+      0.1063,
+      0.1002
+    ],
+    "inference_step": [
+      5.2791,
+      0.7536,
+      0.7529,
+      0.7526,
+      0.7531,
+      0.7529,
+      0.753,
+      0.7533,
+      0.7507,
+      0.7529,
+      0.7537,
+      0.7543,
+      0.7521,
+      0.7505,
+      0.7523,
+      0.7534,
+      0.7534,
+      0.7537,
+      0.7533,
+      0.7523,
+      0.7516,
+      0.7534,
+      0.7526,
+      0.7493,
+      0.7532,
+      0.7528,
+      0.7525,
+      0.7523,
+      0.7544,
+      0.756,
+      0.7542,
+      0.7531,
+      0.7511,
+      0.7534,
+      0.7529,
+      0.7529,
+      0.7528,
+      0.7531,
+      0.7539,
+      0.753
+    ],
+    "io_close": [
+      0.3309
+    ]
+  },
+  "extra": {
+    "ic_source": "ARCO",
+    "steps": 40,
+    "ic_time": "2025-06-01T00:00",
+    "steps_per_s": 1.3282,
+    "io_write_total_s": 5.096,
+    "output_bytes": 12259604540,
+    "n_variables": 72,
+    "store": "/lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/e2s_bench_cache/workflows/01/fcn3_async_zarr_fp32_40steps.zarr",
+    "cache_mode": "cold",
+    "cache_path": "/lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/e2s_bench_cache/workflows/cold_cache/01_deterministic_fcn3/20261028T215741445940Z",
+    "cache_bytes": 3376259916
+  },
+  "env": {
+    "hostname": "nvl72063-T01",
+    "python": "3.12.3",
+    "torch": "2.13.0+cu130",
+    "cuda": "13.0",
+    "earth2studio_path": "/lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nsobhani/forks/earth2studio-bench",
+    "earth2studio_sha": "b959afb6",
+    "gpu": "NVIDIA GB200",
+    "gpu_mem_gib": 184.3,
+    "gpu_count": 1
+  },
+  "argv": [
+    "01_deterministic_fcn3/bench.py",
+    "--source",
+    "arco",
+    "--io",
+    "async_zarr",
+    "--dtype",
+    "fp32",
+    "--steps",
+    "40",
+    "--cache",
+    "cold"
+  ]
+}
