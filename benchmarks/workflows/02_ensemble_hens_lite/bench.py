@@ -26,7 +26,7 @@ from common.harness import BenchRecorder, cache_size_bytes, pick_recent_init_tim
 BENCHMARK = "02_ensemble_hens_lite"
 
 OUTPUT_VARS_PX = ["t2m", "u10m", "v10m", "msl"]  # from SFNO
-OUTPUT_VARS_DX = ["tp"]  # from PrecipitationAFNOv2
+OUTPUT_VARS_DX = ["tp06"]  # PrecipitationAFNOv2 outputs 6-h accumulated precip as tp06
 # CONUS crop, 0.25 deg, descending lat like the model grid
 CONUS_LAT = np.arange(55.0, 20.0 - 1e-6, -0.25)
 CONUS_LON = np.arange(230.0, 300.0 + 1e-6, 0.25)
