@@ -1,17 +1,25 @@
 # Earth2Studio workflow benchmarks
 
-Run six complete weather inference pipelines and compare model download, input
-data fetch, model loading, inference, diagnostics, output writes and peak GPU
-memory. These are performance benchmarks; they do not evaluate forecast skill.
+The suite measures realistic end-to-end production workflows, including model
+and input downloads, inference and output storage. Each benchmark represents an
+operational use case; the measurements cover performance, not forecast skill.
 
-| # | Workflow | Use case | Variants | Main metric |
-|---|---|---|---|---|
-| [01](01_deterministic_fcn3/README.md) | FCN3 from GFS, global 10-day forecast at 6-hour intervals, Zarr output | Size a daily forecast service and choose precision and output strategy | Synchronous/asynchronous Zarr × FP32/BF16 (4) | Seconds per step and IO time |
-| [02](02_ensemble_hens_lite/README.md) | SFNO ensemble with precipitation diagnostic, 5 days, CONUS crop | Plan an ensemble product that represents weather uncertainty within a GPU memory budget | Gaussian/bred-vector perturbations × 16/32 members × batch 8/16 (8) | Member-steps per second and peak GiB |
-| [03](03_corrdiff_taiwan/README.md) | CorrDiff Taiwan downscaling of four GFS analysis times to about 3 km | Trade regional product diversity and sampling cost against delivery latency | Samples 1/4/8 × diffusion steps 8/18/36 (9) | Seconds per generated sample |
-| [04](04_stormscope_goes/README.md) | StormScope GOES, 2-hour US satellite nowcast, raw channels and true-colour images | Choose storage and commit settings for a frequently refreshed nowcast display | Zarr/Icechunk, commit per step/per init, compilation (4) | Step latency, first-frame latency and end-to-end time |
-| [05](05_s2s_long_rollout/README.md) | DLESyM coupled atmosphere/ocean rollout, lat/lon output and weekly means; 45 requested days round up to 48 | Estimate compute and storage for subseasonal outlooks and small ensembles | 1/4 members (2) | Member-days per GPU-minute and numerical stability |
-| [06](06_stormscope_eu/README.md) | StormScope Meteosat EU, 2-hour satellite nowcast with true-colour and airmass images | Budget data acquisition, inference and delivery for a European nowcast service | Zarr/Icechunk, commit per step/per init, compilation (4) | Step latency, first-frame latency and end-to-end time |
+| # | Workflow and use case | Timesteps and cadence (full suite) | What it compares |
+|---|---|---|---|
+| [01](01_deterministic_fcn3/README.md) | **FCN3 deterministic:** daily global forecasts from GFS, archived to Zarr for downstream products | **40 × 6 h = 10 days**, plus the initial condition | Zarr/AsyncZarr and FP32/BF16 |
+| [02](02_ensemble_hens_lite/README.md) | **SFNO HENS-lite:** regional ensemble spread and precipitation products for insurance, energy and emergency planning | **20 × 6 h = 5 days**; precipitation diagnostic each step; 16/32 members, batches of 8/16 | Perturbation method, throughput and GPU memory |
+| [03](03_corrdiff_taiwan/README.md) | **CorrDiff Taiwan:** country-scale, ~3 km downscaling for a national weather service; optionally driven by FCN3 output | **4 forcing times, 6 h apart** (18 h span); 1/4/8 samples with 8/18/36 diffusion iterations per time | Sampling cost versus delivery latency |
+| [04](04_stormscope_goes/README.md) | **StormScope GOES:** US satellite nowcasts intended for publication before the next 10-minute production cycle | **12 × 10 min = 2 h**; initialized from 6 frames at 10-minute intervals | Zarr/Icechunk, commit strategy and compilation |
+| [05](05_s2s_long_rollout/README.md) | **DLESyM:** subseasonal outlooks for agriculture, hydrology and energy planning | **12 × 96 h = 48 days** (45 requested); 16 six-hourly atmosphere leads per step; weekly means; 1/4 members | Long-rollout stability and lead-time-chunked IO |
+| [06](06_stormscope_eu/README.md) | **StormScope-EU:** Meteosat FCI nowcasts following the Earthmover GTC Berlin booth workflow for stage-timing comparisons | **12 × 10 min = 2 h**; initialized from 6 frames at 10-minute intervals | Zarr/Icechunk, commit strategy and compilation |
+
+The cold-cache default includes downloading weights and input data, representing
+a fresh deployment or new node. The shared harness separates download, compute
+and IO phases to show where time goes and which settings improve each workflow.
+StormScope storage measurements use local Zarr/Icechunk stores; cloud upload
+latency depends on the deployment. CorrDiff's diffusion iterations are sampling
+steps, not forecast timesteps. The shorter `--smoke` configurations are described
+by the runner's `--dry-run --smoke` output.
 
 The default full matrix produces **31 result JSON files per cache mode**, from
 23 Python processes (CorrDiff runs its nine sweep points in one process).
