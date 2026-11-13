@@ -1,0 +1,40 @@
+{
+  "source": "UFSObsConv",
+  "data_class": "UFSObsConv",
+  "format": "NetCDF4 (GSI diag .nc4, whole-file download, read with h5netcdf)",
+  "origin": "AWS S3 s3://noaa-ufs-gefsv13replay-pds (us-east-1, anonymous, via obstore)",
+  "winning_model": "HealDA",
+  "count": 8,
+  "variables": [
+    "u",
+    "v",
+    "q",
+    "t",
+    "pres",
+    "gps",
+    "gps_t",
+    "gps_q"
+  ],
+  "ctor_kwargs": {
+    "time_tolerance_hours": 12,
+    "verbose": false
+  },
+  "time": "2023-12-31T15:00:00",
+  "enabled": true,
+  "notes": [
+    "HealDA reads a 24 h window [t-21h, t+3h] via time_tolerance=(timedelta(hours=-21), timedelta(hours=3)) (examples/05_data_assimilation/02_healda.py:101,111; recipes/eval/cfg/model/healda.yaml time_tolerance_hours: [-21, 3]). The harness only builds symmetric tolerances, so the same absolute window for analysis time 2024-01-01T00 (2023-12-31T03 .. 2024-01-01T03) is expressed as time=2023-12-31T15:00 with time_tolerance_hours=12.",
+    "HealDA's conventional list equals the full GSIConventionalLexicon VOCAB (8 keys, earth2studio/lexicon/ufs.py:41-60).",
+    "u and v share one diag file (conv_uv), and gps/gps_t/gps_q share conv_gps; whether the source de-duplicates those downloads was not checked.",
+    "Validity check in code is only time >= 1980-01-01 (ufs.py:_validate_time); missing diag files are tolerated, so an unavailable time returns an empty frame rather than an error.",
+    "Returns a pandas DataFrame (DataFrameSource); HealDA also passes fields= (schema column subset), which the generic harness path does not, so all SCHEMA columns are returned.",
+    "decode_workers defaults to 'auto' (process pool for diag decoding); left at default."
+  ],
+  "all_pairs": [
+    {
+      "model": "HealDA",
+      "count": 8,
+      "missing_vars": [],
+      "evidence_file": "earth2studio/models/da/healda.py:259-261 (input_coords conv_schema variable); examples/05_data_assimilation/02_healda.py:101-107; recipes/eval/cfg/model/healda.yaml:33-39, healda_ucast.yaml:21-27 (same HealDA model)"
+    }
+  ]
+}

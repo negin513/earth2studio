@@ -1,0 +1,25 @@
+{
+  "source": "PC_MODISFire",
+  "data_class": "PlanetaryComputerMODISFire",
+  "format": "GeoTIFF (one asset per variable, whole-file download, read with rioxarray)",
+  "origin": "Azure Blob via Planetary Computer STAC (modis-14A1-061)",
+  "winning_model": null,
+  "count": 3,
+  "variables": [
+    "fmask",
+    "mfrp",
+    "qa"
+  ],
+  "ctor_kwargs": {
+    "tile": "h35v10",
+    "verbose": false
+  },
+  "time": "2023-07-28T00:00:00",
+  "enabled": true,
+  "notes": [
+    "No model in examples/, recipes/, serve/, docs/ or model docstrings reads from this source (only listed in docs/modules/datasources_analysis.md and test/data/test_planetary_computer.py); variables = full lexicon VOCAB.",
+    "tile h35v10 is the class default; time taken from test/data/test_planetary_computer.py:199. Each item is an 8-day composite; the daily band is selected by date.",
+    "lexicon: PlanetaryComputerMODISFireLexicon (earth2studio/lexicon/planetary_computer.py:126)"
+  ],
+  "all_pairs": []
+}

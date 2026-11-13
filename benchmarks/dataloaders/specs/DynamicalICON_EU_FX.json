@@ -1,0 +1,33 @@
+{
+  "source": "DynamicalICON_EU_FX",
+  "data_class": "DynamicalICON_EU_FX",
+  "format": "Icechunk (Zarr v3), opened lazily with xarray",
+  "origin": "AWS S3 s3://dynamical-dwd-icon-eu/dwd-icon-eu-forecast-5-day/v0.2.0.icechunk/ (us-west-2, anonymous; resolved at runtime from https://stac.dynamical.org/dwd-icon-eu-forecast-5-day/collection.json)",
+  "winning_model": null,
+  "count": 10,
+  "variables": [
+    "u10m",
+    "v10m",
+    "t2m",
+    "d2m",
+    "r2m",
+    "sp",
+    "msl",
+    "tcc",
+    "tcwv",
+    "tpf"
+  ],
+  "ctor_kwargs": {
+    "verbose": false
+  },
+  "time": "2026-06-01T00:00:00",
+  "lead_time_hours": 6,
+  "enabled": true,
+  "notes": [
+    "No model in examples/, recipes/, serve/, docs/ or model docstrings reads from any Dynamical* source, so variables are the full DynamicalLexicon.VOCAB filtered to keys this collection actually serves (source.variables probed live 2026-11-13; VOCAB has 19 keys, earth2studio/lexicon/dynamical.py:59-78). Native pass-through names (e.g. downward_*_radiation_flux_surface) are excluded.",
+    "Collection dwd-icon-eu-forecast-5-day: available from 2026-02-10, 6-hourly init, leads 0-120h (1h steps early) (probed from the opened store; STAC extent end is open). Validity is checked in dynamical.py:458 (_validate_time).",
+    "Icechunk reads chunks on demand and writes nothing to the local cache (dynamical.py cache docstring), so cache_bytes will be ~0 and every trial is cold regardless.",
+    "Regional Europe grid 657x1377 (0.0625 deg). Archive start is 2026-02-10 as of the probe; unknown whether the start is fixed or rolling, so re-check `time` if the fetch fails later."
+  ],
+  "all_pairs": []
+}

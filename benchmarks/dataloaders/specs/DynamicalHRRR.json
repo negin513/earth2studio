@@ -1,0 +1,32 @@
+{
+  "source": "DynamicalHRRR",
+  "data_class": "DynamicalHRRR",
+  "format": "Icechunk (Zarr v3)",
+  "origin": "dynamical.org STAC collection noaa-hrrr-analysis; AWS S3 s3://dynamical-noaa-hrrr/noaa-hrrr-analysis (anonymous)",
+  "winning_model": null,
+  "count": 10,
+  "variables": [
+    "u10m",
+    "v10m",
+    "t2m",
+    "d2m",
+    "r2m",
+    "sp",
+    "msl",
+    "tcc",
+    "tcwv",
+    "tpf"
+  ],
+  "ctor_kwargs": {
+    "verbose": false
+  },
+  "time": "2024-01-01T00:00:00",
+  "enabled": true,
+  "notes": [
+    "No model in the repo (examples/, recipes/, serve/, docs/, model docstrings, default data sources) reads from this source; only test/data/test_dynamical.py and docs/modules API listings reference it. Variables are the full DynamicalLexicon.VOCAB (earth2studio/lexicon/dynamical.py:57-74, 19 keys) filtered to the keys this collection actually serves.",
+    "Filter was taken from the live source.variables property (dynamical.py:396-436) on 2026-11-13: 10 of 19 lexicon keys resolve in collection noaa-hrrr-analysis; the rest raise KeyError (dynamical.py:387). The collection's 17 native pass-through names are not lexicon keys and are excluded.",
+    "Time range: STAC extent start 2014-10-01T00:00:00, open-ended; last time in store at probe was 2026-11-13T15:00:00 (dynamical.py:458-488 validates against this).",
+    "`cache` is a no-op for this class (dynamical.py:438-441: Icechunk reads chunks lazily, nothing is written to EARTH2STUDIO_CACHE), so cache_bytes will be 0 and every run is cold by construction."
+  ],
+  "all_pairs": []
+}

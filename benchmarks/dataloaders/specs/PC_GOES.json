@@ -1,0 +1,39 @@
+{
+  "source": "PC_GOES",
+  "data_class": "PlanetaryComputerGOES",
+  "format": "NetCDF4 (ABI-L2-MCMIP, whole-file download)",
+  "origin": "Azure Blob via Planetary Computer STAC (goes-cmi)",
+  "winning_model": "StormScopeGOES",
+  "count": 8,
+  "variables": [
+    "abi01c",
+    "abi02c",
+    "abi03c",
+    "abi07c",
+    "abi08c",
+    "abi09c",
+    "abi10c",
+    "abi13c"
+  ],
+  "ctor_kwargs": {
+    "satellite": "goes16",
+    "scan_mode": "C",
+    "verbose": false
+  },
+  "time": "2024-01-08T18:00:00",
+  "enabled": true,
+  "unverified": "Variable list is the StormScopeGOES class default; the workflow loads model_name 6km_60min_natten_cos_zenith_input_eoe_v2 from a package, which can override it (no checkpoint loaded).",
+  "notes": [
+    "Only repo pairing: serve foundry_fcn3_stormscope_goes workflow, which builds PlanetaryComputerGOES for goes16 and goes19 with scan_mode C; goes16 chosen (same time as the GOES spec).",
+    "time: scan_mode C needs a 5-minute multiple; goes16 valid 2017-12-18..2025-04-07 (earth2studio/data/goes.py:124; planetary_computer.py:1380-1406). The workflow itself requires 1-hour-aligned StormScope start times.",
+    "lexicon: PlanetaryComputerGOESLexicon (earth2studio/lexicon/planetary_computer.py:274), 16 keys abi01c..abi16c; all 8 model variables present."
+  ],
+  "all_pairs": [
+    {
+      "model": "StormScopeGOES",
+      "count": 8,
+      "missing_vars": [],
+      "evidence_file": "serve/server/example_workflows/foundry_fcn3_stormscope_goes.py:80-86 (PlanetaryComputerGOES ctor), :301-310 (fetch with stormscope input_coords variables); earth2studio/models/px/stormscope.py:1769-1779 (class default variables)"
+    }
+  ]
+}

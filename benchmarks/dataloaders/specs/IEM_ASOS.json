@@ -1,0 +1,37 @@
+{
+  "source": "IEM_ASOS",
+  "data_class": "IEM_ASOS",
+  "format": "CSV (comma-delimited text from the bulk ASOS request service)",
+  "origin": "Iowa Environmental Mesonet HTTPS https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py",
+  "winning_model": null,
+  "count": 10,
+  "variables": [
+    "t2m",
+    "d2m",
+    "r2m",
+    "ws10m",
+    "u10m",
+    "v10m",
+    "fg10m",
+    "tp01",
+    "msl",
+    "tcc"
+  ],
+  "ctor_kwargs": {
+    "stations": [
+      "DSM",
+      "ORD",
+      "ATL",
+      "SFO"
+    ],
+    "verbose": false
+  },
+  "time": "2024-01-01T18:00:00",
+  "enabled": true,
+  "notes": [
+    "No model in the repository reads from this source; variables are the full lexicon VOCAB. (earth2studio/lexicon/iem.py IEM_ASOSLexicon.VOCAB, 10 keys).",
+    "Stations are IEM identifiers (Des Moines, Chicago O'Hare, Atlanta, San Francisco). report_types and time_tolerance (10 min) are left at the constructor defaults.",
+    "The source rate-limits itself to about one request per second (iem.py REQUEST_INTERVAL_SECONDS = 1.1); fg10m is only populated when a gust is reported, so it may be absent from the result."
+  ],
+  "all_pairs": []
+}

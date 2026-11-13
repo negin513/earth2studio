@@ -1,0 +1,58 @@
+{
+  "source": "MeteosatFCI",
+  "data_class": "MeteosatFCI",
+  "format": "NetCDF4 BODY segments inside a product zip",
+  "origin": "EUMETSAT Data Store via eumdac (collections EO:EUM:DAT:0662 FDHSI, EO:EUM:DAT:0665 HRFI)",
+  "winning_model": "StormScopeMeteosatEU",
+  "count": 16,
+  "variables": [
+    "fci04vis",
+    "fci05vis",
+    "fci06vis",
+    "fci08vis",
+    "fci09vis",
+    "fci13nir",
+    "fci16nir",
+    "fci22nir",
+    "fci38ir",
+    "fci63wv",
+    "fci73wv",
+    "fci87ir",
+    "fci97ir",
+    "fci105ir",
+    "fci123ir",
+    "fci133ir"
+  ],
+  "ctor_kwargs": {
+    "resolution": "2km",
+    "pixel_bbox": [
+      [
+        4320,
+        5440
+      ],
+      [
+        1856,
+        4288
+      ]
+    ],
+    "verbose": false
+  },
+  "time": "2025-06-15T12:00:00",
+  "enabled": false,
+  "disabled_reason": "needs EUMETSAT Data Store credentials (EUMETSAT_CONSUMER_KEY / EUMETSAT_CONSUMER_SECRET, or the eumdac file ~/.eumdac/credentials, meteosat_fci.py:395, utils_eumetsat.py). Also cannot run through the generic single-instance path with the full model list: one MeteosatFCI instance serves one resolution only (_check_resolution_consistency, meteosat_fci.py:828-852); at 2km only the last 8 variables (fci38ir..fci133ir) are valid, the first 8 (VIS/NIR) need a second instance with resolution='1km'.",
+  "notes": [
+    "Variables are the exact StormScopeMeteosatEU input list (stormscope_meteosat.py:56-73 VARIABLES). The example builds TWO sources (2km and 1km, 1km bbox = 2x the 2km bbox) and fetches 8 variables from each (examples/04_nowcasting/04_stormscope_meteosat_example.py:119-164).",
+    "ctor_kwargs reproduce the example's 2km instance: pixel_bbox = StormScopeMeteosatEU.Model_FCI_BBox (stormscope_meteosat.py:172-175). To make this spec runnable, cut variables to the last 8, or use resolution '1km' with pixel_bbox [[8640,10880],[3712,8576]] and the first 8.",
+    "The example also requests 6 frames (lead times -50..0 min); the harness fetches one time only.",
+    "Time must be on a 600 s grid and >= 2024-01-16 (meteosat_fci.py:125, :880-902). Each time downloads the whole full-disk product zip regardless of the variables or bbox requested (meteosat_fci.py:637-688).",
+    "load_model can override variables from package metadata (stormscope_meteosat.py:863); class default used, no checkpoint loaded."
+  ],
+  "all_pairs": [
+    {
+      "model": "StormScopeMeteosatEU",
+      "count": 16,
+      "missing_vars": [],
+      "evidence_file": "earth2studio/models/px/stormscope_meteosat.py:56-73, :193; examples/04_nowcasting/04_stormscope_meteosat_example.py:83,125-127,146-164"
+    }
+  ]
+}

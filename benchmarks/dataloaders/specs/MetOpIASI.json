@@ -1,0 +1,24 @@
+{
+  "source": "MetOpIASI",
+  "data_class": "MetOpIASI",
+  "format": "EPS native binary (.nat)",
+  "origin": "EUMETSAT Data Store via eumdac (collection EO:EUM:DAT:METOP:IASIL1C-ALL)",
+  "winning_model": null,
+  "count": 1,
+  "variables": [
+    "iasi"
+  ],
+  "ctor_kwargs": {
+    "verbose": false
+  },
+  "time": "2025-06-15T12:00:00",
+  "enabled": false,
+  "disabled_reason": "needs EUMETSAT Data Store credentials (EUMETSAT_CONSUMER_KEY / EUMETSAT_CONSUMER_SECRET environment variables; this class does not fall back to ~/.eumdac/credentials).",
+  "unverified": "No real fetch was run: the credential environment variables are not set on this machine, so time and ctor_kwargs are untested against the Data Store.",
+  "notes": [
+    "No model in the repo reads MetOpIASI; variables are the full MetOpIASILexicon.VOCAB (earth2studio/lexicon/metop.py), a single variable that expands to one row per field of view per channel in a pandas DataFrame.",
+    "Defaults kept: all satellites, time_tolerance +/-1 h.",
+    "Default sensor_indices (174 GSI-assimilated channels) kept. IASI L1C files are 100-200 MB each (metop_iasi.py docstring)."
+  ],
+  "all_pairs": []
+}

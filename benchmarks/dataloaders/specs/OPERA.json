@@ -1,0 +1,24 @@
+{
+  "source": "OPERA",
+  "data_class": "OPERA",
+  "format": "ODIM HDF5 (one file per variable and time)",
+  "origin": "CloudFerro S3 over HTTPS https://s3.waw3-1.cloudferro.com/openradar-archive",
+  "winning_model": null,
+  "count": 3,
+  "variables": [
+    "refc",
+    "tprate",
+    "tp01"
+  ],
+  "ctor_kwargs": {
+    "verbose": false
+  },
+  "time": "2024-01-08T18:00:00",
+  "enabled": true,
+  "notes": [
+    "No model in examples/, recipes/, serve/, docs/ or model code reads this class (repo-wide grep; only earth2studio/data, lexicon, CHANGELOG and docs/modules/datasources_analysis.md mention it), so winning_model is null and variables are the source lexicon. Full OPERALexicon.VOCAB (earth2studio/lexicon/opera.py:36-40), 3 variables.",
+    "Time is deliberately in the ODYSSEY era (before 2024-07-01, 15-minute steps): all three products are 2 km there. From 2024-07-01 refc is 1 km while tprate/tp01 stay 2 km and a single call mixing them raises ValueError (opera.py:423), so the full lexicon cannot be fetched in one call for later times. Archive starts 2011-10-01 (opera.py:63).",
+    "All three files for this time were confirmed present by HTTP HEAD (about 0.8 MB each); the real fetch test used only refc and tprate."
+  ],
+  "all_pairs": []
+}

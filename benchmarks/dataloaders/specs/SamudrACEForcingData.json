@@ -1,0 +1,35 @@
+{
+  "source": "SamudrACEForcingData",
+  "data_class": "SamudrACEForcingData",
+  "format": "NetCDF4 (one whole 380 MB file per scenario, 1460 six-hourly no-leap steps)",
+  "origin": "HuggingFace Hub allenai/SamudrACE-CM4-piControl (pinned revision 48567c80)",
+  "winning_model": "SamudrACE",
+  "count": 4,
+  "variables": [
+    "z",
+    "mtdwswrf",
+    "land_abs",
+    "lake_abs"
+  ],
+  "ctor_kwargs": {
+    "scenario": "0311",
+    "verbose": false
+  },
+  "time": "0311-01-01T00:00:00",
+  "enabled": true,
+  "unverified": "The forcing variables SamudrACE requests are defined by the checkpoint (get_forcing_window_data_requirements, models/px/samudrace.py:205-221), not in code; checkpoint not loaded, fme not installed. The list is the four SamudrACELexicon variables actually present in forcing_0311.nc (HGTsfc, DSWRFtoa, land_fraction, lake_fraction); the model may request a subset.",
+  "notes": [
+    "Default forcing source of SamudrACE.load_model (scenario 0311). Times are matched by month/day/hour ignoring year; Feb 29 and off-6-hour times raise.",
+    "cache=True (default) stores downloads in the shared HuggingFace hub cache (HF_HOME, samudrace.py:171-172), NOT under EARTH2STUDIO_CACHE: the harness cache wipe does not make trials cold (cache_bytes reports 0). Point HF_HOME at a wiped directory per trial for a true cold run.",
+    "Download size is fixed (380 MB) regardless of variable count. Small real fetch (mtdwswrf, land_abs) passed in 18 s.",
+    "ocean_abs and sic_abs are in the lexicon as forcing names but are not in the forcing file (KeyError)."
+  ],
+  "all_pairs": [
+    {
+      "model": "SamudrACE",
+      "count": 4,
+      "missing_vars": [],
+      "evidence_file": "earth2studio/models/px/samudrace.py:405-411 (default forcing_data_source=SamudrACEForcingData(scenario=scenario)), :502 (call); test/models/px/test_samudrace.py:570-573"
+    }
+  ]
+}

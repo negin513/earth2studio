@@ -1,0 +1,44 @@
+{
+  "source": "GHCNHourly",
+  "data_class": "GHCNHourly",
+  "format": "Parquet (one file per station-year)",
+  "origin": "NCEI HTTPS https://www.ncei.noaa.gov/oa/global-historical-climatology-network/hourly/access",
+  "winning_model": "StormCastCONUS",
+  "count": 3,
+  "variables": [
+    "u10m",
+    "v10m",
+    "t2m"
+  ],
+  "ctor_kwargs": {
+    "stations": [
+      "USW00013967",
+      "USW00003954",
+      "USW00013919",
+      "USW00053913"
+    ],
+    "time_tolerance_np_minutes": 15,
+    "verbose": false
+  },
+  "time": "2026-04-17T18:00:00",
+  "enabled": true,
+  "notes": [
+    "Variables, time and 15 min tolerance are from examples/05_data_assimilation/01_stormcast_sda.py:117,139,175-177 (StormCastCONUS run with SDA parameters).",
+    "The example builds its station list at run time with GHCNHourly.get_stations_bbox over the model domain (hundreds of stations); here 4 fixed central Oklahoma stations inside that domain are used, so timings understate the example's real fetch.",
+    "Cost scales with the station list, not the variable count: each station-year parquet is downloaded whole."
+  ],
+  "all_pairs": [
+    {
+      "model": "StormCastCONUS",
+      "count": 3,
+      "missing_vars": [],
+      "evidence_file": "examples/05_data_assimilation/01_stormcast_sda.py:139 (plot_vars), :175 (GHCNHourly(...)), :186, :234 (ghcn(valid_time, plot_vars))"
+    },
+    {
+      "model": "CorrDiffCosmoEra5SDA",
+      "count": 2,
+      "missing_vars": [],
+      "evidence_file": "examples/05_data_assimilation/03_corrdiff_cosmo_sda.py:84 (ASSIMILATE = u10m, v10m), :189-190"
+    }
+  ]
+}

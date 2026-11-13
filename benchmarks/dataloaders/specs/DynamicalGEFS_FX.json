@@ -1,0 +1,38 @@
+{
+  "source": "DynamicalGEFS_FX",
+  "data_class": "DynamicalGEFS_FX",
+  "format": "Icechunk (Zarr v3)",
+  "origin": "dynamical.org STAC collection noaa-gefs-forecast-35-day; AWS S3 s3://dynamical-noaa-gefs/noaa-gefs-forecast-35-day (anonymous)",
+  "winning_model": null,
+  "count": 12,
+  "variables": [
+    "u10m",
+    "v10m",
+    "u100m",
+    "v100m",
+    "t2m",
+    "r2m",
+    "sp",
+    "msl",
+    "tcc",
+    "tcwv",
+    "tpf",
+    "z500"
+  ],
+  "ctor_kwargs": {
+    "member": 0,
+    "verbose": false
+  },
+  "time": "2024-01-01T00:00:00",
+  "lead_time_hours": 6,
+  "enabled": true,
+  "notes": [
+    "No model in the repo (examples/, recipes/, serve/, docs/, model docstrings, default data sources) reads from this source; only test/data/test_dynamical.py and docs/modules API listings reference it. Variables are the full DynamicalLexicon.VOCAB (earth2studio/lexicon/dynamical.py:57-74, 19 keys) filtered to the keys this collection actually serves.",
+    "Filter was taken from the live source.variables property (dynamical.py:396-436) on 2026-11-13: 12 of 19 lexicon keys resolve in collection noaa-gefs-forecast-35-day; the rest raise KeyError (dynamical.py:387). The collection's 15 native pass-through names are not lexicon keys and are excluded.",
+    "Time range: STAC extent start 2020-10-01T00:00:00, open-ended; last init_time in store at probe was 2026-11-13T00:00:00 (dynamical.py:458-488 validates against this).",
+    "`cache` is a no-op for this class (dynamical.py:438-441: Icechunk reads chunks lazily, nothing is written to EARTH2STUDIO_CACHE), so cache_bytes will be 0 and every run is cold by construction.",
+    "Lead times in store: 0h to 840h, first step 3h; lead must match a stored lead_time exactly (.sel, dynamical.py:602).",
+    "member=0 is the class default (control member); 31 members in store. Init times are 00Z only."
+  ],
+  "all_pairs": []
+}

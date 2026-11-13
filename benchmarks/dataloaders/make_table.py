@@ -78,6 +78,9 @@ def main() -> None:
             status = f"{len(ok)}/{len(runs)} ok; {last}"
         else:
             status = f"ok ({len(ok)}/{len(runs)})"
+        empty = max((len(r.get("variables_all_nan") or []) for r in ok), default=0)
+        if empty:
+            status += f"; {empty} variables all NaN"
         print(
             f"| {src} | {model} | {runs[0].get('earth2studio_version') or '-'} "
             f"| {fmt} | {origin} | {req} "

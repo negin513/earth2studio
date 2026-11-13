@@ -1,0 +1,37 @@
+{
+  "source": "CFS_FX_Flux",
+  "data_class": "CFS_FX_Flux",
+  "format": "GRIB2 (byte-range via .idx)",
+  "origin": "AWS S3 s3://noaa-cfs-pds",
+  "winning_model": null,
+  "count": 13,
+  "variables": [
+    "t2m",
+    "q2m",
+    "u10m",
+    "v10m",
+    "sp",
+    "skt",
+    "tpf",
+    "sde",
+    "tcwv",
+    "tcc",
+    "hcc",
+    "mcc",
+    "lcc"
+  ],
+  "ctor_kwargs": {
+    "member": 1,
+    "source": "aws",
+    "verbose": false
+  },
+  "time": "2024-01-01T00:00:00",
+  "lead_time_hours": 6,
+  "enabled": true,
+  "notes": [
+    "No model in the repo (examples/, recipes/, serve/, docs/, model docstrings, default data/conditioning sources) pairs with CFS_FX_Flux; variables = full CFSFluxLexicon.VOCAB (13 keys, earth2studio/lexicon/cfs.py).",
+    "source='aws' chosen: default 'nomads' only keeps ~8 days (cfs.py:197-206); AWS archive starts 2023-04-22 (cfs.py:55). member=1 (default). Lead time must be a 6h multiple, max 180 days (cfs.py:61,505-527).",
+    "flxf product, T126 Gaussian grid 190x384."
+  ],
+  "all_pairs": []
+}

@@ -32,15 +32,24 @@ from pathlib import Path
 
 HERE = Path(__file__).parent
 
+# Default set: the sources that models in this repository read from, plus a few
+# widely used ones. Run with --preset all for every enabled spec.
+TOP20 = [
+    "GFS", "GFS_FX", "HRRR", "GEFS_FX", "CFS_FX", "MRMS", "GOES", "GOESGLMGrid",
+    "ARCO", "WB2ERA5", "PC_IFS", "ACE2", "IFS", "NCAR_ERA5", "UFSObsConv",
+    "UFSObsSat", "NNJAObsConv", "NNJAObsSatwnd", "GHCNHourly", "ISD",
+]  # fmt: skip
+
 
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--specs-dir", type=Path, default=HERE / "specs")
     ap.add_argument("--results-dir", type=Path, default=HERE / "results")
     ap.add_argument("--cache-dir", type=Path, default=None)
-    ap.add_argument("--trials", type=int, default=3)
-    ap.add_argument("--sources", nargs="*", default=None, help="filter by source name")
-    ap.add_argument("--timeout", type=int, default=7200, help="per-run limit (s)")
+    ap.add_argument("--trials", type=int, default=1)
+    ap.add_argument("--preset", choices=["top20", "all"], default="top20")
+    ap.add_argument("--sources", nargs="*", default=None, help="explicit source names")
+    ap.add_argument("--timeout", type=int, default=900, help="per-run limit (s)")
     ap.add_argument("--python", default=sys.executable)
     ap.add_argument("--dry-run", action="store_true")
     args = ap.parse_args()
@@ -49,6 +58,8 @@ def main() -> None:
     if args.sources:
         # naming a source explicitly overrides its "enabled": false flag
         specs = [s for s in specs if s.stem in set(args.sources)]
+    elif args.preset == "top20":
+        specs = [s for s in specs if s.stem in set(TOP20)]
     else:
         kept = []
         for s in specs:
@@ -94,15 +105,29 @@ def main() -> None:
         print(f"dry run done, {failures} failures")
         sys.exit(1 if failures else 0)
 
-    runs = [json.loads(p.read_text()) for p in sorted(raw.glob("*__trial*.json"))]
     specs_by_name = {s.stem: json.loads(s.read_text()) for s in specs}
-    for r in runs:
-        sp = specs_by_name.get(r.get("source"), {})
-        for key in ("winning_model", "format", "origin"):
-            r[key] = sp.get(key)
+    runs = []
+    for stem, sp in specs_by_name.items():
+        # only this run's trials, so stale files from earlier runs are ignored
+        for trial in range(trials):
+            r = json.loads((raw / f"{stem}__trial{trial}.json").read_text())
+            r["source"] = stem
+            for key in ("winning_model", "format", "origin"):
+                r[key] = sp.get(key)
+            runs.append(r)
     args.results_dir.mkdir(parents=True, exist_ok=True)
-    (args.results_dir / "results.json").write_text(json.dumps(runs, indent=2))
-    print(f"wrote {args.results_dir / 'results.json'} ({len(runs)} runs)")
+    results = args.results_dir / "results.json"
+    results.write_text(json.dumps(runs, indent=2))
+    print(f"wrote {results} ({len(runs)} runs)")
+
+    table = subprocess.run(  # noqa: S603
+        [args.python, str(HERE / "make_table.py"), "--results", str(results)],
+        capture_output=True,
+        text=True,
+        check=True,
+    ).stdout
+    (args.results_dir / "table.md").write_text(table)
+    print(f"wrote {args.results_dir / 'table.md'}\n\n{table}")
 
 
 if __name__ == "__main__":

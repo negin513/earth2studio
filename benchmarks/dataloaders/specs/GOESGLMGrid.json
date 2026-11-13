@@ -1,0 +1,31 @@
+{
+  "source": "GOESGLMGrid",
+  "data_class": "GOESGLMGrid",
+  "format": "NetCDF4 (GLM-L2-LCFA, ~20 s files) binned to 0.1-degree grid",
+  "origin": "AWS S3 s3://noaa-goes16 (satellite=east resolves to G16 before 2025-04-04, G19 s3://noaa-goes19 after)",
+  "winning_model": "StormScopeMRMS",
+  "count": 1,
+  "variables": [
+    "glm_density"
+  ],
+  "ctor_kwargs": {
+    "satellite": "east",
+    "verbose": false
+  },
+  "time": "2024-01-08T18:00:00",
+  "enabled": true,
+  "unverified": "glm_variables is derived from the checkpoint's variable list at load time (stormscope.py:2251); glm_density taken from docstring/example/recipe, no checkpoint loaded.",
+  "notes": [
+    "StormScopeMRMS (model_name 3km_10min_flash) reads its glm_density state channel from GOESGLMGrid(satellite='east'); same time as the example start_date (03_stormscope_goes_example.py:156).",
+    "The source also offers glm_energy_density (goes_glm.py:954-957), which no model reads.",
+    "One 5-minute bin [t, t+5min) = 17 LCFA files, parsed with a CONUS bbox. The model itself fetches a multi-step window per call; this spec times a single bin."
+  ],
+  "all_pairs": [
+    {
+      "model": "StormScopeMRMS",
+      "count": 1,
+      "missing_vars": [],
+      "evidence_file": "examples/04_nowcasting/03_stormscope_goes_example.py:134,225; recipes/eval/cfg/model/stormscope_goes_mrms.yaml:61-64; earth2studio/models/px/stormscope.py:2115-2141,2251,2374-2376"
+    }
+  ]
+}

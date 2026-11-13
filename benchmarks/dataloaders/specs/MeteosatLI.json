@@ -1,0 +1,30 @@
+{
+  "source": "MeteosatLI",
+  "data_class": "MeteosatLI",
+  "format": "NetCDF4 (CHK-BODY member of a product zip)",
+  "origin": "EUMETSAT Data Store via eumdac (MTG LI Level-2 LFL/LGR/LEF collections)",
+  "winning_model": null,
+  "count": 9,
+  "variables": [
+    "lightning_flash_radiance",
+    "lightning_flash_count",
+    "lightning_flash_duration",
+    "lightning_flash_footprint_pixels",
+    "lightning_group_radiance",
+    "lightning_group_count",
+    "lightning_group_footprint_pixels",
+    "lightning_event_radiance",
+    "lightning_event_count"
+  ],
+  "ctor_kwargs": {
+    "verbose": false
+  },
+  "time": "2025-06-15T12:00:00",
+  "enabled": false,
+  "disabled_reason": "needs EUMETSAT Data Store credentials (EUMETSAT_CONSUMER_KEY / EUMETSAT_CONSUMER_SECRET, or the eumdac file ~/.eumdac/credentials, meteosat_li.py:269, utils_eumetsat.py).",
+  "notes": [
+    "No model in the repo reads MeteosatLI; variables are the full MeteosatLILexicon.VOCAB (earth2studio/lexicon/meteosat.py), which pulls all three products (LFL, LGR, LEF).",
+    "Default time_tolerance of +/-5 min kept; returns a pandas DataFrame. Archive starts 2024-07-04T14:00 (meteosat_li.py:94)."
+  ],
+  "all_pairs": []
+}

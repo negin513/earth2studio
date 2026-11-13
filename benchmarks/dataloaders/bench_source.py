@@ -112,6 +112,11 @@ def main() -> None:
                 shutil.rmtree(cache_dir)
             cache_dir.mkdir(parents=True, exist_ok=True)
             os.environ["EARTH2STUDIO_CACHE"] = str(cache_dir)
+            # Hugging Face backed sources (ACE2, SamudrACE) cache under HF_HOME,
+            # so point it inside the wiped directory to keep every trial cold.
+            os.environ["HF_HOME"] = str(cache_dir / "hf_home")
+            os.environ.pop("HF_HUB_CACHE", None)
+            os.environ.pop("HUGGINGFACE_HUB_CACHE", None)
 
         import earth2studio
 
@@ -149,6 +154,16 @@ def main() -> None:
         # returned variable count
         if hasattr(out, "coords") and "variable" in out.coords:
             result["n_variables_returned"] = int(out.coords["variable"].size)
+            # Some sources only warn and leave NaN for a variable they could
+            # not find, so list variables that came back entirely empty.
+            if "variable" in getattr(out, "dims", ()) and out.dtype.kind == "f":
+                import numpy as np
+
+                result["variables_all_nan"] = [
+                    str(v)
+                    for i, v in enumerate(out.coords["variable"].values)
+                    if np.isnan(out.isel(variable=i).values).all()
+                ]
         elif hasattr(out, "columns") and "variable" in out.columns:
             result["n_variables_returned"] = int(out["variable"].nunique())
         result["cache_bytes"] = sum(

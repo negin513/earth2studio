@@ -1,0 +1,24 @@
+{
+  "source": "NClimGridDaily",
+  "data_class": "NClimGridDaily",
+  "format": "NetCDF4 (monthly files, whole file downloaded)",
+  "origin": "AWS S3 s3://noaa-nclimgrid-daily-pds",
+  "winning_model": null,
+  "count": 4,
+  "variables": [
+    "t2m_max",
+    "t2m_min",
+    "t2m",
+    "tp"
+  ],
+  "ctor_kwargs": {
+    "verbose": false
+  },
+  "time": "2024-01-01T00:00:00",
+  "enabled": true,
+  "notes": [
+    "No model in examples/, recipes/, serve/, docs/ or model code reads this class (repo-wide grep; only earth2studio/data, lexicon, CHANGELOG and docs/modules/datasources_analysis.md mention it), so winning_model is null and variables are the source lexicon. Full NClimGridLexicon.VOCAB (earth2studio/lexicon/nclimgrid.py:36-41), 4 variables.",
+    "Valid from 1951-01-01, daily; time of day ignored (nclimgrid.py:401). All variables for one day come from one monthly file access/grids/2024/ncdd-202401-grd-scaled.nc (about 65 MB), so cost is nearly independent of variable count."
+  ],
+  "all_pairs": []
+}

@@ -1,0 +1,21 @@
+{
+  "source": "CosineSolarZenith",
+  "data_class": "CosineSolarZenith",
+  "format": "none (computed analytically, no file)",
+  "origin": "local computation via physicsnemo.utils.zenith_angle.cos_zenith_angle_from_timestamp",
+  "winning_model": null,
+  "count": 1,
+  "variables": [
+    "uvcossza"
+  ],
+  "ctor_kwargs": {},
+  "time": "2024-01-01T00:00:00",
+  "enabled": false,
+  "disabled_reason": "Non-JSON constructor: __init__ requires domain_coords, a CoordSystem (OrderedDict of numpy lat/lon arrays), which the generic harness cannot build (rx.py:270). It also needs nvidia-physicsnemo, which is not installed in this venv, and does no remote fetch, so it is not a data loader benchmark target.",
+  "unverified": "Not run: constructor cannot be built from JSON and physicsnemo is not importable here. ctor_kwargs {} is a placeholder that would raise TypeError.",
+  "notes": [
+    "No model, example, recipe, serve workflow or doc page in the repo uses CosineSolarZenith (only earth2studio/data/__init__.py:83 exports it); full vocabulary is the single output variable 'uvcossza' (rx.py:308). The variable argument is ignored.",
+    "Class is marked 'use with caution, needs verification' and slated for deprecation (rx.py:254-257)."
+  ],
+  "all_pairs": []
+}

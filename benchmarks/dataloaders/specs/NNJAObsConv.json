@@ -1,0 +1,42 @@
+{
+  "source": "NNJAObsConv",
+  "data_class": "NNJAObsConv",
+  "format": "BUFR (PrepBUFR cycle file + GPS-RO BUFR dump), decoded with earth2bufr",
+  "origin": "AWS S3 s3://noaa-reanalyses-pds/observations/reanalysis (conv/prepbufr, gps/gpsro)",
+  "winning_model": "HealDAv2",
+  "count": 7,
+  "variables": [
+    "u",
+    "v",
+    "q",
+    "t",
+    "pres",
+    "gps",
+    "gps_refractivity"
+  ],
+  "ctor_kwargs": {
+    "source": "prepbufr",
+    "time_tolerance_hours": 3,
+    "verbose": false,
+    "original_event": true,
+    "exclude_message_types": [
+      "SATWND"
+    ]
+  },
+  "time": "2026-01-15T00:00:00",
+  "enabled": true,
+  "notes": [
+    "HealDAv2 reads prepbufr (u,v,q,t,pres) and gpsro (gps,gps_refractivity) from this source = 7 variables, which is also the full NNJAObsConvLexicon VOCAB (utils_ncep.py:715-716).",
+    "Deviation from the model: HealDAv2 uses layout='wide' in TWO calls (one per stream); wide rejects mixing PrepBUFR and GPS-RO variables in one call (utils_ncep.py:920), so the single generic call here uses the default layout='long'. Same files downloaded and decoded; output frame shape differs.",
+    "HealDAv2 reads [t-45h, t+3h] (8 six-hourly frames, +-3h each; example :107). The harness cannot express an asymmetric tuple tolerance, so time_tolerance_hours=3 benchmarks ONE frame of the window; a real model init is ~8x this.",
+    "original_event / exclude_message_types as in the example (:109-115). Time is the example's analysis time; MIN_DATE 1979-01-01 (nnja.py:321)."
+  ],
+  "all_pairs": [
+    {
+      "model": "HealDAv2",
+      "count": 7,
+      "missing_vars": [],
+      "evidence_file": "examples/05_data_assimilation/04_healda_v2.py:109-115,122 (conv_source used for prepbufr and gpsro streams); earth2studio/models/da/healda_v2.py:102-114 (docstring), :207-208 (input_coords PREPBUFR_VARIABLES, GPSRO_VARIABLES)"
+    }
+  ]
+}

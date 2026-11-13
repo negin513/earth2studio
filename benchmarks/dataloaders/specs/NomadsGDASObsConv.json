@@ -1,0 +1,28 @@
+{
+  "source": "NomadsGDASObsConv",
+  "data_class": "NomadsGDASObsConv",
+  "format": "BUFR (PrepBUFR .nr cycle file + GPS-RO BUFR dump), decoded with earth2bufr",
+  "origin": "NOAA NOMADS HTTPS https://nomads.ncep.noaa.gov/pub/data/nccf/com/obsproc/prod",
+  "winning_model": null,
+  "count": 7,
+  "variables": [
+    "u",
+    "v",
+    "q",
+    "t",
+    "pres",
+    "gps",
+    "gps_refractivity"
+  ],
+  "ctor_kwargs": {
+    "verbose": false
+  },
+  "time": "2026-11-13T00:00:00",
+  "enabled": true,
+  "notes": [
+    "No model in the repo pairs with this source (only CHANGELOG and lexicon/data docstrings mention it); variables are the full GDASObsConvLexicon VOCAB (7 keys).",
+    "ROLLING ARCHIVE: NOMADS keeps about 2 days (_MAX_AGE_DAYS = 2, gdas.py:65) with 6-10 h latency. Update `time` to a 6-hourly cycle from the last ~36 h before every run; the value here was valid on 2026-11-13.",
+    "Default time_tolerance (10 min) and layout='long' kept; layout='wide' would reject PrepBUFR and GPS-RO variables in one call (gdas.py:243)."
+  ],
+  "all_pairs": []
+}

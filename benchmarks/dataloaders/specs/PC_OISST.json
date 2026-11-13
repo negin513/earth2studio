@@ -1,0 +1,25 @@
+{
+  "source": "PC_OISST",
+  "data_class": "PlanetaryComputerOISST",
+  "format": "NetCDF (whole-file download)",
+  "origin": "Azure Blob via Planetary Computer STAC (noaa-cdr-sea-surface-temperature-optimum-interpolation)",
+  "winning_model": null,
+  "count": 4,
+  "variables": [
+    "sst",
+    "ssta",
+    "sstu",
+    "sic"
+  ],
+  "ctor_kwargs": {
+    "verbose": false
+  },
+  "time": "2024-06-19T00:00:00",
+  "enabled": true,
+  "notes": [
+    "No model in examples/, recipes/, serve/, docs/ or model docstrings reads from this source (only listed in docs/modules/datasources_analysis.md and test/data/test_planetary_computer.py); variables = full lexicon VOCAB.",
+    "Daily product; time taken from test/data/test_planetary_computer.py:95.",
+    "lexicon: PlanetaryComputerOISSTLexicon (earth2studio/lexicon/planetary_computer.py:27)"
+  ],
+  "all_pairs": []
+}

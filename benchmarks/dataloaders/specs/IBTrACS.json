@@ -1,0 +1,36 @@
+{
+  "source": "IBTrACS",
+  "data_class": "IBTrACS",
+  "format": "NetCDF (one file per basin)",
+  "origin": "NCEI HTTPS https://www.ncei.noaa.gov/data/international-best-track-archive-for-climate-stewardship-ibtracs/v04r01/access/netcdf",
+  "winning_model": null,
+  "count": 9,
+  "variables": [
+    "tcwnd",
+    "mslp",
+    "tcustm",
+    "tcvstm",
+    "tcr34",
+    "tcr50",
+    "tcr64",
+    "tcsshs",
+    "tcd2l"
+  ],
+  "ctor_kwargs": {
+    "region": [
+      "NA",
+      "EP"
+    ],
+    "time_tolerance_td_days": 1,
+    "verbose": false
+  },
+  "time": "2024-09-26T12:00:00",
+  "enabled": true,
+  "notes": [
+    "No model in the repository reads from this source; variables are the full lexicon VOCAB. (earth2studio/lexicon/ibtracs.py IBTrACSLexicon.VOCAB, 9 keys).",
+    "recipes/tc_tracking uses IBTrACS data but downloads the NCEI CSV itself (recipes/tc_tracking/src/modes/baseline_extraction.py:42-66); it does not use earth2studio.data.IBTrACS, so it is not counted as a pairing.",
+    "region and 1 day tolerance follow the class docstring example (ibtracs.py:142); the constructor default region is 'ALL', which downloads a much larger file. Time is during Hurricane Helene (NA) and Hurricane John (EP).",
+    "Cost is the basin file download and is independent of the variable count."
+  ],
+  "all_pairs": []
+}

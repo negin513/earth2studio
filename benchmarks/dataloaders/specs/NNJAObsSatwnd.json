@@ -1,0 +1,33 @@
+{
+  "source": "NNJAObsSatwnd",
+  "data_class": "NNJAObsSatwnd",
+  "format": "BUFR (NCEP satwnd dump), decoded with earth2bufr",
+  "origin": "AWS S3 s3://noaa-reanalyses-pds/observations/reanalysis/amv (merged <=2019, satwnd after)",
+  "winning_model": "HealDAv2",
+  "count": 2,
+  "variables": [
+    "u",
+    "v"
+  ],
+  "ctor_kwargs": {
+    "time_tolerance_hours": 3,
+    "verbose": false,
+    "layout": "wide"
+  },
+  "time": "2026-01-15T00:00:00",
+  "enabled": true,
+  "notes": [
+    "u, v is both the HealDAv2 satwnd stream and the full NNJAObsSatwndLexicon VOCAB. layout='wide' as in the example (:116-118).",
+    "HealDAv2 reads [t-45h, t+3h] (8 six-hourly frames, +-3h each; example :107). The harness cannot express an asymmetric tuple tolerance, so time_tolerance_hours=3 benchmarks ONE frame of the window; a real model init is ~8x this.",
+    "Time is the example's analysis time; MIN_DATE 1979-01-01 (nnja.py:699).",
+    "layout='wide' frames have no 'variable' column, so the harness reports n_variables_returned = null (u and v are columns)."
+  ],
+  "all_pairs": [
+    {
+      "model": "HealDAv2",
+      "count": 2,
+      "missing_vars": [],
+      "evidence_file": "examples/05_data_assimilation/04_healda_v2.py:116-118,122; earth2studio/models/da/healda_v2.py:112, :209 (input_coords satwnd [u, v])"
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "source": "GEFS_FX_721x1440",
+  "data_class": "GEFS_FX_721x1440",
+  "format": "GRIB2 (byte-range via .idx)",
+  "origin": "AWS S3 s3://noaa-gefs-pds (0.25 deg, pgrb2s select product)",
+  "winning_model": null,
+  "count": 13,
+  "variables": [
+    "u10m",
+    "v10m",
+    "t2m",
+    "d2m",
+    "r2m",
+    "sp",
+    "msl",
+    "tcwv",
+    "tp",
+    "csnow",
+    "cicep",
+    "cfrzr",
+    "crain"
+  ],
+  "ctor_kwargs": {
+    "member": "gec00",
+    "verbose": false
+  },
+  "time": "2024-01-01T00:00:00",
+  "lead_time_hours": 6,
+  "enabled": true,
+  "notes": [
+    "No model in examples/, recipes/, serve/, docs/ or model docstrings/defaults reads from this source (only listed in docs/modules/datasources_forecast.md and CHANGELOG), so variables are the full lexicon VOCAB. Lexicon: GEFSLexiconSel (earth2studio/lexicon/gefs.py), 13 keys, all in the pgrb2s file.",
+    "Control member gec00 (default). Valid from 2020-09-23, 6-hourly cycles; lead time 3h steps, max 240h (gefs.py GEFS_FX_721x1440._validate_leadtime).",
+    "Lead time must be > 0: tp, csnow, cicep, cfrzr, crain are absent from the f000 index (checked 2024-01-01T00) and would be silently returned as NaN; all 13 keys are present at f006."
+  ],
+  "all_pairs": []
+}

@@ -1,0 +1,41 @@
+{
+  "source": "EarthMoverBrightBandIFS_FX",
+  "data_class": "EarthMoverBrightBandIFS_FX",
+  "format": "Zarr (Icechunk store via Arraylake)",
+  "origin": "Earthmover Arraylake Marketplace (app.earthmover.io), repo <org>/ecmwf-ifs-15-day-forecast-open-subscription",
+  "winning_model": null,
+  "count": 15,
+  "variables": [
+    "u100m",
+    "v100m",
+    "u10m",
+    "v10m",
+    "d2m",
+    "t2m",
+    "cp",
+    "fdir",
+    "hcc",
+    "lcc",
+    "mcc",
+    "msl",
+    "sd",
+    "ssrd",
+    "tp"
+  ],
+  "ctor_kwargs": {
+    "verbose": false
+  },
+  "time": "2026-11-12T00:00:00",
+  "lead_time_hours": 6,
+  "enabled": false,
+  "disabled_reason": "Needs credentials and paid/marketplace access: EARTHMOVER_API_KEY (Arraylake API key) plus an Earthmover Marketplace subscription and an org-specific repo (EARTHMOVER_ORGANIZATION or repo='org/repo'); earthmover.py:100-113,144-164. Neither env var is set on the benchmark machine.",
+  "unverified": "No real fetch was run (no credentials): time, variable resolution against the repository metadata, and the dry-run-only ctor_kwargs are untested against the live repo.",
+  "notes": [
+    "No model in examples/, recipes/, serve/, docs/ or model docstrings reads from this source (only docs/blog/posts/earthmover-marketplace.md data-only snippets); variables are the full VOCAB of EarthMoverIFSLexicon (15 keys).",
+    "ROLLING ARCHIVE: the Brightband repos retain a 15-day window (docs/blog/posts/earthmover-marketplace.md:104); update `time` to a recent 6-hourly cycle before running. 2026-11-12T00:00 was one day before the spec was written.",
+    "Lead time 6h is taken from the blog example ([0, 6, 12] h, earthmover-marketplace.md:140); valid lead steps are not defined in code. 0.1 degree grid.",
+    "ctor_kwargs relies on EARTHMOVER_ORGANIZATION to derive '<org>/ecmwf-ifs-15-day-forecast-open-subscription'; otherwise add \"repo\": \"org/repo\".",
+    "Arraylake reads lazily via Icechunk, so the on-disk cache is expected to stay empty."
+  ],
+  "all_pairs": []
+}

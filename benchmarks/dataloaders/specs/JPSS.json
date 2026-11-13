@@ -1,0 +1,40 @@
+{
+  "source": "JPSS",
+  "data_class": "JPSS",
+  "format": "HDF5 (.h5 VIIRS SDR granules, one whole file per band plus one geolocation file)",
+  "origin": "AWS S3 s3://noaa-nesdis-n20-pds",
+  "winning_model": null,
+  "count": 16,
+  "variables": [
+    "viirs01m",
+    "viirs02m",
+    "viirs03m",
+    "viirs04m",
+    "viirs05m",
+    "viirs06m",
+    "viirs07m",
+    "viirs08m",
+    "viirs09m",
+    "viirs10m",
+    "viirs11m",
+    "viirs12m",
+    "viirs13m",
+    "viirs14m",
+    "viirs15m",
+    "viirs16m"
+  ],
+  "ctor_kwargs": {
+    "satellite": "noaa-20",
+    "product_type": "M",
+    "verbose": false
+  },
+  "time": "2026-11-10T12:00:00",
+  "enabled": true,
+  "notes": [
+    "No model in the repo (examples/, recipes/, serve/, docs/, model docstrings, model default sources) reads from JPSS; variables are the full JPSSLexicon VOCAB valid for product_type='M'.",
+    "JPSSLexicon gates variables by product type (jpss.py:_validate_variables): I=5, M=16, L2=14 keys; M chosen as the largest.",
+    "Source returns the granule nearest the requested time and appends _lat/_lon, so 18 variables are returned for 16 requested.",
+    "Rolling archive: the NOAA NODD bucket only held 2026-08-13 onward when listed on 2026-11-13 (about 92 days), so this time expires around 2027-02-08; update `time` to a recent date before running later."
+  ],
+  "all_pairs": []
+}

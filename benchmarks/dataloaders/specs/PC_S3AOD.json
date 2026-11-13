@@ -1,0 +1,43 @@
+{
+  "source": "PC_S3AOD",
+  "data_class": "PlanetaryComputerSentinel3AOD",
+  "format": "NetCDF (whole-file download)",
+  "origin": "Azure Blob via Planetary Computer STAC (sentinel-3-synergy-aod-l2-netcdf)",
+  "winning_model": null,
+  "count": 22,
+  "variables": [
+    "s3sy01aod",
+    "s3sy02aod",
+    "s3sy03aod",
+    "s3sy04aod",
+    "s3sy05aod",
+    "s3sy06aod",
+    "s3sy01ssa",
+    "s3sy02ssa",
+    "s3sy03ssa",
+    "s3sy04ssa",
+    "s3sy05ssa",
+    "s3sy01sr",
+    "s3sy02sr",
+    "s3sy03sr",
+    "s3sy04sr",
+    "s3sy05sr",
+    "s3sysunzen",
+    "s3sysatzen",
+    "s3syrelaz",
+    "s3sycloudfrac",
+    "s3sy_lat",
+    "s3sy_lon"
+  ],
+  "ctor_kwargs": {
+    "verbose": false
+  },
+  "time": "2024-06-01T00:00:00",
+  "enabled": true,
+  "notes": [
+    "No model in examples/, recipes/, serve/, docs/ or model docstrings reads from this source (only listed in docs/modules/datasources_analysis.md and test/data/test_planetary_computer.py); variables = full lexicon VOCAB.",
+    "Swath product; the item closest to the time within 12 h is used (SEARCH_TOLERANCE). Time taken from test/data/test_planetary_computer.py:145.",
+    "lexicon: PlanetaryComputerSentinel3AODLexicon (earth2studio/lexicon/planetary_computer.py:51)"
+  ],
+  "all_pairs": []
+}

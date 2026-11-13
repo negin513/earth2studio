@@ -1,0 +1,30 @@
+{
+  "source": "GOESGLM",
+  "data_class": "GOESGLM",
+  "format": "NetCDF4 (GLM-L2-LCFA, ~20 s files)",
+  "origin": "AWS S3 s3://noaa-goes16 (satellite=east resolves to G16 before 2025-04-04, G19 s3://noaa-goes19 after)",
+  "winning_model": null,
+  "count": 8,
+  "variables": [
+    "lightning_event_energy",
+    "lightning_event_count",
+    "lightning_group_energy",
+    "lightning_group_count",
+    "lightning_group_area",
+    "lightning_flash_energy",
+    "lightning_flash_count",
+    "lightning_flash_area"
+  ],
+  "ctor_kwargs": {
+    "satellite": "east",
+    "verbose": false
+  },
+  "time": "2024-01-08T18:00:00",
+  "enabled": true,
+  "notes": [
+    "No model reads GOESGLM directly; variables are the full GOESGLMLexicon.VOCAB (earth2studio/lexicon/goes_glm.py:58-70). Deprecated aliases flashe/flashc excluded.",
+    "Only indirect use: GOESGLMGrid wraps GOESGLM for StormScopeMRMS (goes_glm.py:961) and has its own spec.",
+    "DataFrame source (returns pandas DataFrame, not DataArray). Default time_tolerance +/-2 min and full disk (lat_lon_bbox=None) kept, so one call downloads 14 LCFA files. Valid from 2018-02-13 (goes_glm.py:86)."
+  ],
+  "all_pairs": []
+}

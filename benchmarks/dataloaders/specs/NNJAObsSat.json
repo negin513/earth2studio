@@ -1,0 +1,40 @@
+{
+  "source": "NNJAObsSat",
+  "data_class": "NNJAObsSat",
+  "format": "BUFR (per-sensor aggregate cycle files), decoded with earth2bufr",
+  "origin": "AWS S3 s3://noaa-reanalyses-pds/observations/reanalysis (atms, amsua, amsub, mhs, airs/nasa/aqua, iasi, cris/crisf4)",
+  "winning_model": "HealDAv2",
+  "count": 7,
+  "variables": [
+    "atms",
+    "amsua",
+    "amsub",
+    "mhs",
+    "airs",
+    "iasi",
+    "cris"
+  ],
+  "ctor_kwargs": {
+    "time_tolerance_hours": 3,
+    "verbose": false
+  },
+  "time": "2026-01-15T00:00:00",
+  "enabled": true,
+  "unverified": "No HealDAv2 checkpoint loaded (healda package not installed, needs GPU). The real sensor list (model.satellite_sensors) and IR channel subset (model.ir_channels) come from the checkpoint; the 7 sensors are the docstring superset. Only a 1-variable fetch (amsua) was run: the full long-layout request without sensor_indices explodes iasi/cris to one row per footprint-channel and may exhaust memory.",
+  "notes": [
+    "Variables are the 7 sensors named in the HealDAv2 docstring (healda_v2.py:105-106, 'a subset of'); the lexicon has one more key, atms_antenna_temperature, which the model does not read.",
+    "At the chosen time amsub (archive ends 2014-06-06) and airs (ends 2023-01-18) are outside their archive period (nnja.py:165-183) and are skipped with a warning, so 5 sensors actually download. No single time has all 7 (cris starts 2018-01-16).",
+    "Deviation from the model: HealDAv2 uses layout='wide', ONE sensor per call (nnja.py:1265), with sensor_indices=model.sensor_indices. The single generic call here uses layout='long' and no sensor_indices, so iasi (616 ch) and cris (431 ch) decode every archived channel.",
+    "Cycle file sizes at 2026-01-15T00 (S3 listing): cris 1.48 GB, iasi 0.82 GB, atms 217 MB, mhs 30 MB, amsua 5 MB; about 2.6 GB per cold trial.",
+    "HealDAv2 reads [t-45h, t+3h] (8 six-hourly frames, +-3h each; example :107). The harness cannot express an asymmetric tuple tolerance, so time_tolerance_hours=3 benchmarks ONE frame of the window; a real model init is ~8x this.",
+    "Radiances are optional in the example (include_satellite_radiances = False by default, :108)."
+  ],
+  "all_pairs": [
+    {
+      "model": "HealDAv2",
+      "count": 7,
+      "missing_vars": [],
+      "evidence_file": "examples/05_data_assimilation/04_healda_v2.py:123-131 (NNJAObsSat, optional); earth2studio/models/da/healda_v2.py:105-114 (docstring), :161-168 (sensors from model.satellite_sensors), :172-174 (sensor_indices from model.ir_channels)"
+    }
+  ]
+}

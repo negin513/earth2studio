@@ -1,0 +1,40 @@
+{
+  "source": "GHCNDaily",
+  "data_class": "GHCNDaily",
+  "format": "Parquet (by_station / by_year partitions per element)",
+  "origin": "AWS S3 s3://noaa-ghcn-pds",
+  "winning_model": null,
+  "count": 12,
+  "variables": [
+    "t2m_max",
+    "t2m_min",
+    "t2m",
+    "d2m",
+    "r2m",
+    "tp",
+    "sf",
+    "sd",
+    "sde",
+    "ws10m",
+    "fg10m",
+    "tcc"
+  ],
+  "ctor_kwargs": {
+    "stations": [
+      "USW00013874",
+      "USW00003888",
+      "USW00023234",
+      "USW00094846"
+    ],
+    "time_tolerance_td_days": 1,
+    "verbose": false
+  },
+  "time": "2024-01-01T00:00:00",
+  "enabled": true,
+  "notes": [
+    "No model in the repository reads from this source; variables are the full lexicon VOCAB. (earth2studio/lexicon/ghcn.py GHCNDailyLexicon.VOCAB, 12 keys).",
+    "Stations are 11-character GHCN IDs (Atlanta Hartsfield, Atlanta Fulton Co, San Francisco, Chicago O'Hare); time and 1 day tolerance follow the class docstring example (ghcn.py:405-406).",
+    "Not every station reports every element, so fewer variables may be returned than requested."
+  ],
+  "all_pairs": []
+}

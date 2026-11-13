@@ -1,0 +1,23 @@
+{
+  "source": "MetOpMHS",
+  "data_class": "MetOpMHS",
+  "format": "EPS native binary (.nat)",
+  "origin": "EUMETSAT Data Store via eumdac (collection EO:EUM:DAT:METOP:MHSL1)",
+  "winning_model": null,
+  "count": 1,
+  "variables": [
+    "mhs"
+  ],
+  "ctor_kwargs": {
+    "verbose": false
+  },
+  "time": "2025-06-15T12:00:00",
+  "enabled": false,
+  "disabled_reason": "needs EUMETSAT Data Store credentials (EUMETSAT_CONSUMER_KEY / EUMETSAT_CONSUMER_SECRET environment variables; this class does not fall back to ~/.eumdac/credentials).",
+  "unverified": "No real fetch was run: the credential environment variables are not set on this machine, so time and ctor_kwargs are untested against the Data Store.",
+  "notes": [
+    "No model in the repo reads MetOpMHS; variables are the full MetOpMHSLexicon.VOCAB (earth2studio/lexicon/metop.py), a single variable that expands to one row per field of view per channel in a pandas DataFrame.",
+    "Defaults kept: all satellites, time_tolerance +/-1 h."
+  ],
+  "all_pairs": []
+}

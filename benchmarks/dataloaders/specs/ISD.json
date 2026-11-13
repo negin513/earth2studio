@@ -1,0 +1,36 @@
+{
+  "source": "ISD",
+  "data_class": "ISD",
+  "format": "CSV (one file per station-year)",
+  "origin": "AWS S3 s3://noaa-global-hourly-pds",
+  "winning_model": null,
+  "count": 8,
+  "variables": [
+    "ws10m",
+    "u10m",
+    "v10m",
+    "tp",
+    "t2m",
+    "fg10m",
+    "d2m",
+    "tcc"
+  ],
+  "ctor_kwargs": {
+    "stations": [
+      "72493023230",
+      "72494023234",
+      "72219013874",
+      "72219503888"
+    ],
+    "time_tolerance_hours": 2,
+    "verbose": false
+  },
+  "time": "2024-01-01T20:00:00",
+  "enabled": true,
+  "notes": [
+    "No model in the repository reads from this source; variables are the full lexicon VOCAB. (earth2studio/lexicon/isd.py ISDLexicon.VOCAB, 8 keys).",
+    "Stations are USAF+WBAN IDs (Oakland, San Francisco, Atlanta Hartsfield, Atlanta Fulton Co) taken from ISD.get_stations_bbox; time and 2 h tolerance follow the class docstring example (isd.py:102-103).",
+    "Cost scales with the station list, not the variable count: each station-year CSV is downloaded whole."
+  ],
+  "all_pairs": []
+}

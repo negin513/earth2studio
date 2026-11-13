@@ -1,0 +1,35 @@
+{
+  "source": "CFS_Reforecast_FX_Flux",
+  "data_class": "CFS_Reforecast_FX_Flux",
+  "format": "GRIB2 (whole-file download, no .idx)",
+  "origin": "NCEI HTTPS https://www.ncei.noaa.gov/oa/prod-cfs-reforecast (cfs_reforecast_6-hourly_9mon_flxf)",
+  "winning_model": null,
+  "count": 13,
+  "variables": [
+    "t2m",
+    "q2m",
+    "u10m",
+    "v10m",
+    "sp",
+    "skt",
+    "tpf",
+    "sde",
+    "tcwv",
+    "tcc",
+    "hcc",
+    "mcc",
+    "lcc"
+  ],
+  "ctor_kwargs": {
+    "verbose": false
+  },
+  "time": "1981-12-12T00:00:00",
+  "lead_time_hours": 6,
+  "enabled": true,
+  "notes": [
+    "No model in the repo (examples/, recipes/, serve/, docs/, model docstrings, default data/conditioning sources) pairs with CFS_Reforecast_FX_Flux; variables = full CFSFluxLexicon.VOCAB (13 keys, earth2studio/lexicon/cfs.py).",
+    "NCEI archive has no .idx files: each (time, lead) downloads one whole grib file regardless of variable count (cfs_reforecast.py:189-193). Valid ICs: 6-hourly, every 5th day, 1981-12-12 to 2011-03-27T18 (cfs_reforecast.py:55-56); off-schedule dates raise FileNotFoundError. Lead time 6h multiple, max 270 days.",
+    "flxf product, T126 Gaussian grid 190x384."
+  ],
+  "all_pairs": []
+}

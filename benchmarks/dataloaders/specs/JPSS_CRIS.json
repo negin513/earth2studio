@@ -1,0 +1,26 @@
+{
+  "source": "JPSS_CRIS",
+  "data_class": "JPSS_CRIS",
+  "format": "HDF5 (.h5 SCRIF SDR + GCRSO geolocation granules)",
+  "origin": "AWS S3 s3://noaa-nesdis-n20-pds",
+  "winning_model": null,
+  "count": 1,
+  "variables": [
+    "crisfsr"
+  ],
+  "ctor_kwargs": {
+    "satellites": [
+      "n20"
+    ],
+    "time_tolerance_np_minutes": 1,
+    "verbose": false
+  },
+  "time": "2024-06-01T12:00:00",
+  "enabled": true,
+  "notes": [
+    "No model in the repo reads from JPSS_CRIS; variables are the full JPSSCrISLexicon VOCAB (1 key).",
+    "satellites restricted to n20 (class default is all three) and time_tolerance narrowed to +/-1 minute (class default 10 minutes) to bound download size and DataFrame rows; all 2211 apodized channels are kept.",
+    "Archive starts 2023-09-06 for all satellites (jpss_cris.py:_SAT_START_DATE). Returns a DataFrame."
+  ],
+  "all_pairs": []
+}

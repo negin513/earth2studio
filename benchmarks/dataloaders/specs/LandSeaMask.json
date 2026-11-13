@@ -1,0 +1,22 @@
+{
+  "source": "LandSeaMask",
+  "data_class": "LandSeaMask",
+  "format": "Zarr v2 (single static 721x1440 array)",
+  "origin": "GCS gs://gcp-public-data-arco-era5/ar/1959-2022-full_37-1h-0p25deg-chunk-1.zarr-v2",
+  "winning_model": null,
+  "count": 1,
+  "variables": [
+    "lsm"
+  ],
+  "ctor_kwargs": {
+    "verbose": false
+  },
+  "time": "2024-01-01T00:00:00",
+  "enabled": true,
+  "notes": [
+    "No model, example, recipe, serve workflow or doc page in the repo uses LandSeaMask (only earth2studio/data/__init__.py:83 exports it), so the full vocabulary is used: the class serves exactly one variable, 'lsm' (ARCO array 'land_sea_mask', rx.py). There is no lexicon; the variable argument is ignored.",
+    "Static land-sea mask: the time argument only sets the time coordinate, any time works.",
+    "Small real fetch passed (about 2 s, 4 MB .npy cache under EARTH2STUDIO_CACHE). Constructor opens the remote Zarr group, so most of the cost is store initialisation."
+  ],
+  "all_pairs": []
+}

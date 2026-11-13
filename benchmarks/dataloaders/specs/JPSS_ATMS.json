@@ -1,0 +1,27 @@
+{
+  "source": "JPSS_ATMS",
+  "data_class": "JPSS_ATMS",
+  "format": "BUFR (decoded with eccodes)",
+  "origin": "AWS S3 s3://noaa-nesdis-n20-pds (ATMS_BUFR/)",
+  "winning_model": null,
+  "count": 1,
+  "variables": [
+    "atms"
+  ],
+  "ctor_kwargs": {
+    "satellites": [
+      "n20"
+    ],
+    "time_tolerance_np_minutes": 10,
+    "verbose": false
+  },
+  "time": "2026-11-10T12:00:00",
+  "enabled": true,
+  "notes": [
+    "No model in the repo reads from JPSS_ATMS (HealDA takes atms from UFS/NNJA sources); variables are the full JPSSATMSLexicon VOCAB (1 key).",
+    "satellites restricted to n20 (class default is all three: n20, n21, npp); time_tolerance is the class default of 10 minutes (+/-).",
+    "Archive starts 2023-09-06 for all satellites (jpss_atms.py:_SAT_START_DATE). Returns a DataFrame.",
+    "Rolling archive: the NOAA NODD bucket only held 2026-08-13 onward when listed on 2026-11-13 (about 92 days), so this time expires around 2027-02-08; update `time` to a recent date before running later."
+  ],
+  "all_pairs": []
+}

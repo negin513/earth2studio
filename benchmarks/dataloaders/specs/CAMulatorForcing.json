@@ -1,0 +1,35 @@
+{
+  "source": "CAMulatorForcing",
+  "data_class": "CAMulatorForcing",
+  "format": "NetCDF4 (one whole 1.29 GB file, cyclic 1-year record, 1460 six-hourly no-leap steps)",
+  "origin": "HuggingFace Hub willychap/camulator (pinned revision 4da83abd)",
+  "winning_model": "CAMulator",
+  "count": 4,
+  "variables": [
+    "mtdwswrf",
+    "sst",
+    "sic",
+    "global_mean_co2"
+  ],
+  "ctor_kwargs": {
+    "mode": "cyclic",
+    "verbose": false
+  },
+  "time": "2000-01-01T00:00:00",
+  "enabled": true,
+  "unverified": "No real fetch was run: any call downloads the whole 1.29 GB cyclic file regardless of variable count. Checked instead by HTTP range reads of the remote file header: SOLIN, SST, ICEFRAC, co2vmr_3d present with shape (1460, 192, 288), noleap 6-hourly time axis starting 2000-01-01, grid matches CAMULATOR_GRID_LAT/LON. Only the dry run passed.",
+  "notes": [
+    "Variables are CAMulator FORCING_VARIABLES (models/px/camulator.py:78), fetched each step at :445.",
+    "Unlike SamudrACE, the file is downloaded with local_dir=self.cache (camulator.py:299-301), i.e. under EARTH2STUDIO_CACHE/camulator, so the harness wipe gives a cold trial (the class docstring's HF_HOME statement is wrong).",
+    "Cyclic mode matches month/day/hour so any 6-hourly date works; mode='transient' would download 9.7 GB.",
+    "Expect roughly 1.3 GB per trial; time is dominated by the download."
+  ],
+  "all_pairs": [
+    {
+      "model": "CAMulator",
+      "count": 4,
+      "missing_vars": [],
+      "evidence_file": "earth2studio/models/px/camulator.py:78 (FORCING_VARIABLES), :243-244 (default CAMulatorForcing(verbose=False)), :445; test/models/px/test_camulator.py:363. Not used in examples/, recipes/ or serve/."
+    }
+  ]
+}

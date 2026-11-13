@@ -1,0 +1,37 @@
+{
+  "source": "HimawariAHI",
+  "data_class": "HimawariAHI",
+  "format": "NetCDF4 (ISatSS L2 Full Disk tiles, 88 per channel)",
+  "origin": "AWS S3 s3://noaa-himawari9 (AHI-L2-FLDK-ISatSS)",
+  "winning_model": null,
+  "count": 16,
+  "variables": [
+    "ahi01",
+    "ahi02",
+    "ahi03",
+    "ahi04",
+    "ahi05",
+    "ahi06",
+    "ahi07",
+    "ahi08",
+    "ahi09",
+    "ahi10",
+    "ahi11",
+    "ahi12",
+    "ahi13",
+    "ahi14",
+    "ahi15",
+    "ahi16"
+  ],
+  "ctor_kwargs": {
+    "satellite": "himawari9",
+    "verbose": false
+  },
+  "time": "2024-01-08T18:00:00",
+  "enabled": true,
+  "notes": [
+    "No model in the repo reads HimawariAHI; variables are the full HimawariAHILexicon.VOCAB (earth2studio/lexicon/himawari_ahi.py:49-70).",
+    "Full disk (lat_lon_bbox=None): 16 channels x 88 tiles = ~1408 objects, output 16 x 5500 x 5500. Time must be on a 10-minute scan; himawari9 valid from 2022-12-13 (himawari_ahi.py:309,741)."
+  ],
+  "all_pairs": []
+}

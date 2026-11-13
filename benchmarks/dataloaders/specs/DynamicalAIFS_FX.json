@@ -1,0 +1,37 @@
+{
+  "source": "DynamicalAIFS_FX",
+  "data_class": "DynamicalAIFS_FX",
+  "format": "Icechunk (Zarr v3), opened lazily with xarray",
+  "origin": "AWS S3 s3://dynamical-ecmwf-aifs-single/ecmwf-aifs-single-forecast/v0.1.0.icechunk/ (us-west-2, anonymous; resolved at runtime from https://stac.dynamical.org/ecmwf-aifs-single-forecast/collection.json)",
+  "winning_model": null,
+  "count": 15,
+  "variables": [
+    "u10m",
+    "v10m",
+    "u100m",
+    "v100m",
+    "t2m",
+    "d2m",
+    "sp",
+    "msl",
+    "tcc",
+    "tpf",
+    "z500",
+    "z850",
+    "z925",
+    "t850",
+    "t925"
+  ],
+  "ctor_kwargs": {
+    "verbose": false
+  },
+  "time": "2025-01-01T00:00:00",
+  "lead_time_hours": 6,
+  "enabled": true,
+  "notes": [
+    "No model in examples/, recipes/, serve/, docs/ or model docstrings reads from any Dynamical* source, so variables are the full DynamicalLexicon.VOCAB filtered to keys this collection actually serves (source.variables probed live 2026-11-13; VOCAB has 19 keys, earth2studio/lexicon/dynamical.py:59-78). Native pass-through names (e.g. downward_*_radiation_flux_surface) are excluded.",
+    "Collection ecmwf-aifs-single-forecast: available from 2024-04-01, 6-hourly init, leads 0-360h every 6h (probed from the opened store; STAC extent end is open). Validity is checked in dynamical.py:458 (_validate_time).",
+    "Icechunk reads chunks on demand and writes nothing to the local cache (dynamical.py cache docstring), so cache_bytes will be ~0 and every trial is cold regardless."
+  ],
+  "all_pairs": []
+}

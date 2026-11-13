@@ -49,9 +49,13 @@ Caveats, also recorded in each spec's `unverified` / `disabled_reason` field:
   realms) that the generic harness does not build, and fetches about 60 GB.
 - CBottle3D is disabled: it is a generative model that needs a GPU and a
   checkpoint, not a remote fetch.
-- Sources with no model pairing in the repository are not benchmarked: CFS,
-  HRRR_FX, IFS_ENS, ISD, GHCN, IBTrACS, JPSS, UFS and NNJA observations,
-  NClimGrid, and the other Planetary Computer sources.
+- The table above lists the first 14 specs only. `specs/` holds 83 in total,
+  covering most remote sources in `earth2studio.data`. Where no model reads a
+  source, `winning_model` is null and the spec requests the source's full
+  lexicon (for example GEFS_FX 214, CFS_FX 81, HRRR_FX 648).
+- Specs for the ECMWF forecast variants, the Dynamical family, Meteosat/MetOp,
+  CMIP6 and EarthMover were written but not all confirmed with a real fetch.
+- Sample output for the default 20 sources is in `RESULTS.md`.
 
 ## Methodology
 
@@ -67,16 +71,29 @@ Caveats, also recorded in each spec's `unverified` / `disabled_reason` field:
 
 ## Usage
 
+Install Earth2Studio with the data extra, then run one command. It benchmarks
+the default 20 sources once each and prints the results table:
+
 ```bash
-python driver.py --dry-run                 # validate specs, import classes
-python driver.py --trials 3                # all enabled specs
-python driver.py --trials 3 --sources GFS HRRR
-python driver.py --sources CDS             # naming a disabled spec runs it
-python make_table.py > results/table.md
+uv sync --extra data
+cd benchmarks/dataloaders
+uv run python driver.py
 ```
 
-Outputs go to `results/raw/*.json` (one per trial) and `results/results.json`.
-`results/` is git-ignored.
+Other options:
+
+```bash
+python driver.py --trials 3                # median over three cold trials
+python driver.py --preset all              # every enabled spec
+python driver.py --sources GFS HRRR        # only the named specs
+python driver.py --sources CDS             # naming a disabled spec runs it
+python driver.py --dry-run                 # validate specs, no network
+python make_table.py                       # re-render the table from results
+```
+
+Outputs go to `results/raw/*.json` (one per trial), `results/results.json` and
+`results/table.md`. `results/` is git-ignored. Each source has a 15 minute
+limit by default (`--timeout`).
 
 The `PC_IFS` spec reads a rolling archive: update its `time` to a recent
 6-hourly cycle before running.

@@ -1,0 +1,35 @@
+{
+  "source": "DynamicalHRRR_FX",
+  "data_class": "DynamicalHRRR_FX",
+  "format": "Icechunk (Zarr v3), virtual chunk references into GRIB2",
+  "origin": "dynamical.org STAC collection noaa-hrrr-forecast-48-hour-virtual; AWS S3 s3://dynamical-noaa-hrrr/noaa-hrrr-forecast-48-hour-virtual (virtual chunks -> s3://noaa-hrrr-bdp-pds) (anonymous)",
+  "winning_model": null,
+  "count": 10,
+  "variables": [
+    "u10m",
+    "v10m",
+    "t2m",
+    "d2m",
+    "r2m",
+    "sp",
+    "msl",
+    "tcc",
+    "tcwv",
+    "tpf"
+  ],
+  "ctor_kwargs": {
+    "verbose": false
+  },
+  "time": "2024-01-01T00:00:00",
+  "lead_time_hours": 6,
+  "enabled": true,
+  "notes": [
+    "No model in the repo (examples/, recipes/, serve/, docs/, model docstrings, default data sources) reads from this source; only test/data/test_dynamical.py and docs/modules API listings reference it. Variables are the full DynamicalLexicon.VOCAB (earth2studio/lexicon/dynamical.py:57-74, 19 keys) filtered to the keys this collection actually serves.",
+    "Filter was taken from the live source.variables property (dynamical.py:396-436) on 2026-11-13: 10 of 19 lexicon keys resolve in collection noaa-hrrr-forecast-48-hour-virtual; the rest raise KeyError (dynamical.py:387). The collection's 132 native pass-through names are not lexicon keys and are excluded.",
+    "Time range: STAC extent start 2018-07-13T12:00:00, open-ended; last init_time in store at probe was 2026-11-13T12:00:00 (dynamical.py:458-488 validates against this).",
+    "`cache` is a no-op for this class (dynamical.py:438-441: Icechunk reads chunks lazily, nothing is written to EARTH2STUDIO_CACHE), so cache_bytes will be 0 and every run is cold by construction.",
+    "Lead times in store: 0h to 48h, first step 1h; lead must match a stored lead_time exactly (.sel, dynamical.py:602).",
+    "Init times are 6-hourly (00/06/12/18Z) in this 48-hour collection."
+  ],
+  "all_pairs": []
+}
