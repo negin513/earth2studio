@@ -24,7 +24,7 @@
   },
   "time": "2024-01-01T00:00:00",
   "lead_time_hours": 6,
-  "enabled": true,
+  "enabled": false,
   "notes": [
     "No model in the repo (examples/, recipes/, serve/, docs/, model docstrings, default data sources) reads from this source; only test/data/test_dynamical.py and docs/modules API listings reference it. Variables are the full DynamicalLexicon.VOCAB (earth2studio/lexicon/dynamical.py:57-74, 19 keys) filtered to the keys this collection actually serves.",
     "Filter was taken from the live source.variables property (dynamical.py:396-436) on 2026-11-13: 11 of 19 lexicon keys resolve in collection noaa-gfs-forecast; the rest raise KeyError (dynamical.py:387). The collection's 14 native pass-through names are not lexicon keys and are excluded.",
@@ -32,5 +32,6 @@
     "`cache` is a no-op for this class (dynamical.py:438-441: Icechunk reads chunks lazily, nothing is written to EARTH2STUDIO_CACHE), so cache_bytes will be 0 and every run is cold by construction.",
     "Lead times in store: 0h to 384h, first step 1h; lead must match a stored lead_time exactly (.sel, dynamical.py:602)."
   ],
-  "all_pairs": []
+  "all_pairs": [],
+  "disabled_reason": "Fetch deadlocks in this environment (Python 3.14.3, zarr 3.2.1, xarray 2026.2.0, icechunk 2.1.0): a blocking zarr read in dynamical.py fetch() waits on the async I/O thread; a 1-variable DynamicalGFS call made no progress in 90 s."
 }

@@ -14,22 +14,35 @@ source the model with the most variables wins; its exact variable list is in
 `specs/<SOURCE>.json`, along with every other pairing found (`all_pairs`) and
 the file evidence.
 
-| Spec | Data class | Model with max variables | Variables | Other paired models (variables) | Runs by default |
+The default run covers these 20 sources. "Full lexicon" means no model in the
+repository reads the source, so the spec requests every variable it offers.
+
+| Spec | Data class | File format | Pulled from | Model with max variables | Variables |
 |---|---|---|---|---|---|
-| ARCO | `ARCO_ERA5` | UCast | 83 | GraphCastOperational 82, FuXiS2S 76, AtlasCRPS 75, SFNO 73, FCN3 72 | yes |
-| NCAR_ERA5 | `NCAR_ERA5` | Aurora1p5 | 83 | SFNO 73, FCN3 72, OrbitGlobalPrecip 17 | yes |
-| WB2ERA5 | `WB2ERA5` | Aurora | 69 | CBottleInfill 13, DLWP 7 | yes |
-| GFS | `GFS` | SFNO | 73 | InterpCRPSDiT 73, FCN3 72, Pangu24 69, FCN 26, CorrDiffTaiwan 12, DLWP 7 | yes |
-| GFS_FX | `GFS_FX` | StormCast (conditioning) | 26 | StormCastCONUS 26, StormCastSDA 26 | yes |
-| HRRR | `HRRR` | StormCastCONUS | 99 | StormCast 99, StormCastSDA 99 | yes |
-| IFS | `IFS` | AIFS2 | 125 | AIFS2ENS 125, AIFS 106, AIFSENS 104 | yes |
-| PC_IFS | `PlanetaryComputerECMWFOpenDataIFS` | FCN3 | 72 | InterpModAFNO 72 | yes |
-| GOES | `GOES` | StormScopeGOES | 8 | StormScopeMRMS 8 (conditioning) | yes |
-| MRMS | `MRMS` | StormScopeMRMS | 2 | - | yes |
-| ACE2 | `ACE2ERA5Data` | ACE2ERA5 | 38 | - | yes |
-| CDS | `CDS_ERA5` | AIFSENS | 88 (estimated) | - | no |
-| CMIP6MultiRealm | `CMIP6MultiRealm` | CorrDiffCMIP6 | 74 | - | no |
-| CBottle3D | `CBottle3D` | CBottleSR | 12 | - | no |
+| ARCO | `ARCO_ERA5` | Zarr (v2) | Google Cloud Storage `gs://gcp-public-data-arco-era5` | UCast | 83 |
+| WB2ERA5 | `WB2ERA5` | Zarr (v2) | Google Cloud Storage `gs://weatherbench2` | Aurora | 69 |
+| NCAR_ERA5 | `NCAR_ERA5` | NetCDF4 (HDF5) | AWS S3 `s3://nsf-ncar-era5` | Aurora1p5 | 83 |
+| GFS | `GFS` | GRIB2 (byte-range via .idx) | AWS S3 `s3://noaa-gfs-bdp-pds` | SFNO | 73 |
+| GFS_FX | `GFS_FX` | GRIB2 (byte-range via .idx) | AWS S3 `s3://noaa-gfs-bdp-pds` | StormCast (conditioning) | 26 |
+| GEFS_FX | `GEFS_FX` | GRIB2 (byte-range via .idx) | AWS S3 `s3://noaa-gefs-pds` | full lexicon | 214 |
+| CFS_FX | `CFS_FX` | GRIB2 (byte-range via .idx) | AWS S3 `s3://noaa-cfs-pds` | full lexicon | 81 |
+| HRRR | `HRRR` | GRIB2 (byte-range via .idx) | AWS S3 `s3://noaa-hrrr-bdp-pds` | StormCastCONUS | 99 |
+| IFS | `IFS` | GRIB2 | AWS S3, ECMWF open data mirror (`ecmwf-forecasts`) | AIFS2 | 125 |
+| PC_IFS | `PlanetaryComputerECMWFOpenDataIFS` | GRIB2 (byte-range via .index) | Azure Blob via Planetary Computer STAC | FCN3 | 72 |
+| GOES | `GOES` | NetCDF4 (ABI-L2-MCMIP) | AWS S3 `s3://noaa-goes16` | StormScopeGOES | 8 |
+| GOESGLMGrid | `GOESGLMGrid` | NetCDF4 (GLM-L2-LCFA), binned to a 0.1 degree grid | AWS S3 `s3://noaa-goes16` | StormScopeMRMS | 1 |
+| MRMS | `MRMS` | GRIB2, gzipped | AWS S3 `s3://noaa-mrms-pds` | StormScopeMRMS | 2 |
+| ACE2 | `ACE2ERA5Data` | NetCDF | Hugging Face `allenai/ACE2-ERA5` | ACE2ERA5 | 38 |
+| UFSObsConv | `UFSObsConv` | NetCDF4 (GSI diag, whole-file download) | AWS S3 `s3://noaa-ufs-gefsv13replay-pds` | HealDA | 8 |
+| UFSObsSat | `UFSObsSat` | NetCDF4 (GSI diag, whole-file download) | AWS S3 `s3://noaa-ufs-gefsv13replay-pds` | HealDA | 4 |
+| NNJAObsConv | `NNJAObsConv` | BUFR (PrepBUFR and GPS-RO) | AWS S3 `s3://noaa-reanalyses-pds` | HealDAv2 | 7 |
+| NNJAObsSatwnd | `NNJAObsSatwnd` | BUFR (satwnd dump) | AWS S3 `s3://noaa-reanalyses-pds` | HealDAv2 | 2 |
+| GHCNHourly | `GHCNHourly` | Parquet (one file per station-year) | NCEI HTTPS `ncei.noaa.gov` | StormCastCONUS | 3 |
+| ISD | `ISD` | CSV (one file per station-year) | AWS S3 `s3://noaa-global-hourly-pds` | full lexicon | 8 |
+
+The Zarr version is detected from the opened store at run time (ARCO and
+WB2ERA5 are both Zarr v2). Every spec in `specs/` records its own `format` and
+`origin`, and the results table prints them for whatever set you run.
 
 Caveats, also recorded in each spec's `unverified` / `disabled_reason` field:
 
@@ -49,12 +62,14 @@ Caveats, also recorded in each spec's `unverified` / `disabled_reason` field:
   realms) that the generic harness does not build, and fetches about 60 GB.
 - CBottle3D is disabled: it is a generative model that needs a GPU and a
   checkpoint, not a remote fetch.
-- The table above lists the first 14 specs only. `specs/` holds 83 in total,
-  covering most remote sources in `earth2studio.data`. Where no model reads a
-  source, `winning_model` is null and the spec requests the source's full
-  lexicon (for example GEFS_FX 214, CFS_FX 81, HRRR_FX 648).
-- Specs for the ECMWF forecast variants, the Dynamical family, Meteosat/MetOp,
-  CMIP6 and EarthMover were written but not all confirmed with a real fetch.
+- `specs/` holds 83 specs in total, covering most remote sources in
+  `earth2studio.data`; run them with `--preset all` or `--sources`.
+- The 14 Dynamical sources (dynamical.org Icechunk stores, Zarr v3) are
+  disabled: their fetch deadlocks in the tested environment (Python 3.14.3,
+  zarr 3.2.1, xarray 2026.2.0, icechunk 2.1.0). A one-variable `DynamicalGFS`
+  call made no progress in 90 seconds.
+- Specs for the ECMWF forecast variants, Meteosat/MetOp, CMIP6 and EarthMover
+  were written but not all confirmed with a real fetch.
 - Sample output for the default 20 sources is in `RESULTS.md`.
 
 ## Methodology

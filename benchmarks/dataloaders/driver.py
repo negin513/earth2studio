@@ -38,12 +38,9 @@ DEFAULT = [
     "GFS", "GFS_FX", "HRRR", "GEFS_FX", "CFS_FX", "MRMS", "GOES", "GOESGLMGrid",
     "ARCO", "WB2ERA5", "PC_IFS", "ACE2", "IFS", "NCAR_ERA5", "UFSObsConv",
     "UFSObsSat", "NNJAObsConv", "NNJAObsSatwnd", "GHCNHourly", "ISD",
-    # dynamical.org Icechunk (Zarr v3) stores
-    "DynamicalGFS", "DynamicalGFS_FX", "DynamicalGEFS", "DynamicalGEFS_FX",
-    "DynamicalHRRR", "DynamicalHRRR_FX", "DynamicalMRMS", "DynamicalAIFS",
-    "DynamicalAIFS_FX", "DynamicalAIFS_ENS", "DynamicalAIFSENS_FX",
-    "DynamicalIFS_ENS", "DynamicalIFS_ENS_FX", "DynamicalICON_EU_FX",
 ]  # fmt: skip
+# The Dynamical* specs (dynamical.org Icechunk, Zarr v3) are left out: their
+# fetch deadlocks in the tested environment. Run them with --sources.
 
 
 def main() -> None:

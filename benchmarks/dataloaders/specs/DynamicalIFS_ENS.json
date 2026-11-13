@@ -29,7 +29,7 @@
     "verbose": false
   },
   "time": "2025-01-01T00:00:00",
-  "enabled": true,
+  "enabled": false,
   "notes": [
     "No model in examples/, recipes/, serve/, docs/ or model docstrings reads from any Dynamical* source, so variables are the full DynamicalLexicon.VOCAB filtered to keys this collection actually serves (source.variables probed live 2026-11-13; VOCAB has 19 keys, earth2studio/lexicon/dynamical.py:59-78). Native pass-through names (e.g. downward_*_radiation_flux_surface) are excluded.",
     "Collection ecmwf-ifs-ens-forecast-15-day-0-25-degree: available from 2024-04-01, daily 00Z init only, leads 0-360h (3h steps early), 51 members (probed from the opened store; STAC extent end is open). Validity is checked in dynamical.py:458 (_validate_time).",
@@ -37,5 +37,6 @@
     "Analysis view = lead_time 0 of the forecast archive (dynamical.py:678); time is the forecast init_time.",
     "member=0 is the control member (class default)."
   ],
-  "all_pairs": []
+  "all_pairs": [],
+  "disabled_reason": "Fetch deadlocks in this environment (Python 3.14.3, zarr 3.2.1, xarray 2026.2.0, icechunk 2.1.0): a blocking zarr read in dynamical.py fetch() waits on the async I/O thread; a 1-variable DynamicalGFS call made no progress in 90 s."
 }
