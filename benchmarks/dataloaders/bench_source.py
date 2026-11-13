@@ -53,6 +53,13 @@ SOURCES = {
         },
         "time": "2024-01-01T00:00",
     },
+    # dynamical.org HRRR analysis: Zarr v3 (sharded) in an Icechunk repo, 27
+    # native variables (vars/DynamicalHRRR.json). Not available in 0.14.0.
+    "DynamicalHRRR": {
+        "class_name": "DynamicalHRRR",
+        "ctor_kwargs": {"verbose": False},
+        "time": "2024-01-01T00:00",
+    },
     "GEFS_FX": {
         "class_name": "GEFS_FX",
         "ctor_kwargs": {
