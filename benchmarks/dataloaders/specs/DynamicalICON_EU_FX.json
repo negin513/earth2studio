@@ -2,6 +2,7 @@
   "source": "DynamicalICON_EU_FX",
   "data_class": "DynamicalICON_EU_FX",
   "format": "Icechunk (Zarr v3), opened lazily with xarray",
+  "zarr_format": 3,
   "origin": "AWS S3 s3://dynamical-dwd-icon-eu/dwd-icon-eu-forecast-5-day/v0.2.0.icechunk/ (us-west-2, anonymous; resolved at runtime from https://stac.dynamical.org/dwd-icon-eu-forecast-5-day/collection.json)",
   "winning_model": null,
   "count": 10,

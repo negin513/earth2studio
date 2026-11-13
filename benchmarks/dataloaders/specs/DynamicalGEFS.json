@@ -2,6 +2,7 @@
   "source": "DynamicalGEFS",
   "data_class": "DynamicalGEFS",
   "format": "Icechunk (Zarr v3)",
+  "zarr_format": 3,
   "origin": "dynamical.org STAC collection noaa-gefs-analysis; AWS S3 s3://dynamical-noaa-gefs/noaa-gefs-analysis (anonymous)",
   "winning_model": null,
   "count": 12,

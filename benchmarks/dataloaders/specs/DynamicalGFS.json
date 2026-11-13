@@ -2,6 +2,7 @@
   "source": "DynamicalGFS",
   "data_class": "DynamicalGFS",
   "format": "Icechunk (Zarr v3)",
+  "zarr_format": 3,
   "origin": "dynamical.org STAC collection noaa-gfs-analysis; AWS S3 s3://dynamical-noaa-gfs/noaa-gfs-analysis (anonymous)",
   "winning_model": null,
   "count": 11,

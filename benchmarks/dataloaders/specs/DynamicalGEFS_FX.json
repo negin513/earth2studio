@@ -2,6 +2,7 @@
   "source": "DynamicalGEFS_FX",
   "data_class": "DynamicalGEFS_FX",
   "format": "Icechunk (Zarr v3)",
+  "zarr_format": 3,
   "origin": "dynamical.org STAC collection noaa-gefs-forecast-35-day; AWS S3 s3://dynamical-noaa-gefs/noaa-gefs-forecast-35-day (anonymous)",
   "winning_model": null,
   "count": 12,

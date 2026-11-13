@@ -2,6 +2,7 @@
   "source": "DynamicalMRMS",
   "data_class": "DynamicalMRMS",
   "format": "Icechunk (Zarr v3)",
+  "zarr_format": 3,
   "origin": "dynamical.org STAC collection noaa-mrms-conus-analysis-hourly; AWS S3 s3://dynamical-noaa-mrms/noaa-mrms-conus-analysis-hourly (anonymous)",
   "winning_model": null,
   "count": 2,

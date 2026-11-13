@@ -2,6 +2,7 @@
   "source": "DynamicalIFS_ENS_FX",
   "data_class": "DynamicalIFS_ENS_FX",
   "format": "Icechunk (Zarr v3), opened lazily with xarray",
+  "zarr_format": 3,
   "origin": "AWS S3 s3://dynamical-ecmwf-ifs-ens/ecmwf-ifs-ens-forecast-15-day-0-25-degree/v0.1.0.icechunk/ (us-west-2, anonymous; resolved at runtime from https://stac.dynamical.org/ecmwf-ifs-ens-forecast-15-day-0-25-degree/collection.json)",
   "winning_model": null,
   "count": 16,

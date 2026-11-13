@@ -80,6 +80,19 @@ def parse_times(spec: dict):
     return [np.datetime64(t) for t in raw]
 
 
+def detect_zarr_format(source: object) -> int | None:
+    """Zarr format version (2 or 3) of a store the source opened, if any.
+
+    Looks for zarr groups held as attributes on the source object and reads the
+    version from their metadata, so the value reflects the store actually read.
+    """
+    for value in vars(source).values():
+        fmt = getattr(getattr(value, "metadata", None), "zarr_format", None)
+        if fmt in (2, 3):
+            return int(fmt)
+    return None
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--spec", required=True)
@@ -143,6 +156,9 @@ def main() -> None:
         result["ctor_seconds"] = t1 - t0
         result["call_seconds"] = t3 - t2
         result["seconds"] = t3 - t0
+        # Detected from the opened store; the spec value is the fallback for
+        # sources that do not keep a zarr group (Icechunk stores are Zarr v3).
+        result["zarr_format"] = detect_zarr_format(ds) or spec.get("zarr_format")
         if hasattr(out, "shape"):  # xarray DataArray / DataFrame
             result["result_shape"] = list(out.shape)
         if hasattr(out, "dims"):  # dimension names for the shape

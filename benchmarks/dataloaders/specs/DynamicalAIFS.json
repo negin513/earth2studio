@@ -2,6 +2,7 @@
   "source": "DynamicalAIFS",
   "data_class": "DynamicalAIFS",
   "format": "Icechunk (Zarr v3), opened lazily with xarray",
+  "zarr_format": 3,
   "origin": "AWS S3 s3://dynamical-ecmwf-aifs-single/ecmwf-aifs-single-forecast/v0.1.0.icechunk/ (us-west-2, anonymous; resolved at runtime from https://stac.dynamical.org/ecmwf-aifs-single-forecast/collection.json)",
   "winning_model": null,
   "count": 15,

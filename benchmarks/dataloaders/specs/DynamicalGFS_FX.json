@@ -2,6 +2,7 @@
   "source": "DynamicalGFS_FX",
   "data_class": "DynamicalGFS_FX",
   "format": "Icechunk (Zarr v3)",
+  "zarr_format": 3,
   "origin": "dynamical.org STAC collection noaa-gfs-forecast; AWS S3 s3://dynamical-noaa-gfs/noaa-gfs-forecast (anonymous)",
   "winning_model": null,
   "count": 11,

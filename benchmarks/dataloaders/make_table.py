@@ -57,12 +57,20 @@ def main() -> None:
                 return f"{out} ({', '.join(dims)})" if dims else out
         return "-"
 
+    def zarr_version(runs: list, src: str) -> str:
+        """Zarr format version: detected at run time, else from the spec."""
+        for r in runs:
+            if r.get("zarr_format"):
+                return f"v{r['zarr_format']}"
+        val = spec_field(runs, src, "zarr_format")
+        return f"v{val}" if val != "-" else "-"
+
     print(
-        "| Source | Model | earth2studio version | Format | Pulled from "
-        "| Variables requested | Variables returned | Shape | Median time (s) "
-        "| Cache (MB) | Data in memory (MB) | Status |"
+        "| Source | Model | earth2studio version | Format | Zarr version "
+        "| Pulled from | Variables requested | Variables returned | Shape "
+        "| Median time (s) | Cache (MB) | Data in memory (MB) | Status |"
     )
-    print("|---|---|---|---|---|---|---|---|---|---|---|---|")
+    print("|---|---|---|---|---|---|---|---|---|---|---|---|---|")
     for src in sorted(groups):
         runs = groups[src]
         fmt = spec_field(runs, src, "format")
@@ -83,7 +91,7 @@ def main() -> None:
             status += f"; {empty} variables all NaN"
         print(
             f"| {src} | {model} | {runs[0].get('earth2studio_version') or '-'} "
-            f"| {fmt} | {origin} | {req} "
+            f"| {fmt} | {zarr_version(runs, src)} | {origin} | {req} "
             f"| {ret if ret is not None else '-'} | {shape(ok)} | {med} "
             f"| {mb(ok, 'cache_bytes')} | {mb(ok, 'result_bytes')} | {status} |"
         )

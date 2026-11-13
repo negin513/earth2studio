@@ -34,10 +34,15 @@ HERE = Path(__file__).parent
 
 # Default set: the sources that models in this repository read from, plus a few
 # widely used ones. Run with --preset all for every enabled spec.
-TOP20 = [
+DEFAULT = [
     "GFS", "GFS_FX", "HRRR", "GEFS_FX", "CFS_FX", "MRMS", "GOES", "GOESGLMGrid",
     "ARCO", "WB2ERA5", "PC_IFS", "ACE2", "IFS", "NCAR_ERA5", "UFSObsConv",
     "UFSObsSat", "NNJAObsConv", "NNJAObsSatwnd", "GHCNHourly", "ISD",
+    # dynamical.org Icechunk (Zarr v3) stores
+    "DynamicalGFS", "DynamicalGFS_FX", "DynamicalGEFS", "DynamicalGEFS_FX",
+    "DynamicalHRRR", "DynamicalHRRR_FX", "DynamicalMRMS", "DynamicalAIFS",
+    "DynamicalAIFS_FX", "DynamicalAIFS_ENS", "DynamicalAIFSENS_FX",
+    "DynamicalIFS_ENS", "DynamicalIFS_ENS_FX", "DynamicalICON_EU_FX",
 ]  # fmt: skip
 
 
@@ -47,7 +52,7 @@ def main() -> None:
     ap.add_argument("--results-dir", type=Path, default=HERE / "results")
     ap.add_argument("--cache-dir", type=Path, default=None)
     ap.add_argument("--trials", type=int, default=1)
-    ap.add_argument("--preset", choices=["top20", "all"], default="top20")
+    ap.add_argument("--preset", choices=["default", "all"], default="default")
     ap.add_argument("--sources", nargs="*", default=None, help="explicit source names")
     ap.add_argument("--timeout", type=int, default=900, help="per-run limit (s)")
     ap.add_argument("--python", default=sys.executable)
@@ -58,8 +63,8 @@ def main() -> None:
     if args.sources:
         # naming a source explicitly overrides its "enabled": false flag
         specs = [s for s in specs if s.stem in set(args.sources)]
-    elif args.preset == "top20":
-        specs = [s for s in specs if s.stem in set(TOP20)]
+    elif args.preset == "default":
+        specs = [s for s in specs if s.stem in set(DEFAULT)]
     else:
         kept = []
         for s in specs:

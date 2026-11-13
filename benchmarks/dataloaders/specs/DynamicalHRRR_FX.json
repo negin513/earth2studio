@@ -2,6 +2,7 @@
   "source": "DynamicalHRRR_FX",
   "data_class": "DynamicalHRRR_FX",
   "format": "Icechunk (Zarr v3), virtual chunk references into GRIB2",
+  "zarr_format": 3,
   "origin": "dynamical.org STAC collection noaa-hrrr-forecast-48-hour-virtual; AWS S3 s3://dynamical-noaa-hrrr/noaa-hrrr-forecast-48-hour-virtual (virtual chunks -> s3://noaa-hrrr-bdp-pds) (anonymous)",
   "winning_model": null,
   "count": 10,
