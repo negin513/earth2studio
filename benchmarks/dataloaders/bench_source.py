@@ -140,6 +140,8 @@ def main() -> None:
         result["seconds"] = t3 - t0
         if hasattr(out, "shape"):  # xarray DataArray / DataFrame
             result["result_shape"] = list(out.shape)
+        if hasattr(out, "dims"):  # dimension names for the shape
+            result["result_dims"] = [str(d) for d in out.dims]
         if hasattr(out, "nbytes"):
             result["result_bytes"] = int(out.nbytes)
         elif hasattr(out, "memory_usage"):

@@ -48,12 +48,21 @@ def main() -> None:
             val = json.loads(spec.read_text()).get(key)
         return val or "-"
 
+    def shape(runs: list) -> str:
+        """Returned array shape, labelled with dimension names when recorded."""
+        for r in runs:
+            if r.get("result_shape"):
+                dims = r.get("result_dims")
+                out = " x ".join(str(n) for n in r["result_shape"])
+                return f"{out} ({', '.join(dims)})" if dims else out
+        return "-"
+
     print(
-        "| Source | Model | Format | Pulled from | Variables requested "
-        "| Variables returned | Median time (s) | Cache (MB) "
-        "| Data in memory (MB) | Status |"
+        "| Source | Model | earth2studio version | Format | Pulled from "
+        "| Variables requested | Variables returned | Shape | Median time (s) "
+        "| Cache (MB) | Data in memory (MB) | Status |"
     )
-    print("|---|---|---|---|---|---|---|---|---|---|")
+    print("|---|---|---|---|---|---|---|---|---|---|---|---|")
     for src in sorted(groups):
         runs = groups[src]
         fmt = spec_field(runs, src, "format")
@@ -70,8 +79,9 @@ def main() -> None:
         else:
             status = f"ok ({len(ok)}/{len(runs)})"
         print(
-            f"| {src} | {model} | {fmt} | {origin} | {req} "
-            f"| {ret if ret is not None else '-'} | {med} "
+            f"| {src} | {model} | {runs[0].get('earth2studio_version') or '-'} "
+            f"| {fmt} | {origin} | {req} "
+            f"| {ret if ret is not None else '-'} | {shape(ok)} | {med} "
             f"| {mb(ok, 'cache_bytes')} | {mb(ok, 'result_bytes')} | {status} |"
         )
 
