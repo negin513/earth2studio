@@ -1,6 +1,8 @@
 {
   "source": "HRRR",
   "data_class": "HRRR",
+  "format": "GRIB2 (byte-range via .idx)",
+  "origin": "AWS S3 s3://noaa-hrrr-bdp-pds",
   "winning_model": "StormCastCONUS",
   "count": 99,
   "variables": [

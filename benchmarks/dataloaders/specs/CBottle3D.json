@@ -1,6 +1,8 @@
 {
   "source": "CBottle3D",
   "data_class": "CBottle3D",
+  "format": "generated in memory",
+  "origin": "none (cBottle model checkpoint from NGC)",
   "winning_model": "CBottleSR",
   "count": 12,
   "variables": [

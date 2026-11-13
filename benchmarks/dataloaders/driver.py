@@ -98,7 +98,8 @@ def main() -> None:
     specs_by_name = {s.stem: json.loads(s.read_text()) for s in specs}
     for r in runs:
         sp = specs_by_name.get(r.get("source"), {})
-        r["winning_model"] = sp.get("winning_model")
+        for key in ("winning_model", "format", "origin"):
+            r[key] = sp.get(key)
     args.results_dir.mkdir(parents=True, exist_ok=True)
     (args.results_dir / "results.json").write_text(json.dumps(runs, indent=2))
     print(f"wrote {args.results_dir / 'results.json'} ({len(runs)} runs)")

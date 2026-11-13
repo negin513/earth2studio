@@ -1,6 +1,8 @@
 {
   "source": "GOES",
   "data_class": "GOES",
+  "format": "NetCDF4 (ABI-L2-MCMIP)",
+  "origin": "AWS S3 s3://noaa-goes16",
   "winning_model": "StormScopeGOES",
   "count": 8,
   "variables": [

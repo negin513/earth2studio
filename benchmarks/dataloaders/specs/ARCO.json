@@ -1,6 +1,8 @@
 {
   "source": "ARCO",
   "data_class": "ARCO_ERA5",
+  "format": "Zarr",
+  "origin": "Google Cloud Storage gs://gcp-public-data-arco-era5",
   "winning_model": "UCast",
   "count": 83,
   "variables": [

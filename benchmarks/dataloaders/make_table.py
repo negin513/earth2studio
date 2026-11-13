@@ -40,13 +40,24 @@ def main() -> None:
         vals = [r[key] for r in runs if r.get(key) is not None]
         return f"{statistics.median(vals) / 1e6:.1f}" if vals else "-"
 
+    def spec_field(runs: list, src: str, key: str) -> str:
+        """Field from the results, falling back to the spec file."""
+        val = runs[0].get(key)
+        spec = HERE / "specs" / f"{src}.json"
+        if val is None and spec.exists():
+            val = json.loads(spec.read_text()).get(key)
+        return val or "-"
+
     print(
-        "| Source | Model | Variables requested | Variables returned "
-        "| Median time (s) | Cache (MB) | Data in memory (MB) | Status |"
+        "| Source | Model | Format | Pulled from | Variables requested "
+        "| Variables returned | Median time (s) | Cache (MB) "
+        "| Data in memory (MB) | Status |"
     )
-    print("|---|---|---|---|---|---|---|---|")
+    print("|---|---|---|---|---|---|---|---|---|---|")
     for src in sorted(groups):
         runs = groups[src]
+        fmt = spec_field(runs, src, "format")
+        origin = spec_field(runs, src, "origin")
         ok = [r for r in runs if not r.get("error") and r.get("seconds") is not None]
         errs = [r for r in runs if r.get("error")]
         model = runs[0].get("winning_model") or "-"
@@ -59,7 +70,8 @@ def main() -> None:
         else:
             status = f"ok ({len(ok)}/{len(runs)})"
         print(
-            f"| {src} | {model} | {req} | {ret if ret is not None else '-'} | {med} "
+            f"| {src} | {model} | {fmt} | {origin} | {req} "
+            f"| {ret if ret is not None else '-'} | {med} "
             f"| {mb(ok, 'cache_bytes')} | {mb(ok, 'result_bytes')} | {status} |"
         )
 

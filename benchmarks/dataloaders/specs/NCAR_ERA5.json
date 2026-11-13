@@ -1,6 +1,8 @@
 {
   "source": "NCAR_ERA5",
   "data_class": "NCAR_ERA5",
+  "format": "NetCDF4 (HDF5)",
+  "origin": "AWS S3 s3://nsf-ncar-era5",
   "winning_model": "Aurora1p5",
   "count": 83,
   "variables": [

@@ -1,6 +1,8 @@
 {
   "source": "ACE2",
   "data_class": "ACE2ERA5Data",
+  "format": "NetCDF",
+  "origin": "Hugging Face allenai/ACE2-ERA5",
   "winning_model": "ACE2ERA5",
   "count": 38,
   "variables": [

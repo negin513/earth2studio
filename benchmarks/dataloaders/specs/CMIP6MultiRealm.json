@@ -1,6 +1,8 @@
 {
   "source": "CMIP6MultiRealm",
   "data_class": "CMIP6MultiRealm",
+  "format": "NetCDF",
+  "origin": "ESGF via intake-esgf",
   "winning_model": "CorrDiffCMIP6",
   "count": 74,
   "variables": [

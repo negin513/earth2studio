@@ -1,6 +1,8 @@
 {
   "source": "PC_IFS",
   "data_class": "PlanetaryComputerECMWFOpenDataIFS",
+  "format": "GRIB2 (byte-range via .index)",
+  "origin": "Azure Blob via Planetary Computer STAC (ecmwf-forecast)",
   "winning_model": "FCN3",
   "count": 72,
   "variables": [

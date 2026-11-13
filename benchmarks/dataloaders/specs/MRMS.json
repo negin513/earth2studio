@@ -1,6 +1,8 @@
 {
   "source": "MRMS",
   "data_class": "MRMS",
+  "format": "GRIB2, gzipped",
+  "origin": "AWS S3 s3://noaa-mrms-pds",
   "winning_model": "StormScopeMRMS",
   "count": 2,
   "variables": [

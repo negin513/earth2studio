@@ -1,6 +1,8 @@
 {
   "source": "WB2ERA5",
   "data_class": "WB2ERA5",
+  "format": "Zarr",
+  "origin": "Google Cloud Storage gs://weatherbench2",
   "winning_model": "Aurora",
   "count": 69,
   "variables": [

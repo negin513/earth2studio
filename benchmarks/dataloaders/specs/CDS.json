@@ -1,6 +1,8 @@
 {
   "source": "CDS",
   "data_class": "CDS_ERA5",
+  "format": "GRIB",
+  "origin": "Copernicus CDS API",
   "winning_model": "AIFSENS",
   "count": 88,
   "variables": [

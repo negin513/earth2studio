@@ -1,6 +1,8 @@
 {
   "source": "IFS",
   "data_class": "IFS",
+  "format": "GRIB2",
+  "origin": "AWS S3 ECMWF open data mirror (ecmwf-forecasts)",
   "winning_model": "AIFS2",
   "count": 125,
   "variables": [
