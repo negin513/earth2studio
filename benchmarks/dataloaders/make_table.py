@@ -35,8 +35,16 @@ def main() -> None:
     for r in json.loads(args.results.read_text()):
         groups[r["source"]].append(r)
 
-    print("| Source | Model | #vars (req/ret) | Median time (s) | Status |")
-    print("|---|---|---|---|---|")
+    def mb(runs: list, key: str) -> str:
+        """Median of a byte-count field across runs, in MB."""
+        vals = [r[key] for r in runs if r.get(key) is not None]
+        return f"{statistics.median(vals) / 1e6:.1f}" if vals else "-"
+
+    print(
+        "| Source | Model | Variables requested | Variables returned "
+        "| Median time (s) | Cache (MB) | Data in memory (MB) | Status |"
+    )
+    print("|---|---|---|---|---|---|---|---|")
     for src in sorted(groups):
         runs = groups[src]
         ok = [r for r in runs if not r.get("error") and r.get("seconds") is not None]
@@ -51,7 +59,8 @@ def main() -> None:
         else:
             status = f"ok ({len(ok)}/{len(runs)})"
         print(
-            f"| {src} | {model} | {req}/{ret if ret is not None else '-'} | {med} | {status} |"
+            f"| {src} | {model} | {req} | {ret if ret is not None else '-'} | {med} "
+            f"| {mb(ok, 'cache_bytes')} | {mb(ok, 'result_bytes')} | {status} |"
         )
 
 
