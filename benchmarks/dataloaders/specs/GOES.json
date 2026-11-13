@@ -1,0 +1,58 @@
+{
+  "source": "GOES",
+  "data_class": "GOES",
+  "winning_model": "StormScopeGOES",
+  "count": 8,
+  "variables": [
+    "abi01c",
+    "abi02c",
+    "abi03c",
+    "abi07c",
+    "abi08c",
+    "abi09c",
+    "abi10c",
+    "abi13c"
+  ],
+  "ctor_kwargs": {
+    "satellite": "goes16",
+    "scan_mode": "C"
+  },
+  "time": "2024-01-08T18:00:00",
+  "enabled": true,
+  "notes": [
+    "winning_model: StormScopeGOES (tie with StormScopeMRMS conditioning; same 8 vars)",
+    "cite: examples/04_nowcasting/03_stormscope_goes_example.py:156-164; lexicon earth2studio/lexicon/goes.py:45-62 (all 8 verified); recipes/eval/cfg/model/stormscope_goes_mrms.yaml:37-39 same kwargs; example also uses lead_time=model.input_coords()['lead_time'] (:178)"
+  ],
+  "all_pairs": [
+    {
+      "model": "StormScopeGOES",
+      "role": "input",
+      "variables": [
+        "abi01c",
+        "abi02c",
+        "abi03c",
+        "abi07c",
+        "abi08c",
+        "abi09c",
+        "abi10c",
+        "abi13c"
+      ],
+      "cite": "earth2studio/models/px/stormscope.py:1769-1780"
+    },
+    {
+      "model": "StormScopeMRMS",
+      "role": "conditioning",
+      "variables": [
+        "abi01c",
+        "abi02c",
+        "abi03c",
+        "abi07c",
+        "abi08c",
+        "abi09c",
+        "abi10c",
+        "abi13c"
+      ],
+      "cite": "earth2studio/models/px/stormscope.py:2180-2190; examples/04_nowcasting/03_stormscope_goes_example.py:133"
+    }
+  ]
+}

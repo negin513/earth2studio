@@ -1,0 +1,201 @@
+{
+  "source": "ARCO",
+  "data_class": "ARCO_ERA5",
+  "winning_model": "UCast",
+  "count": 83,
+  "variables": [
+    "msl",
+    "u10m",
+    "v10m",
+    "t2m",
+    "sst",
+    "z50",
+    "z100",
+    "z150",
+    "z200",
+    "z250",
+    "z300",
+    "z400",
+    "z500",
+    "z600",
+    "z700",
+    "z850",
+    "z925",
+    "z1000",
+    "q50",
+    "q100",
+    "q150",
+    "q200",
+    "q250",
+    "q300",
+    "q400",
+    "q500",
+    "q600",
+    "q700",
+    "q850",
+    "q925",
+    "q1000",
+    "t50",
+    "t100",
+    "t150",
+    "t200",
+    "t250",
+    "t300",
+    "t400",
+    "t500",
+    "t600",
+    "t700",
+    "t850",
+    "t925",
+    "t1000",
+    "u50",
+    "u100",
+    "u150",
+    "u200",
+    "u250",
+    "u300",
+    "u400",
+    "u500",
+    "u600",
+    "u700",
+    "u850",
+    "u925",
+    "u1000",
+    "v50",
+    "v100",
+    "v150",
+    "v200",
+    "v250",
+    "v300",
+    "v400",
+    "v500",
+    "v600",
+    "v700",
+    "v850",
+    "v925",
+    "v1000",
+    "w50",
+    "w100",
+    "w150",
+    "w200",
+    "w250",
+    "w300",
+    "w400",
+    "w500",
+    "w600",
+    "w700",
+    "w850",
+    "w925",
+    "w1000"
+  ],
+  "ctor_kwargs": {
+    "verbose": false
+  },
+  "time": "2024-01-01T00:00:00",
+  "enabled": true,
+  "unverified": [
+    "CorrDiffCosmoEra5, DLESyM (package config), DLESyMv0_ISCCP variable lists live in downloaded checkpoints; no network fetch done",
+    "did not execute any fetch against ARCO; membership only checked against ARCO_ERA5Lexicon.VOCAB"
+  ],
+  "notes": [
+    "winning_model: UCast (earth2studio.models.px.UCast) - recipes/eval default model + default arco_era5 data source",
+    "lexicon: earth2studio.lexicon.ARCO_ERA5Lexicon (ARCOLexicon / data.ARCO are deprecated aliases: earth2studio/data/arco.py:501, lexicon/arco.py:225)",
+    "ctor_kwargs_note: recipes/eval/cfg/data_source/arco_era5.yaml:25-27 uses cache: false, verbose: false; class defaults are cache=True, verbose=True, async_timeout=600 (earth2studio/data/arco.py:75-80)",
+    "time_note: UCast needs lead_time [-12h, 0h] (ucast.py:700); recipes/eval uses 2024 monthly ICs. ARCO_ERA5 valid 1940-01-01..2025-12-31 (arco.py:68). Atlas example uses 2024-01-01T00:00 (06_atlas_inference.py)"
+  ],
+  "all_pairs": [
+    {
+      "model": "UCast",
+      "count": 83,
+      "missing_vars": [],
+      "evidence_file": "recipes/eval/cfg/default.yaml:9-10 (model: ucast + data_source: arco_era5 defaults); recipes/eval/cfg/model/ucast.yaml:6; VARIABLES earth2studio/models/px/ucast.py:40-52; input_coords ucast.py:692-701"
+    },
+    {
+      "model": "GraphCastOperational",
+      "count": 82,
+      "missing_vars": [],
+      "evidence_file": "skills/earth2studio-deterministic-forecast/evals/targets/eval_2_target.py:19,28; VARIABLES earth2studio/models/px/graphcast_operational.py:64-148 (skills eval target, not an example/recipe)"
+    },
+    {
+      "model": "FuXiS2S",
+      "count": 76,
+      "missing_vars": [],
+      "evidence_file": "recipes/eval/cfg/data_source/arco_era5_daily.yaml:27-30 (24h WindowMeanSource over ARCO_ERA5); VARIABLES earth2studio/models/px/fuxi_s2s.py:49-82 (two history frames)"
+    },
+    {
+      "model": "AtlasCRPS",
+      "count": 75,
+      "missing_vars": [],
+      "evidence_file": "examples/02_medium_range/06_atlas_inference.py:100,110; VARIABLES earth2studio/models/px/atlas.py:46"
+    },
+    {
+      "model": "SFNO",
+      "count": 73,
+      "missing_vars": [],
+      "evidence_file": "examples/02_medium_range/05_cyclone_tracking.py:73,86; examples/03_downscaling/04_cosmo_rea_downscaling.py:102,135; recipes/s2s/cfg/pnw_sfno.yaml:21; recipes/s2s/cfg/pnw_sfno_precip.yaml:28; VARIABLES earth2studio/models/px/sfno.py:55-128"
+    },
+    {
+      "model": "FCN3",
+      "count": 72,
+      "missing_vars": [],
+      "evidence_file": "recipes/eval/cfg/campaign/fcn3_2024_monthly.yaml:5 (default arco_era5); VARIABLES earth2studio/models/px/fcn3.py:56"
+    },
+    {
+      "model": "StormCast/StormCastCONUS (conditioning)",
+      "count": 26,
+      "missing_vars": [],
+      "evidence_file": "examples/04_nowcasting/01_stormcast_example.py:58 (ARCO_ERA5 mentioned as alternative only; examples use GFS_FX; ensemble example 02_stormcast_ensemble_example.py:66-67 uses GFS_FX, no ARCO); CONDITIONING_VARIABLES earth2studio/models/px/stormcast.py:78-81 (note stormcast.py uses lowercase z)"
+    },
+    {
+      "model": "CorrDiffCosmoEra5",
+      "count": null,
+      "missing_vars": null,
+      "evidence_file": "examples/05_data_assimilation/03_corrdiff_cosmo_sda.py:108,165; examples/03_downscaling/04_cosmo_rea_downscaling.py:102,135 (reads 47 ERA5 channels per comment line 169 comment; list is in the checkpoint package, not in repo; not verified)"
+    },
+    {
+      "model": "DLESyM/DLESyMLatLon",
+      "count": 11,
+      "missing_vars": [],
+      "evidence_file": "examples/06_seasonal/02_dlesym_example.py:78,87; recipes/s2s/cfg/global_dlesym.yaml:24, pnw_dlesym.yaml:21; defaults earth2studio/models/px/dlesym.py:50-62,1375-1380 (actual list comes from checkpoint config; ttr03 appended if package has it)"
+    },
+    {
+      "model": "DLESyMv0_ISCCP_ERA5LatLon",
+      "count": null,
+      "missing_vars": null,
+      "evidence_file": "examples/06_seasonal/03_dlesym_climate.py:79,89 (10 variables incl ttr+sst per docstring dx/dlesym_v0_isccp_era5_precip.py:151; list in package, not verified)"
+    },
+    {
+      "model": "DLWP",
+      "count": 7,
+      "missing_vars": [],
+      "evidence_file": "recipes/eval/cfg/campaign/dlwp_2024_monthly.yaml (default arco_era5); VARIABLES earth2studio/models/px/dlwp.py:47"
+    },
+    {
+      "model": "TCTrackerWuDuan",
+      "count": 5,
+      "missing_vars": [],
+      "evidence_file": "examples/02_medium_range/05_cyclone_tracking.py:73-111; earth2studio/models/dx/tc_tracking.py:71"
+    },
+    {
+      "model": "TCTrackerVitart",
+      "count": 13,
+      "missing_vars": [],
+      "evidence_file": "no ARCO pairing found in repo; included for completeness; earth2studio/models/dx/tc_tracking.py:56-69"
+    },
+    {
+      "model": "FCN",
+      "count": 26,
+      "missing_vars": [
+        "r500",
+        "r850"
+      ],
+      "evidence_file": "no repo example pairs FCN with ARCO (examples/01_getting_started uses other sources; serve examples no ARCO); VARIABLES earth2studio/models/px/fcn.py:42-69; r500,r850 not in ARCO_ERA5Lexicon.VOCAB"
+    },
+    {
+      "model": "PrecipitationAFNO",
+      "count": null,
+      "missing_vars": null,
+      "evidence_file": "recipes/s2s/cfg/pnw_sfno_precip.yaml:28 -- consumes SFNO output, ARCO feeds SFNO only (73 vars)"
+    }
+  ]
+}

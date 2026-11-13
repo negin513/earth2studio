@@ -1,0 +1,140 @@
+{
+  "source": "GFS",
+  "data_class": "GFS",
+  "winning_model": "SFNO",
+  "count": 73,
+  "variables": [
+    "u10m",
+    "v10m",
+    "u100m",
+    "v100m",
+    "t2m",
+    "sp",
+    "msl",
+    "tcwv",
+    "u50",
+    "u100",
+    "u150",
+    "u200",
+    "u250",
+    "u300",
+    "u400",
+    "u500",
+    "u600",
+    "u700",
+    "u850",
+    "u925",
+    "u1000",
+    "v50",
+    "v100",
+    "v150",
+    "v200",
+    "v250",
+    "v300",
+    "v400",
+    "v500",
+    "v600",
+    "v700",
+    "v850",
+    "v925",
+    "v1000",
+    "z50",
+    "z100",
+    "z150",
+    "z200",
+    "z250",
+    "z300",
+    "z400",
+    "z500",
+    "z600",
+    "z700",
+    "z850",
+    "z925",
+    "z1000",
+    "t50",
+    "t100",
+    "t150",
+    "t200",
+    "t250",
+    "t300",
+    "t400",
+    "t500",
+    "t600",
+    "t700",
+    "t850",
+    "t925",
+    "t1000",
+    "q50",
+    "q100",
+    "q150",
+    "q200",
+    "q250",
+    "q300",
+    "q400",
+    "q500",
+    "q600",
+    "q700",
+    "q850",
+    "q925",
+    "q1000"
+  ],
+  "ctor_kwargs": {
+    "source": "aws",
+    "verbose": false
+  },
+  "time": "2024-01-01T00:00:00",
+  "enabled": true,
+  "notes": [
+    "GFS_FX shares GFSLexicon (earth2studio/data/gfs.py:46,306); earth2studio.data.GFS aws source requires time >= 2021-01-01, 6h-aligned (gfs.py:138-142,419). Ties: none (max 73)."
+  ],
+  "all_pairs": [
+    {
+      "model": "SFNO",
+      "count": 73,
+      "missing_vars": [],
+      "evidence_file": "earth2studio/models/px/sfno.py:55 (VARIABLES); examples/02_medium_range/03_huge_ensembles.py:115,148 (GFS()+SFNO.load_model); recipes/hens/cfg/helene.yaml:13,22 (SFNO + earth2studio.data.GFS)"
+    },
+    {
+      "model": "InterpCRPSDiT",
+      "count": 73,
+      "missing_vars": [],
+      "evidence_file": "earth2studio/models/px/interpcrpsdit.py:48 (VARIABLES, identical to SFNO's 73); examples/02_medium_range/04_temporal_interpolation.py:74-81 (GFS() feeds SFNO px_model wrapped by InterpCRPSDiT)"
+    },
+    {
+      "model": "Pangu24",
+      "count": 69,
+      "missing_vars": [],
+      "evidence_file": "earth2studio/models/px/pangu.py:53; examples/06_seasonal/01_seasonal_statistics.py:199,202"
+    },
+    {
+      "model": "FCN3",
+      "count": 72,
+      "missing_vars": [],
+      "evidence_file": "earth2studio/models/px/fcn3.py:56; serve/server/README_workflows.md:361,372,375 (GFS()+FCN3)"
+    },
+    {
+      "model": "FCN",
+      "count": 26,
+      "missing_vars": [],
+      "evidence_file": "earth2studio/models/px/fcn.py:42; examples/01_getting_started/03_ensemble_workflow.py:82,88; examples/08_extend/03_custom_datasource.py:275"
+    },
+    {
+      "model": "PrecipitationAFNO",
+      "count": 20,
+      "missing_vars": [],
+      "evidence_file": "earth2studio/models/dx/precipitation_afno.py:43; examples/01_getting_started/02_diagnostic_workflow.py:80 (inputs come from FCN output, not read directly from GFS; GFS feeds FCN's 26 vars)"
+    },
+    {
+      "model": "CorrDiffTaiwan",
+      "count": 12,
+      "missing_vars": [],
+      "evidence_file": "earth2studio/models/dx/corrdiff.py:1230; examples/03_downscaling/01_corrdiff_inference.py:171,174; examples/03_downscaling/03_ensemble_downscaling.py:232,252"
+    },
+    {
+      "model": "DLWP",
+      "count": 7,
+      "missing_vars": [],
+      "evidence_file": "earth2studio/models/px/dlwp.py:47; examples/01_getting_started/01_deterministic_workflow.py:70,73"
+    }
+  ]
+}

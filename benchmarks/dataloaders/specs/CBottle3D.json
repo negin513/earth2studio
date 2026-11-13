@@ -1,0 +1,61 @@
+{
+  "source": "CBottle3D",
+  "data_class": "CBottle3D",
+  "winning_model": "CBottleSR",
+  "count": 12,
+  "variables": [
+    "tclw",
+    "tciw",
+    "t2m",
+    "u10m",
+    "v10m",
+    "rlut",
+    "rsut",
+    "msl",
+    "tpf",
+    "rsds",
+    "sst",
+    "sic"
+  ],
+  "ctor_kwargs": {},
+  "time": "2020-01-01T00:00",
+  "enabled": false,
+  "disabled_reason": "Generative model source (needs GPU + NGC checkpoint via load_model), not a remote data fetch; generic ctor+call path does not apply.",
+  "notes": [
+    "time: {\"evidence\": \"example SR :124; valid range [1940-01-01, 2022-12-16T12) cbottle.py:361-374\"}",
+    "ctor_kwargs: CBottle3D.load_model(CBottle3D.load_default_package(), seed=None); defaults lat_lon=True, sampler_steps=18, batch_size=4 (earth2studio/data/cbottle.py:115-124). Requires GPU + NGC package download"
+  ],
+  "all_pairs": [
+    {
+      "model": "CBottleSR",
+      "variables": [
+        "tclw",
+        "tciw",
+        "t2m",
+        "u10m",
+        "v10m",
+        "rlut",
+        "rsut",
+        "msl",
+        "tpf",
+        "rsds",
+        "sst",
+        "sic"
+      ],
+      "count": 12,
+      "evidence": "examples/03_downscaling/02_cbottle_super_resolution.py:128-133 fetch_data(cbottle_ds,times,cbottle_sr.input_coords()['variable']); VARIABLES at earth2studio/models/dx/cbottle_sr.py:52-65"
+    },
+    {
+      "model": "CBottleInfill",
+      "variables": [],
+      "count": 0,
+      "evidence": "CBottle3D is not its input source: examples/07_misc/02_cbottle_generation.py:103-105 uses CBottle3D only for standalone generation (['msl','tcwv']); infill inputs come from WB2ERA5 (:192,226)"
+    },
+    {
+      "model": "CBottleTCGuidance",
+      "variables": [],
+      "count": 0,
+      "evidence": "takes tc_guidance tensor (cbottle_tc.py:173-201), no data source read; examples/07_misc/05_cbottle_tc_guidance.py"
+    }
+  ]
+}

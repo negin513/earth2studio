@@ -1,0 +1,71 @@
+{
+  "source": "GFS_FX",
+  "data_class": "GFS_FX",
+  "winning_model": "StormCast",
+  "count": 26,
+  "variables": [
+    "u10m",
+    "v10m",
+    "t2m",
+    "tcwv",
+    "sp",
+    "msl",
+    "u1000",
+    "u850",
+    "u500",
+    "u250",
+    "v1000",
+    "v850",
+    "v500",
+    "v250",
+    "z1000",
+    "z850",
+    "z500",
+    "z250",
+    "t1000",
+    "t850",
+    "t500",
+    "t250",
+    "q1000",
+    "q850",
+    "q500",
+    "q250"
+  ],
+  "ctor_kwargs": {
+    "source": "aws",
+    "verbose": false
+  },
+  "time": "2024-01-01T00:00:00",
+  "lead_time_hours": 6,
+  "enabled": true,
+  "unverified": "StormCast conditioning list is the class default; StormCastCONUS overrides it from package metadata at load time.",
+  "notes": [
+    "Tie at 26 between StormCast, StormCastCONUS, StormCast_SDA (identical lists); first listed chosen. Lead time must be 1h multiple, max 384h (gfs.py:717,724)."
+  ],
+  "all_pairs": [
+    {
+      "model": "StormCast",
+      "count": 26,
+      "missing_vars": [],
+      "evidence_file": "earth2studio/models/px/stormcast.py:78 (CONDITIONING_VARIABLES), :284 (conditioning_data_source=GFS_FX()); examples/04_nowcasting/01_stormcast_example.py:56,82"
+    },
+    {
+      "model": "StormCastCONUS",
+      "count": 26,
+      "missing_vars": [],
+      "evidence_file": "earth2studio/models/px/stormcastconus.py:84, :807; examples/04_nowcasting/02_stormcast_ensemble_example.py:92; serve/server/example_workflows/stormcast_conus_workflow.py:98. NOTE load_model overrides conditioning vars from package metadata (stormcastconus.py:878); class default used here"
+    },
+    {
+      "model": "StormCast_SDA",
+      "count": 26,
+      "missing_vars": [],
+      "evidence_file": "earth2studio/models/da/sda_stormcast.py:93, :360"
+    },
+    {
+      "model": "StormScopeGOES",
+      "count": 1,
+      "missing_vars": [],
+      "evidence_file": "earth2studio/models/px/stormscope.py:1781 (conditioning_variables default z500); GFS_FX only mentioned in recipes/eval/src/pipelines/stormscope.py:466; examples use GOES conditioning source, load_model reads conditioning_vars from package (:1980) so UNVERIFIED"
+    }
+  ]
+}

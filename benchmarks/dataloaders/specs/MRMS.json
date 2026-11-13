@@ -1,0 +1,27 @@
+{
+  "source": "MRMS",
+  "data_class": "MRMS",
+  "winning_model": "StormScopeMRMS",
+  "count": 2,
+  "variables": [
+    "refc",
+    "refc_base"
+  ],
+  "ctor_kwargs": {},
+  "time": "2024-01-08T18:00:00",
+  "enabled": true,
+  "notes": [
+    "cite: example :198 MRMS() defaults; lexicon earth2studio/lexicon/mrms.py:40-41 (refc, refc_base verified); recipes cfg stormscope_goes_mrms.yaml:70-72 uses cache:false"
+  ],
+  "all_pairs": [
+    {
+      "model": "StormScopeMRMS",
+      "role": "input (radar channels; glm_density comes from GOESGLMGrid, not MRMS)",
+      "variables": [
+        "refc",
+        "refc_base"
+      ],
+      "cite": "examples/04_nowcasting/03_stormscope_goes_example.py:201-209 (model_name 3km_10min_flash; class default is only [refc], stormscope.py:2179)"
+    }
+  ]
+}
