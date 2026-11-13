@@ -301,7 +301,7 @@ def wipe(path: Path) -> None:
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--source", required=True, choices=sorted(SOURCES))
-    ap.add_argument("--version", required=True, choices=["before", "after"])
+    ap.add_argument("--version", required=True, choices=["before", "after", "single"])
     ap.add_argument("--variables-file", required=True)
     ap.add_argument("--cache-dir", required=True)
     ap.add_argument("--output", required=True)
